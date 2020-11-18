@@ -1,0 +1,13 @@
+﻿body {
+    background-color: lightgrey;
+}
+
+.home {
+    text-align: center;
+}
+
+.home-name {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+}
