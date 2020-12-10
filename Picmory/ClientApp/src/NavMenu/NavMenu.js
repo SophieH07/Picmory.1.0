@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import logo from './PicmoryLogoTransparent.png';
-import name from './transparentNameOnly.png';
+import logo from "../img/PicmoryLogoTransparent.png";
+import name from "../img/transparentNameOnly.png";
 
 export class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -37,10 +37,10 @@ export class NavMenu extends Component {
                   <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/counter">Log in</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/login">Log in</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/fetch-data">Sign up</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/register">Sign up</NavLink>
                 </NavItem>
               </ul>
             </Collapse>
