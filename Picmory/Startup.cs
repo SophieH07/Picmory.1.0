@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Picmory.Models;
+using Picmory.Models.Repositorys;
 
 namespace Picmory
 {
     public class Startup
     {
+        private string ConnectionString = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -20,8 +24,10 @@ namespace Picmory
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            ConnectionString = Configuration["Picmory:ConnectionString"];
+            services.AddDbContextPool<PicmoryDbContext>(options => options.UseSqlServer(ConnectionString));
             services.AddControllersWithViews();
+            services.AddScoped<IUserRepository, SQLUserRepository>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

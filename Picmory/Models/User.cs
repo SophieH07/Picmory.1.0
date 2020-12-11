@@ -1,14 +1,22 @@
 ﻿using Picmory.Util;
+using System.ComponentModel.DataAnnotations;
 
 namespace Picmory.Models
 {
     public class User
     {
-        private string Name { get; set; }
-        private string EMail { get; set; }
-        private string Password { get; set; }
-        private Theme Theme { get; set; }
-        private string ProfilePicture { get; set; }
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string EMail { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public Theme Theme { get; set; }
+        public string ProfilePicture { get; set; }
+        [Timestamp]
+        public byte[] RegistrationTime { get; set; }
 
 
     }
