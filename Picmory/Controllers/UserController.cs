@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Picmory.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Picmory.Models.Repositorys;
 using System;
-using Picmory.Util;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Picmory.Controllers
 {
@@ -12,37 +14,26 @@ namespace Picmory.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository userRepository;
+        private IConfiguration _config;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
+            _config = config;
         }
 
-        [HttpPost("registration")]
-        public bool Create([FromBody]User user)
+        [Authorize]
+        [HttpGet("userinfo")]
+        public string Info()
         {
-            if (!userRepository.GetUserExist(user.Name))
+           string result = "Not";
+            var currentUser = HttpContext.User;
+            if (currentUser.HasClaim(c => c.Type == "Id"))
             {
-                user.Password = Hashing.HashPassword(user.Password);
-                User newUser = userRepository.RegisterNewUser(user);
-                return true;
+                result = currentUser.Claims.FirstOrDefault().Value;
             }
-            return false;
+            return result;
         }
 
-        [HttpPost("login")]
-        public bool Login([FromBody] User user)
-        {
-            string loginPassword = user.Password;
-            User databaseUser = userRepository.GetUserData(user.Name);
-            if (databaseUser != null) {
-                string originalPassword = databaseUser.Password;
-                if (Hashing.ValidatePassword(loginPassword, originalPassword))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
