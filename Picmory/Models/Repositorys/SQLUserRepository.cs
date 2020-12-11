@@ -26,6 +26,30 @@ namespace Picmory.Models.Repositorys
             return context.Users.Find(id);
         }
 
+        public User GetUserData(string name)
+        {
+            try
+            {
+                var user = context.Users.Where(a => a.Name == name).Single();
+                return user;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public bool GetUserExist(string name)
+        {
+            try {
+                var user = context.Users.Where(a => a.Name == name).Single();
+                return true;
+            }
+            catch (Exception e) {
+                return false;
+            }
+        }
+
         public User RegisterNewUser(User user)
         {
             context.Users.Add(user);

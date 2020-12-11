@@ -2,13 +2,14 @@
 using Picmory.Models;
 using Picmory.Models.Repositorys;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Picmory.Util;
+
 
 namespace Picmory.Controllers
 {
-    public class UserController
+    [ApiController]
+    [Route("[controller]")]
+    public class UserController : ControllerBase
     {
         private readonly IUserRepository userRepository;
 
@@ -18,11 +19,30 @@ namespace Picmory.Controllers
         }
 
         [HttpPost("registration")]
-        public bool Create(string user)
+        public bool Create([FromBody]User user)
         {
-            Console.WriteLine("ok");
-            //User newUser = userRepository.RegisterNewUser(user);
-            return true;
+            if (!userRepository.GetUserExist(user.Name))
+            {
+                user.Password = Hashing.HashPassword(user.Password);
+                User newUser = userRepository.RegisterNewUser(user);
+                return true;
+            }
+            return false;
+        }
+
+        [HttpPost("login")]
+        public bool Login([FromBody] User user)
+        {
+            string loginPassword = user.Password;
+            User databaseUser = userRepository.GetUserData(user.Name);
+            if (databaseUser != null) {
+                string originalPassword = databaseUser.Password;
+                if (Hashing.ValidatePassword(loginPassword, originalPassword))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -8,6 +8,8 @@ namespace Picmory.Models.Repositorys
     public interface IUserRepository
     {
         User GetUserData(int id);
+        User GetUserData(string name);
+        bool GetUserExist(String name);
         User RegisterNewUser(User user);
         User EditUserData(User user);
     }

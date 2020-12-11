@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Picmory.Models;
 
 namespace Picmory.Migrations
 {
     [DbContext(typeof(PicmoryDbContext))]
-    partial class PicmoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201211133801_PictureTable")]
+    partial class PictureTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,8 +76,8 @@ namespace Picmory.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProfPicture")
-                        .HasColumnType("int");
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("RegistrationTime")
                         .IsConcurrencyToken()
@@ -86,8 +88,6 @@ namespace Picmory.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProfPicture");
 
                     b.ToTable("Users");
                 });
@@ -101,15 +101,6 @@ namespace Picmory.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Picmory.Models.User", b =>
-                {
-                    b.HasOne("Picmory.Models.Picture", "ProfilePicture")
-                        .WithMany()
-                        .HasForeignKey("ProfPicture");
-
-                    b.Navigation("ProfilePicture");
                 });
 #pragma warning restore 612, 618
         }
