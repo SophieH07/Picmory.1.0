@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Models.Repositorys
 {
     public class SQLUserRepository : IUserRepository
     {
         private readonly PicmoryDbContext context;
-
         public SQLUserRepository(PicmoryDbContext context)
         {
             this.context = context;
         }
+        
+        
         public User EditUserData(User userChanges)
         {
             var user = context.Users.Attach(userChanges);
@@ -30,7 +29,7 @@ namespace Picmory.Models.Repositorys
         {
             try
             {
-                var user = context.Users.Where(a => a.Name == name).Single();
+                var user = context.Users.Where(a => a.UserName == name).Single();
                 return user;
             }
             catch (Exception e)
@@ -42,7 +41,7 @@ namespace Picmory.Models.Repositorys
         public bool GetUserExist(string name)
         {
             try {
-                var user = context.Users.Where(a => a.Name == name).Single();
+                var user = context.Users.Where(a => a.UserName == name).Single();
                 return true;
             }
             catch (Exception e) {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Picmory.Util
 {
-    public enum Theme
+    public enum ThemeColor
     {
         Light,
         Dark

@@ -17,22 +17,22 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private IConfiguration _config;
-
         public AuthenticationController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
             _config = config;
         }
 
+
         [HttpPost("registration")]
         public IActionResult Create([FromBody]User user)
         {
             IActionResult response = Unauthorized();
-            if (!userRepository.GetUserExist(user.Name))
+            if (!userRepository.GetUserExist(user.UserName))
             {
                 user.Password = Hashing.HashPassword(user.Password);
                 User newUser = userRepository.RegisterNewUser(user);
-                var tokenString = GenerateJSONWebToken(user);
+                var tokenString = GenerateJSONWebToken(newUser);
                 response = Ok(new { token = tokenString });
             }
             return response;
@@ -43,17 +43,19 @@ namespace Picmory.Controllers
         {
             IActionResult response = Unauthorized();
             string loginPassword = user.Password;
-            User databaseUser = userRepository.GetUserData(user.Name);
+            User databaseUser = userRepository.GetUserData(user.UserName);
             if (databaseUser != null) {
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                    var tokenString = GenerateJSONWebToken(user);
+                    var tokenString = GenerateJSONWebToken(databaseUser);
                     response = Ok(new { token = tokenString });
                 }
             }
             return response;
         }
+
+
 
         private string GenerateJSONWebToken(User userInfo)
         {
@@ -61,7 +63,7 @@ namespace Picmory.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
-            new Claim(JwtRegisteredClaimNames.Sub, userInfo.Name),
+            new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
             new Claim("Id", userInfo.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
     };
@@ -74,7 +76,5 @@ namespace Picmory.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-     
     }
 }
