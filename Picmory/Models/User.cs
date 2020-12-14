@@ -7,9 +7,10 @@ namespace Picmory.Models
     public class User
     {
         public User() { }
-        public User(string password) 
+        public User(ThemeColor colorOne, ThemeColor coloreTwo) 
         {
-            password = password;
+            ColorOne = colorOne;
+            ColorTow = ColorTow;
         }
         public User(string name,  string password)
         {

@@ -14,13 +14,9 @@ namespace Picmory.Models.Repositorys
             this.context = context;
         }
         
-        
-        public Folder ChangeFolderAccessType(Folder folder, AccessType newAccessType)
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public Folder ChangeFolderName(Folder folder, string newName)
+        public Folder ChangeFolderData(Folder folder)
         {
             throw new NotImplementedException();
         }
@@ -34,8 +30,7 @@ namespace Picmory.Models.Repositorys
         {
             try
             {
-                //List<Folder> folders = context.Folders.Where(a => a.Owner == user).ToArray(List<Folder>);
-                return null;
+                return  context.Folders.Where(a => a.Owner == user).ToList();
             }
             catch (Exception e)
             {

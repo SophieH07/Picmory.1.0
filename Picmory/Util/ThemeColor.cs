@@ -7,7 +7,10 @@ namespace Picmory.Util
 {
     public enum ThemeColor
     {
-        Light,
-        Dark
+        Red,
+        Green,
+        Blue,
+        Grey,
+        Black
     }
 }
