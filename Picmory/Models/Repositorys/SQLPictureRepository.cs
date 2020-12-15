@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Picmory.Models.Repositorys
 {
@@ -12,8 +9,15 @@ namespace Picmory.Models.Repositorys
         {
             this.context = context;
         }
-        
-        
+
+
+        public string GetPictureType(int Id)
+        {
+            var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
+            if (picture == null) { return "Null"; }
+            return picture.Type;
+        }
+
         public Picture SavePicture(Picture picture)
         {
             context.Pictures.Add(picture);
@@ -21,9 +25,9 @@ namespace Picmory.Models.Repositorys
             return picture;
         }
 
-        public bool SavePicturePath(User user, int Id, string path)
+        public bool SavePicturePath(int Id, string path)
         {
-            var picture = context.Pictures.FirstOrDefault(item => item.Owner == user && item.Id == Id);
+            var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
             if (picture != null)
             {
                 picture.Path = path;

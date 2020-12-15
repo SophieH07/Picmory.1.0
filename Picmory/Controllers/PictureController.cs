@@ -22,58 +22,94 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly IPictureRepository pictureRepository;
-        private IConfiguration _config;
-        private readonly IWebHostEnvironment _hostEnvironment;
-
-        public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IConfiguration config, IWebHostEnvironment hostEnvironment)
+        private readonly IWebHostEnvironment _hostEnv;
+        public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment)
         {
             this.userRepository = userRepository;
             this.pictureRepository = pictureRepository;
-            _config = config;
-            this._hostEnvironment = hostEnvironment;
+            _hostEnv = hostEnvironment;
         }
 
 
         [HttpGet("{pictureId}")]
         public IActionResult GetImageById(string pictureId)
         {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id"))
+            string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
+            if (HaveUser(HttpContext) && pictureType != "Null")
             {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
-                Byte[] picture;
-                string path = Path.Combine(_hostEnvironment.WebRootPath, user.UserName, pictureId);
-                picture = System.IO.File.ReadAllBytes(path + ".png");
-                return File(picture, "image/jpeg");
+                string path = CreatePath(HttpContext, pictureId, pictureType);
+                Byte[] picture = System.IO.File.ReadAllBytes(path);
+                return File(picture, pictureType);
             }
             return Unauthorized();
         }
 
         [HttpPost("uploadPicture")]
-        public IActionResult SetNewPassword()
+        public IActionResult UploadPicture()
         {
-            var request = HttpContext.Request;
-            UploadPhoto photo = new UploadPhoto(request.Form["Description"].ToString(), request.Form["Access"].ToString(), request.Form["FolderName"].ToString()) ;
             IActionResult response = Unauthorized();
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id") && ModelState.IsValid)
+
+            IFormFile uploadedImage = (IFormFile)HttpContext.Request.Form.Files[0];
+            UploadPhoto photoData = new UploadPhoto(
+                                                HttpContext.Request.Form["Description"].ToString(),
+                                                HttpContext.Request.Form["Access"].ToString(),
+                                                HttpContext.Request.Form["FolderName"].ToString());
+            if (HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null)
             {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
-                IFormFile image = (IFormFile)request.Form.Files[0];
-                if (image != null) {
-                    string uploadFolder = Path.Combine(_hostEnvironment.WebRootPath, user.UserName);
-                    Picture picture = new Picture(photo.Description, photo.Access, image.ContentType, user, photo.FolderName);
-                    Picture savedPicture = pictureRepository.SavePicture(picture);
-                    string filePath = Path.Combine(uploadFolder, savedPicture.Id.ToString());
-                    bool saved = pictureRepository.SavePicturePath(user, savedPicture.Id, filePath);
-                    string fullFilePath = filePath + "." + image.ContentType.ToString().Substring(6);
-                    image.CopyTo(new FileStream(fullFilePath, FileMode.Create));
-                    response = Ok();
-                }
+                UploadImage(HttpContext, photoData, uploadedImage);
+                response = Ok();
             }
             return response;
+        }
+
+
+
+        private User GetUser(HttpContext context)
+        {
+            return userRepository.GetUserData(int.Parse(context.User.Claims.FirstOrDefault(c => c.Type == "Id").Value));
+        }
+
+        private bool HaveUser(HttpContext context)
+        {
+            return context.User.HasClaim(c => c.Type == "Id") ? true : false;
+        }
+    
+        private void UploadImage(HttpContext context, UploadPhoto photoData, IFormFile uploadedImage)
+        {
+            string uploadFolder = CreateFolderPath(context);
+            Picture imageDataForDB = new Picture(
+                                            photoData.Description,
+                                            photoData.Access,
+                                            uploadedImage.ContentType,
+                                            GetUser(context),
+                                            photoData.FolderName);
+            Picture savedImageData = pictureRepository.SavePicture(imageDataForDB);
+            string filePath = CreateFilePath(uploadFolder, savedImageData, uploadedImage);
+            FileStream stream = new FileStream(filePath, FileMode.Create);
+            uploadedImage.CopyTo(stream);
+            stream.Close();
+        }
+    
+        private string CreatePath(HttpContext context, string pictureId, string pictureType) 
+        {
+            byte LenghtOfPictureTypeFirstPart = 6;
+            User user = GetUser(context);
+            return Path.Combine(_hostEnv.WebRootPath, user.UserName, pictureId) 
+                            + "." + pictureType.Substring(LenghtOfPictureTypeFirstPart);
+        } 
+        
+        private string CreateFilePath(string uploadFolder, Picture savedImageData, IFormFile uploadedImage) 
+        {
+            byte LenghtOfPictureTypeFirstPart = 6;
+            string filePathWithoutType = Path.Combine(uploadFolder, savedImageData.Id.ToString());
+            pictureRepository.SavePicturePath(savedImageData.Id, filePathWithoutType);
+            return (filePathWithoutType + "." + uploadedImage.ContentType.ToString().Substring(LenghtOfPictureTypeFirstPart));
+        } 
+        
+        private string CreateFolderPath(HttpContext context) 
+        {
+            User user = GetUser(context);
+            return Path.Combine(_hostEnv.WebRootPath, user.UserName);
         }
     }
 }
