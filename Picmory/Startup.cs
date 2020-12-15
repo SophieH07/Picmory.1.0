@@ -46,6 +46,7 @@ namespace Picmory
             services.AddScoped<IUserRepository, SQLUserRepository>();
             services.AddScoped<IFolderRepository, SQLFolderRepository>();
             services.AddScoped<IFollowerRepository, SQLFollowerRepository>();
+            services.AddScoped<IPictureRepository, SQLPictureRepository>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

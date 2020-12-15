@@ -23,7 +23,7 @@ namespace Picmory.Models
 
         [Key]
         public int Id { get; set; }
-        [ForeignKey("PictureOwner")]
+        [ForeignKey("FolderOwner")]
         public User Owner { get; set; }
         [Required]
         public string FolderName { get; set; }

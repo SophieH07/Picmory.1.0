@@ -33,12 +33,12 @@ namespace Picmory.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PictureOwner")
+                    b.Property<int?>("FolderOwner")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PictureOwner");
+                    b.HasIndex("FolderOwner");
 
                     b.ToTable("Folders");
                 });
@@ -62,7 +62,6 @@ namespace Picmory.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PictureOwner")
@@ -123,9 +122,7 @@ namespace Picmory.Migrations
                 {
                     b.HasOne("Picmory.Models.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("PictureOwner")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FolderOwner");
 
                     b.Navigation("Owner");
                 });

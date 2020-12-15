@@ -7,11 +7,17 @@ namespace Picmory.Models
     public class Picture
     {
         public Picture() { }
-        public Picture(string path, string desription, AccessType accesType, string type, User owner, string foldername) { }
+        public Picture(string desription, AccessType accesType, string type, User owner, string foldername) 
+        {
+            Description = desription;
+            Access = accesType;
+            Type = type;
+            Owner = owner;
+            FolderName = foldername;
+        }
 
         [Key]
         public int Id { get; set; }
-        [Required]
         public string Path { get; set; }
         [Required]
         public string Description { get; set; }
