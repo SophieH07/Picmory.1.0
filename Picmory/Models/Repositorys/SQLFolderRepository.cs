@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Models.Repositorys
 {
@@ -16,14 +15,40 @@ namespace Picmory.Models.Repositorys
         
        
 
-        public Folder ChangeFolderData(Folder folder)
+        public bool ChangeFolderName(User user, string originalName, string newName)
         {
-            throw new NotImplementedException();
+            var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName==originalName);
+            if (folder != null)
+            {
+                folder.FolderName = newName;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
-        public Folder DeleteFolder(Folder folder)
+        public bool ChangeFolderAccess(User user, string folderName, AccessType newAccess)
         {
-            throw new NotImplementedException();
+            var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName==folderName);
+            if (folder != null)
+            {
+                folder.Access = newAccess;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool DeleteFolder(User user, string folderName)
+        {
+            var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName == folderName);
+            if (folder != null)
+            {
+                context.Folders.Remove(folder);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public List<Folder> GetAllFolders(User user)

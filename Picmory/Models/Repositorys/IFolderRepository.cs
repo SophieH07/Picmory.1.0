@@ -1,8 +1,5 @@
 ﻿using Picmory.Util;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Models.Repositorys
 {
@@ -10,7 +7,8 @@ namespace Picmory.Models.Repositorys
     {
         public Folder SaveNewFolder(Folder folder);
         public List<Folder> GetAllFolders(User user);
-        public Folder ChangeFolderData(Folder folder);
-        public Folder DeleteFolder(Folder folder);
+        public bool ChangeFolderName(User user, string originalName, string newName);
+        public bool ChangeFolderAccess(User user, string folderName, AccessType newAccess);
+        public bool DeleteFolder(User user, string folderName);
     }
 }
