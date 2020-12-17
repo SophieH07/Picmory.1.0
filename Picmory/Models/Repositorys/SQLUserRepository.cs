@@ -38,7 +38,20 @@ namespace Picmory.Models.Repositorys
             }
         }
 
-        public bool GetUserExist(string name)
+        public bool EmailAlreadyUsed(string email)
+        {
+            try
+            {
+                var user = context.Users.Where(a => a.Email == email).Single();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UserNameAlreadyUsed(string name)
         {
             try {
                 var user = context.Users.Where(a => a.UserName == name).Single();

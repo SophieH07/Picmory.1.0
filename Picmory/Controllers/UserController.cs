@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
+using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
@@ -49,7 +50,7 @@ namespace Picmory.Controllers
             return result;
         }
        
-        [HttpPost("setnewpassword")]
+        [HttpPost("chnagepassword")]
         public IActionResult SetNewPassword([FromBody] string newPassword)
         {
             IActionResult response = Unauthorized();
@@ -65,24 +66,18 @@ namespace Picmory.Controllers
             return response;
         }
 
-        [HttpPost("setnewusername")]
-
-        [HttpPost("setnewtheme")]
-        public IActionResult SetNewTheme([FromBody] string colorsForSet)
+        [HttpPost("changethemeandusername")]
+        public IActionResult SetNewTheme([FromBody] ChangeUserData changeData)
         {
             IActionResult response = Unauthorized();
             var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id") && colorsForSet.Contains(" "))
+            if (currentUser.HasClaim(c => c.Type == "Id") && ModelState.IsValid)
             {
-                string[] colors = colorsForSet.Split(' ');
-                if (!typeof(ThemeColor).IsEnumDefined(colors[0]) || !typeof(ThemeColor).IsEnumDefined(colors[1]))
-                {
-                    return response;
-                }
                 int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
                 User user = userRepository.GetUserData(id);
-                user.ColorOne = (ThemeColor)Enum.Parse(typeof(ThemeColor), colors[0], true);
-                user.ColorTwo = (ThemeColor)Enum.Parse(typeof(ThemeColor), colors[1], true);
+                user.ColorOne = (ThemeColor)changeData.ColorOne;
+                user.ColorTwo = (ThemeColor)changeData.ColorTwo;
+                user.UserName = changeData.UserName;
                 userRepository.EditUserData(user);
                 response = Ok();                
             }

@@ -31,12 +31,12 @@ namespace Picmory.Controllers
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            IActionResult response = Unauthorized();
-            if (!userRepository.GetUserExist(user.UserName))
+            IActionResult response = BadRequest("Wrong Data!");
+            if (!userRepository.UserNameAlreadyUsed(user.UserName) && user.Email != null)
             {
-                string directoryPath = Path.Combine(_hostEnvironment.WebRootPath, user.UserName);
                 user.Password = Hashing.HashPassword(user.Password);
                 User newUser = userRepository.RegisterNewUser(user);
+                string directoryPath = Path.Combine(_hostEnvironment.WebRootPath, user.UserName);
                 if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                 var tokenString = GenerateJSONWebToken(newUser);
                 response = Ok(new { token = tokenString });
@@ -47,7 +47,7 @@ namespace Picmory.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] User user)
         {
-            IActionResult response = Unauthorized();
+            IActionResult response;
             string loginPassword = user.Password;
             User databaseUser = userRepository.GetUserData(user.UserName);
             if (databaseUser != null) {
@@ -57,23 +57,23 @@ namespace Picmory.Controllers
                     var tokenString = GenerateJSONWebToken(databaseUser);
                     response = Ok(new { token = tokenString });
                 }
+                else { response =  BadRequest("Wrong Password!"); }
             }
+            else { response = BadRequest("Wrong Username!"); }
             return response;
         }
 
         [HttpPost("checkusernamealreadyexist")]
         public bool CheckUsername([FromBody] string username)
         {
-            bool response = false;
-            User databaseUser = userRepository.GetUserData(username);
-            if (databaseUser != null)
-            {
-                response = true;
-            }
-            return response;
+            return userRepository.UserNameAlreadyUsed(username);
         }
 
-        [HttpPost("checkusernamealreadyexist")]
+        [HttpPost("checkemailalreadyexist")]
+        public bool CheckEmail([FromBody] string email)
+        {
+            return userRepository.EmailAlreadyUsed(email);
+        }
 
 
         private string GenerateJSONWebToken(User userInfo)
