@@ -71,6 +71,12 @@ namespace Picmory.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("UploadDate")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("UploadDate");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PictureOwner");
@@ -88,10 +94,10 @@ namespace Picmory.Migrations
                     b.Property<int>("ColorOne")
                         .HasColumnType("int");
 
-                    b.Property<int>("ColorTow")
+                    b.Property<int>("ColorTwo")
                         .HasColumnType("int");
 
-                    b.Property<string>("EMail")
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")

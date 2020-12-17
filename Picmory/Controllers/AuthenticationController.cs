@@ -73,6 +73,7 @@ namespace Picmory.Controllers
             return response;
         }
 
+        [HttpPost("checkusernamealreadyexist")]
 
 
         private string GenerateJSONWebToken(User userInfo)

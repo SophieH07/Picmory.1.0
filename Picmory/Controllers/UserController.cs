@@ -43,7 +43,7 @@ namespace Picmory.Controllers
                 {
                     foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
                 }
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.EMail, user.ColorOne, user.ColorTow, 0, 0, 0, foldersForShow);
+                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, 0, foldersForShow);
                 result = JsonConvert.SerializeObject(resultUser);
             }
             return result;
@@ -65,6 +65,8 @@ namespace Picmory.Controllers
             return response;
         }
 
+        [HttpPost("setnewusername")]
+
         [HttpPost("setnewtheme")]
         public IActionResult SetNewTheme([FromBody] string colorsForSet)
         {
@@ -80,7 +82,7 @@ namespace Picmory.Controllers
                 int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
                 User user = userRepository.GetUserData(id);
                 user.ColorOne = (ThemeColor)Enum.Parse(typeof(ThemeColor), colors[0], true);
-                user.ColorTow = (ThemeColor)Enum.Parse(typeof(ThemeColor), colors[1], true);
+                user.ColorTwo = (ThemeColor)Enum.Parse(typeof(ThemeColor), colors[1], true);
                 userRepository.EditUserData(user);
                 response = Ok();                
             }

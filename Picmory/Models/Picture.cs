@@ -30,5 +30,8 @@ namespace Picmory.Models
         public User Owner { get; set; }
         [Required]
         public string FolderName { get; set; }
+        [Timestamp]
+        [Column("UploadDate")]
+        public byte[] UploadDate { get; set; }
     }
 }

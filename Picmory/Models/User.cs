@@ -10,7 +10,7 @@ namespace Picmory.Models
         public User(ThemeColor colorOne, ThemeColor coloreTwo) 
         {
             ColorOne = colorOne;
-            ColorTow = ColorTow;
+            ColorTwo = coloreTwo;
         }
         public User(string name,  string password)
         {
@@ -20,7 +20,7 @@ namespace Picmory.Models
         public User(string name, string email, string password)
         {
             this.UserName = name;
-            this.EMail = email;
+            this.Email = email;
             this.Password = password;
         }
 
@@ -29,11 +29,11 @@ namespace Picmory.Models
         public int Id { get; set; }
         [Required]
         public string UserName { get; set; }
-        public string EMail { get; set; }
+        public string Email { get; set; }
         [Required]
         public string Password { get; set; }
         public ThemeColor ColorOne { get; set; }
-        public ThemeColor ColorTow { get; set; }
+        public ThemeColor ColorTwo { get; set; }
         [ForeignKey("ProfPicture")]
         public Picture ProfilePicture { get; set; }
         [Timestamp]
