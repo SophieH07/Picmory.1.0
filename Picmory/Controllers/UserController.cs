@@ -67,17 +67,19 @@ namespace Picmory.Controllers
         }
 
         [HttpPost("changethemeandusername")]
-        public IActionResult SetNewTheme([FromBody] ChangeUserData changeData)
+        public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {
             IActionResult response = Unauthorized();
             var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id") && ModelState.IsValid)
+            if (currentUser.HasClaim(c => c.Type == "Id"))
             {
                 int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
                 User user = userRepository.GetUserData(id);
+                if (userRepository.UserNameAlreadyUsed(changeData.UserName) && user.UserName != changeData.UserName )
+                { return BadRequest("Used Username Data!"); }
+                user.UserName = changeData.UserName;
                 user.ColorOne = (ThemeColor)changeData.ColorOne;
                 user.ColorTwo = (ThemeColor)changeData.ColorTwo;
-                user.UserName = changeData.UserName;
                 userRepository.EditUserData(user);
                 response = Ok();                
             }

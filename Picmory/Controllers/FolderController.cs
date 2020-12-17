@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
-using Picmory.Util;
+using Picmory.Models.RequestModels;
 using System.Linq;
 
 namespace Picmory.Controllers
@@ -41,8 +41,8 @@ namespace Picmory.Controllers
             return response;
         }
 
-        [HttpPost("changefoldername")]
-        public IActionResult ChangeFolderName(string originalname, string newname)
+        [HttpPost("changefolderdata")]
+        public IActionResult ChangeFolderName(ChangeFolderData changeFolderData)
         {
             IActionResult response = Unauthorized();
             var currentUser = HttpContext.User;
@@ -50,27 +50,12 @@ namespace Picmory.Controllers
             {
                 int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
                 User user = userRepository.GetUserData(id);
-                folderRepository.ChangeFolderName(user, originalname, newname);
+                folderRepository.ChangeFolderData(user,changeFolderData.originalFolder, changeFolderData.newName, changeFolderData.newAccessType);
                 response = Ok();
             }
             return response;
         }
-
-        [HttpPost("changefolderaccess")]
-        public IActionResult ChangeFolderAccess(string folderName, AccessType newAccess)
-        {
-            IActionResult response = Unauthorized();
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id"))
-            {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
-                folderRepository.ChangeFolderAccess(user, folderName, newAccess);
-                response = Ok();
-            }
-            return response;
-        }
-
+    
         [HttpPost("deletefolder")]
         public IActionResult DeleteFolder(string folderName)
         {
