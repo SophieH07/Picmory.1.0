@@ -6,6 +6,7 @@ using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestResultModels;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -16,6 +17,7 @@ namespace Picmory.Controllers
     [Route("[controller]")]
     public class PictureController :ControllerBase
     {
+        private readonly string[] AcceptedFileTypes = { "image/gif", "image/png", "image/jpg", "image/jpeg" };
         private readonly IUserRepository userRepository;
         private readonly IPictureRepository pictureRepository;
         private readonly IWebHostEnvironment _hostEnv;
@@ -50,7 +52,7 @@ namespace Picmory.Controllers
                                                 HttpContext.Request.Form["Description"].ToString(),
                                                 HttpContext.Request.Form["Access"].ToString(),
                                                 HttpContext.Request.Form["FolderName"].ToString());
-            if (HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null)
+            if (HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
             {
                 UploadImage(HttpContext, photoData, uploadedImage);
                 response = Ok();
@@ -58,7 +60,10 @@ namespace Picmory.Controllers
             return response;
         }
 
-
+        private bool ImageTypeIsValid(IFormFile uploadedImage)
+        {
+            return (AcceptedFileTypes.Contains(uploadedImage.ContentType));
+        }
 
         private User GetUser(HttpContext context)
         {
