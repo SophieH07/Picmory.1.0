@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -9,6 +11,7 @@ using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Picmory.Controllers
@@ -21,11 +24,13 @@ namespace Picmory.Controllers
         private readonly IUserRepository userRepository;
         private readonly IFolderRepository folderRepository;
         private IConfiguration _config;
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IConfiguration config)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IConfiguration config, IWebHostEnvironment hostEnvironment)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
             _config = config;
+            _hostEnvironment = hostEnvironment;
         }
 
         
@@ -70,20 +75,40 @@ namespace Picmory.Controllers
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {
             IActionResult response = Unauthorized();
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id"))
+            if (HaveUser(HttpContext))
             {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
+                User user = GetUser(HttpContext);
                 if (userRepository.UserNameAlreadyUsed(changeData.UserName) && user.UserName != changeData.UserName )
-                { return BadRequest("Used Username Data!"); }
+                    { return BadRequest("Used Username!"); }
+                ChangeFolderName(user.UserName, changeData.UserName);
                 user.UserName = changeData.UserName;
                 user.ColorOne = (ThemeColor)changeData.ColorOne;
                 user.ColorTwo = (ThemeColor)changeData.ColorTwo;
                 userRepository.EditUserData(user);
+
                 response = Ok();                
             }
             return response;
+        }
+
+        private void ChangeFolderName(string originalUsername, string newUserName)
+        {
+            string originalDirectoryPath = Path.Combine(_hostEnvironment.WebRootPath, originalUsername);
+            string newDirectoryPath = Path.Combine(_hostEnvironment.WebRootPath, newUserName);
+            if (Directory.Exists(originalDirectoryPath))
+            {
+                Directory.Move(originalDirectoryPath, newDirectoryPath);
+            }
+        }
+
+        private bool HaveUser(HttpContext context)
+        {
+            return context.User.HasClaim(c => c.Type == "Id");
+        }
+
+        private User GetUser(HttpContext context)
+        {
+            return userRepository.GetUserData(int.Parse(context.User.Claims.FirstOrDefault(c => c.Type == "Id").Value));
         }
     }
 }

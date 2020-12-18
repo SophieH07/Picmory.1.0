@@ -2,16 +2,12 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestResultModels;
-using Picmory.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Controllers
 {
@@ -35,9 +31,9 @@ namespace Picmory.Controllers
         public IActionResult GetImageById(string pictureId)
         {
             string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
-            if (HaveUser(HttpContext) && pictureType != "Null")
+            if (HaveUser(HttpContext) && pictureType != null)
             {
-                string path = CreatePath(HttpContext, pictureId, pictureType);
+                string path = CreatePathForRetrive(HttpContext, pictureId, pictureType);
                 Byte[] picture = System.IO.File.ReadAllBytes(path);
                 return File(picture, pictureType);
             }
@@ -49,7 +45,7 @@ namespace Picmory.Controllers
         {
             IActionResult response = Unauthorized();
 
-            IFormFile uploadedImage = (IFormFile)HttpContext.Request.Form.Files[0];
+            IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
             UploadPhoto photoData = new UploadPhoto(
                                                 HttpContext.Request.Form["Description"].ToString(),
                                                 HttpContext.Request.Form["Access"].ToString(),
@@ -71,7 +67,7 @@ namespace Picmory.Controllers
 
         private bool HaveUser(HttpContext context)
         {
-            return context.User.HasClaim(c => c.Type == "Id") ? true : false;
+            return context.User.HasClaim(c => c.Type == "Id");
         }
     
         private void UploadImage(HttpContext context, UploadPhoto photoData, IFormFile uploadedImage)
@@ -90,7 +86,7 @@ namespace Picmory.Controllers
             stream.Close();
         }
     
-        private string CreatePath(HttpContext context, string pictureId, string pictureType) 
+        private string CreatePathForRetrive(HttpContext context, string pictureId, string pictureType) 
         {
             byte LenghtOfPictureTypeFirstPart = 6;
             User user = GetUser(context);

@@ -14,7 +14,7 @@ namespace Picmory.Models.Repositorys
         public string GetPictureType(int Id)
         {
             var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
-            if (picture == null) { return "Null"; }
+            if (picture == null) { return null; }
             return picture.Type;
         }
 
