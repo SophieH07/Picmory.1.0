@@ -24,12 +24,14 @@ namespace Picmory.Controllers
         private readonly IUserRepository userRepository;
         private readonly IFolderRepository folderRepository;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IPictureRepository pictureRepository;
         private readonly UserGet userGet;
 
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment)
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
+            this.pictureRepository = pictureRepository;
             _hostEnvironment = hostEnvironment;
             userGet = new UserGet(userRepository);
         }
@@ -48,7 +50,7 @@ namespace Picmory.Controllers
                 {
                     foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
                 }
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, 0, foldersForShow);
+                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, user.ProfilePicture, foldersForShow);
                 result = JsonConvert.SerializeObject(resultUser);
             }
             return result;
@@ -84,6 +86,21 @@ namespace Picmory.Controllers
                 userRepository.EditUserData(user);
 
                 response = Ok();                
+            }
+            return response;
+        }
+
+        [HttpPost("setprofilepicture")]
+        public IActionResult SetProfilePicture([FromBody] string profilePictureId)
+        {
+            IActionResult response = Unauthorized();
+            Picture profilePicture = pictureRepository.GetPicture(int.Parse(profilePictureId));
+            if (userGet.HaveUser(HttpContext) && profilePicture != null)
+            {
+                User user = userGet.GetUser(HttpContext);
+                user.ProfilePicture = profilePicture;
+                userRepository.EditUserData(user);
+                response = Ok();
             }
             return response;
         }

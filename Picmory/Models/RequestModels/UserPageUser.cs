@@ -6,7 +6,7 @@ namespace Picmory.Models.RequestResultModels
     public class UserPageUser
     {
         public UserPageUser() { }
-        public UserPageUser(string userName, string email, ThemeColor coloreOne, ThemeColor coloreTwo, int followers, int followed, int profilePictureId, List<FolderForShow> folders ) 
+        public UserPageUser(string userName, string email, ThemeColor coloreOne, ThemeColor coloreTwo, int followers, int followed, Picture profilePicture, List<FolderForShow> folders ) 
         {
             UserName = userName;
             Email = email;
@@ -14,7 +14,7 @@ namespace Picmory.Models.RequestResultModels
             ColoreTwo = coloreTwo;
             Followers = followers;
             Followed = followed;
-            ProfilePictureId = profilePictureId;
+            ProfilePictureId = profilePicture == null ? 0 : profilePicture.Id;
             Folders = folders;
         }
 

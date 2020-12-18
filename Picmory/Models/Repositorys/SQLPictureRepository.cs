@@ -10,6 +10,10 @@ namespace Picmory.Models.Repositorys
             this.context = context;
         }
 
+        public Picture GetPicture(int id)
+        {
+            return context.Pictures.Find(id);
+        }
 
         public string GetPictureType(int Id)
         {

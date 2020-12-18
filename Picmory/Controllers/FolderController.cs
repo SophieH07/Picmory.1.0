@@ -13,13 +13,11 @@ namespace Picmory.Controllers
     [Route("[controller]")]
     public class FolderController : ControllerBase
     {
-        private readonly IUserRepository userRepository;
         private readonly IFolderRepository folderRepository;
         public UserGet userGet { get; }
 
         public FolderController(IUserRepository userRepository, IFolderRepository folderRepository)
         {
-            this.userRepository = userRepository;
             this.folderRepository = folderRepository;
             userGet = new UserGet(userRepository);
         }
