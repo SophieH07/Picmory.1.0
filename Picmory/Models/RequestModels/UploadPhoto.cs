@@ -11,11 +11,11 @@ namespace Picmory.Models.RequestResultModels
     public class UploadPhoto
     {
         public UploadPhoto() { }
-        public UploadPhoto(string description, string access, string folderName)
+        public UploadPhoto(string description, string access, Folder folder)
         {
             Description = description;
             Access = (AccessType)Enum.Parse(typeof(AccessType), access, true);
-            FolderName = folderName;
+            Folder = folder;
         }
 
 
@@ -25,6 +25,6 @@ namespace Picmory.Models.RequestResultModels
         [Required]
         public AccessType Access { get; set; }
         [Required]
-        public string FolderName { get; set; }
+        public Folder Folder { get; set; }
     }
 }

@@ -52,6 +52,18 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public Folder GetFolder(User user, string folderName)
+        {
+            try
+            {
+                return context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
         public Folder SaveNewFolder(Folder folder)
         {
             context.Folders.Add(folder);

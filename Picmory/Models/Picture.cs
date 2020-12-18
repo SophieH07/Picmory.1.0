@@ -7,13 +7,13 @@ namespace Picmory.Models
     public class Picture
     {
         public Picture() { }
-        public Picture(string desription, AccessType accesType, string type, User owner, string foldername) 
+        public Picture(string desription, AccessType accesType, string type, User owner, Folder folder) 
         {
             Description = desription;
             Access = accesType;
             Type = type;
             Owner = owner;
-            FolderName = foldername;
+            Folder = folder;
         }
 
 
@@ -30,7 +30,8 @@ namespace Picmory.Models
         [ForeignKey("PictureOwner")]
         public User Owner { get; set; }
         [Required]
-        public string FolderName { get; set; }
+        [ForeignKey("FolderData")]
+        public Folder Folder { get; set; }
         [Timestamp]
         [Column("UploadDate")]
         public byte[] UploadDate { get; set; }

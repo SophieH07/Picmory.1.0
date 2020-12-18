@@ -7,6 +7,7 @@ namespace Picmory.Models.Repositorys
     {
         public Folder SaveNewFolder(Folder folder);
         public List<Folder> GetAllFolders(User user);
+        public Folder GetFolder(User user, string folderName);
         public bool ChangeFolderData(User user, Folder originalFolder, string newName, AccessType newAccess);
         public bool DeleteFolder(User user, string folderName);
     }

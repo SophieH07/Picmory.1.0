@@ -23,14 +23,15 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly IFolderRepository folderRepository;
-        private IConfiguration _config;
         private readonly IWebHostEnvironment _hostEnvironment;
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IConfiguration config, IWebHostEnvironment hostEnvironment)
+        private readonly UserGet userGet;
+
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
-            _config = config;
             _hostEnvironment = hostEnvironment;
+            userGet = new UserGet(userRepository);
         }
 
         
@@ -38,11 +39,9 @@ namespace Picmory.Controllers
         public string Info()
         {
             string result = null;
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id"))
+            if (userGet.HaveUser(HttpContext))
             {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
+                User user = userGet.GetUser(HttpContext);
                 List<Folder> folders = folderRepository.GetAllFolders(user);
                 List<FolderForShow> foldersForShow = new List<FolderForShow>();
                 foreach (Folder folder in folders)
@@ -59,11 +58,9 @@ namespace Picmory.Controllers
         public IActionResult SetNewPassword([FromBody] string newPassword)
         {
             IActionResult response = Unauthorized();
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "Id"))
+            if (userGet.HaveUser(HttpContext))
             {
-                int id = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                User user = userRepository.GetUserData(id);
+                User user = userGet.GetUser(HttpContext);
                 user.Password = Hashing.HashPassword(newPassword);
                 userRepository.EditUserData(user);
                 response = Ok(); 
@@ -75,9 +72,9 @@ namespace Picmory.Controllers
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {
             IActionResult response = Unauthorized();
-            if (HaveUser(HttpContext))
+            if (userGet.HaveUser(HttpContext))
             {
-                User user = GetUser(HttpContext);
+                User user = userGet.GetUser(HttpContext);
                 if (userRepository.UserNameAlreadyUsed(changeData.UserName) && user.UserName != changeData.UserName )
                     { return BadRequest("Used Username!"); }
                 ChangeFolderName(user.UserName, changeData.UserName);
@@ -101,14 +98,5 @@ namespace Picmory.Controllers
             }
         }
 
-        private bool HaveUser(HttpContext context)
-        {
-            return context.User.HasClaim(c => c.Type == "Id");
-        }
-
-        private User GetUser(HttpContext context)
-        {
-            return userRepository.GetUserData(int.Parse(context.User.Claims.FirstOrDefault(c => c.Type == "Id").Value));
-        }
     }
 }
