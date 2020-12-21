@@ -8,8 +8,6 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Picmory.Controllers
 {
@@ -19,12 +17,11 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private IConfiguration _config;
-        private readonly IWebHostEnvironment _hostEnvironment;
-        public AuthenticationController(IUserRepository userRepository, IConfiguration config, IWebHostEnvironment hostEnvironment)
+    
+        public AuthenticationController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
             _config = config;
-            _hostEnvironment = hostEnvironment;
         }
 
 
@@ -36,8 +33,6 @@ namespace Picmory.Controllers
             {
                 user.Password = Hashing.HashPassword(user.Password);
                 User newUser = userRepository.RegisterNewUser(user);
-                string directoryPath = Path.Combine(_hostEnvironment.WebRootPath, user.UserName);
-                if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                 var tokenString = GenerateJSONWebToken(newUser);
                 response = Ok(new { token = tokenString });
             }
