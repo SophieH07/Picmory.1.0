@@ -20,11 +20,14 @@
 
 .folder {
     border: solid;
-    list-style-type: none;
     border-color: black;
     background-color: white;
     border-width: thin;
     text-align: left;
+}
+
+.new {
+    text-align: center;
 }
 
 .upload-pic {

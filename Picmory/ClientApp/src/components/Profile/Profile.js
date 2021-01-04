@@ -22,6 +22,7 @@ export class Profile extends Component {
                         <div className="folder">
                             <Link>folder<img className="pencil" src={pencil} alt="edit" /></Link>
                         </div>
+                        <div className="folder new"><Link>new folder +</Link></div>
                     </div>
                 </div>
                 <div className="right-side">
