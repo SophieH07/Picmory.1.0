@@ -1,0 +1,46 @@
+﻿.profile {
+    display: flex;
+}
+
+.right-side {
+    margin: 10px;
+}
+
+.left-side {
+    margin: 10px;
+    text-align: center;
+}
+
+.pencil {
+    max-width: 25px;
+    width: 100%;
+    height: auto;
+    float: right;
+}
+
+.folder {
+    border: solid;
+    list-style-type: none;
+    border-color: black;
+    background-color: white;
+    border-width: thin;
+    text-align: left;
+}
+
+.upload-pic {
+    border: solid;
+    border-color: black;
+    border-width: thin;
+    margin-bottom: 5px;
+    color: black;
+}
+
+.username {
+    margin-top: 5px;
+    font-size: large;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: none;
+}
