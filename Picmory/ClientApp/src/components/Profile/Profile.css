@@ -7,36 +7,60 @@
 }
 
 .left-side {
-    margin: 10px;
+    background-color: #9CE2CB;
+    height: 85vh;
+    width: 40vh;
+    margin-right: 10px;
     text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.profile-pic {
+    margin: 10px;
 }
 
 .pencil {
-    max-width: 25px;
+    margin-top: 2px;
+    margin-right: 2px;
+    max-width: 20px;
     width: 100%;
     height: auto;
     float: right;
 }
 
+.folders {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .folder {
+    font-size: large;
     border: solid;
     border-color: black;
-    background-color: white;
     border-width: thin;
     text-align: left;
 }
+
+    .folder:hover {
+        background-color: white;
+    }
 
 .new {
     text-align: center;
 }
 
 .upload-pic {
+    font-size: large;
+    margin: 10px;
     border: solid;
     border-color: black;
     border-width: thin;
     margin-bottom: 5px;
-    color: black;
 }
+
+    .upload-pic:hover {
+        background-color: white;
+    }
 
 .username {
     margin-top: 5px;
@@ -44,6 +68,10 @@
     font-weight: bold;
 }
 
-a:hover {
-    text-decoration: none;
+a {
+    color: black !important;
 }
+
+    a:hover {
+        text-decoration: none;
+    }
