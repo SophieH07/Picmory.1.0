@@ -63,6 +63,17 @@ namespace Picmory.Controllers
             return response;
         }
 
+        [HttpGet("getImagesForFolder")]
+        public IActionResult GetImageForFolder(string folderName, string userName, int counter)
+        {
+            if (userName == null) { userName = userGet.GetUser(HttpContext).UserName; }
+            if (userGet.HaveUser(HttpContext) && folderName != null)
+            {
+                pictureRepository.GetPicturesForFolder(userGet.GetUser(HttpContext), folderName, counter);
+            }
+            return Unauthorized();
+        }
+
 
         private bool ImageTypeIsValid(IFormFile uploadedImage)
         {

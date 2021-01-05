@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Picmory.Models.Repositorys
 {
@@ -13,6 +15,21 @@ namespace Picmory.Models.Repositorys
         public Picture GetPicture(int id)
         {
             return context.Pictures.Find(id);
+        }
+
+        public List<Picture> GetPicturesForFolder(User user, string folderName, int counter)
+        {
+            try
+            {
+                List<Picture> pictures = context.Pictures.Where(a => a.Owner == user).ToList();
+                List<Picture> picturesForSend = new List<Picture>();
+               
+                return picturesForSend;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public string GetPictureType(int Id)

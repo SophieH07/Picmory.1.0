@@ -2,17 +2,14 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Picmory.Controllers
 {
@@ -44,12 +41,7 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                List<Folder> folders = folderRepository.GetAllFolders(user);
-                List<FolderForShow> foldersForShow = new List<FolderForShow>();
-                foreach (Folder folder in folders)
-                {
-                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
-                }
+                List<FolderForShow> foldersForShow = folderRepository.GetAllFolders(user);
                 UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, user.ProfilePicture, foldersForShow);
                 result = JsonConvert.SerializeObject(resultUser);
             }
@@ -79,7 +71,6 @@ namespace Picmory.Controllers
                 User user = userGet.GetUser(HttpContext);
                 if (userRepository.UserNameAlreadyUsed(changeData.UserName) && user.UserName != changeData.UserName )
                     { return BadRequest("Used Username!"); }
-                ChangeFolderName(user.UserName, changeData.UserName);
                 user.UserName = changeData.UserName;
                 user.ColorOne = (ThemeColor)changeData.ColorOne;
                 user.ColorTwo = (ThemeColor)changeData.ColorTwo;

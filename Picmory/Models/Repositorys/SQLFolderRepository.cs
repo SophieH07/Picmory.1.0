@@ -1,4 +1,5 @@
-﻿using Picmory.Util;
+﻿using Picmory.Models.RequestResultModels;
+using Picmory.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,11 +41,18 @@ namespace Picmory.Models.Repositorys
             return false;
         }
 
-        public List<Folder> GetAllFolders(User user)
+        public List<FolderForShow> GetAllFolders(User user)
         {
+
             try
             {
-                return  context.Folders.Where(a => a.Owner == user).ToList();
+                List<Folder> folders =  context.Folders.Where(a => a.Owner == user).ToList();
+                List<FolderForShow> foldersForShow = new List<FolderForShow>();
+                foreach (Folder folder in folders)
+                {
+                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
+                }
+                return foldersForShow;
             }
             catch (Exception e)
             {
