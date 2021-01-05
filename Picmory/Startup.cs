@@ -3,16 +3,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Picmory.Models;
+using Picmory.Models.Repositorys;
 using System.Text;
 
 namespace Picmory
 {
     public class Startup
     {
+        private string ConnectionString = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -23,21 +27,26 @@ namespace Picmory
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConnectionString = Configuration["Picmory:ConnectionString"];
+            services.AddDbContextPool<PicmoryDbContext>(options => options.UseSqlServer(ConnectionString));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
-                {
-                options.TokenValidationParameters = new TokenValidationParameters
-                   {
-                       ValidateIssuer = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ValidateIssuerSigningKey = true,
-                       ValidIssuer = Configuration["Jwt:Issuer"],
-                       ValidAudience = Configuration["Jwt:Issuer"],
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                   };
+                    {options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
                 });
             services.AddControllersWithViews();
+            services.AddScoped<IUserRepository, SQLUserRepository>();
+            services.AddScoped<IFolderRepository, SQLFolderRepository>();
+            services.AddScoped<IFollowerRepository, SQLFollowerRepository>();
+            services.AddScoped<IPictureRepository, SQLPictureRepository>();
 
 
             // In production, the React files will be served from this directory
@@ -60,8 +69,8 @@ namespace Picmory
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseAuthentication();
-            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
