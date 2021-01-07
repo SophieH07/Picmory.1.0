@@ -20,4 +20,10 @@
     height: auto;
 }
 
+.warning {
+    background-color: yellow;
+    color: dimgrey;
+    border-radius: 4px 4px;
+    margin-bottom: 10px;
+}
 
