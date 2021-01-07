@@ -15,7 +15,7 @@ export class Register extends Component {
         }
         this.toggleShow = this.toggleShow.bind(this);
         this.toggleCheck = this.toggleCheck.bind(this);
-        this.submitFormat = this.submitFormat.bind(this);
+        this.submitForm = this.submitForm.bind(this);
     }
 
     toggleShow(e) {
@@ -105,16 +105,16 @@ export class Register extends Component {
         }
     }
 
-    submitFormat() {
+    submitForm() {
         if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
             this.setState({
-                formatIsFull: true
+                formIsFull: true
             })
         } else {
             this.setState({
-                formatIsFull: false
+                formIsFull: false
             })
-            alert("Oops, something is still missing!");
+            alert("Oops, something is still missing or wrong!");
         }
     }
 
@@ -128,7 +128,7 @@ export class Register extends Component {
                         <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     <div>
-                        {this.state.emailError ? <p><span className="warning">Please Enter valid email address</span></p> : ''}
+                        {this.state.emailError ? <p><span className="warning">Please enter a valid email address</span></p> : ''}
                         <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     {this.state.passwordError ? <p><span className="warning">The password must be at least 6 char long, contain a lowercase letter, an uppercase letter and a number</span></p> : ''}
@@ -143,47 +143,18 @@ export class Register extends Component {
                     </div>
                 </div>
                 <div>
-                    <p>
+                    <p className="underline">
                         <input type="checkbox" id="" name="checkbox" onClick={this.toggleCheck} />
-                         I agree all statements in Terms of service.
+                         I agree all statements in <Link tag={Link}>Terms of service</Link>.
                         </p>
                 </div>
-                <button onClick={this.submitFormat} name="submit">Sign up</button>
-                <p>Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
+                <button onClick={this.submitForm} name="submit">Sign up</button>
+                <p className="back-to-login underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
             </div>
         );
     }
 }
 
-
-
-//handleChange(e){
-//    const target = e.target;
-//    const value = target.type === 'checkbox' ? target.checked : target.value;
-//    const name = target.name;
-//    this.setState({
-//        [name]: value
-//    });
-
-//    if (e.target.name === 'password') {
-//        if (e.target.value === '' || e.target.value === null) {
-//            this.setState({
-//                passwordError: true
-//            })
-//        } else {
-//            this.setState({
-//                passwordError: false,
-//                password: e.target.value
-//            })
-//        }
-//    }
-//    if (this.state.firstnameError === false && this.state.lastnameError === false &&
-//        this.state.emailError === false && this.state.passwordError === false) {
-//        this.setState({
-//            isDisabled: false
-//        })
-//    }
-//}
 //submitForm(e){
 //    e.preventDefault();
 //    const data = {

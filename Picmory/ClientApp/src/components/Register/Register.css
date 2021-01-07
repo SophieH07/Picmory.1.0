@@ -1,5 +1,5 @@
 ﻿.register {
-    margin-top: 20px;
+    margin-top: 40px;
     text-align: center;
     background-color: #9CE2CB;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -13,13 +13,19 @@
     text-align: -webkit-center;
 }
 
-.input-fields input {
-    margin-bottom: 10px;
-    max-width: 300px;
-    width: 100%;
-    height: auto;
-    padding-right: 30px;
-}
+    .input-fields input {
+        margin-bottom: 10px;
+        max-width: 300px;
+        width: 100%;
+        height: auto;
+        padding-right: 30px;
+    }
+
+    .input-fields p {
+        max-width: 300px;
+        width: 100%;
+        height: auto;
+    }
 
 .password-container {
     display: block;
@@ -31,7 +37,7 @@
 
 .warning {
     background-color: yellow;
-    color: dimgrey;
+    color: black;
     border-radius: 4px 4px;
 }
 
@@ -41,4 +47,12 @@
     cursor: pointer;
     top: 4px;
     right: 4%;
+}
+
+.back-to-login {
+    margin-top: 10px;
+}
+
+.underline a:hover {
+    text-decoration: underline;
 }
