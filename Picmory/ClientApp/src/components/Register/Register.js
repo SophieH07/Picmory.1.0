@@ -9,12 +9,13 @@ export class Register extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isDisabled: true,
             hidden1: true,
             hidden2: true,
+            isChecked: false
         }
         this.toggleShow = this.toggleShow.bind(this);
-        //this.submitForm = this.submitForm.bind(this);
+        this.toggleCheck = this.toggleCheck.bind(this);
+        this.submitFormat = this.submitFormat.bind(this);
     }
 
     toggleShow(e) {
@@ -22,6 +23,25 @@ export class Register extends Component {
             this.setState({ hidden1: !this.state.hidden1 });
         } else {
             this.setState({ hidden2: !this.state.hidden2 });
+        }
+    }
+
+    toggleCheck() {
+        this.setState({
+            isChecked: !this.state.isChecked
+        })
+    }
+
+    validateUsername(username) {
+        if (username !== '') {
+            this.setState({
+                username: username,
+                usernameError: false
+            })
+        } else {
+            this.setState({
+                usernameError: true
+            })
         }
     }
 
@@ -68,6 +88,10 @@ export class Register extends Component {
     }
 
     handleChange(e) {
+        if (e.target.name === 'username') {
+            this.validateUsername(e.target.value);
+        }
+
         if (e.target.name === 'email') {
             this.validateEmail(e.target.value);
         }
@@ -81,36 +105,50 @@ export class Register extends Component {
         }
     }
 
+    submitFormat() {
+        if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
+            this.setState({
+                formatIsFull: true
+            })
+        } else {
+            this.setState({
+                formatIsFull: false
+            })
+            alert("Oops, something is still missing!");
+        }
+    }
+
     render() {
         return (
             <div className="register">
                 <h2>Create Account</h2>
                 <div className="input-fields">
+                    {this.state.usernameError ? <p><span className="warning">The username cannot be null</span></p> : ''}
                     <div>
-                        <input id="name" placeholder="Your username" type="text" />
+                        <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     <div>
                         {this.state.emailError ? <p><span className="warning">Please Enter valid email address</span></p> : ''}
-                        <input id="email" name="email" placeholder="Your email" type="text" onChange={(e) => { this.handleChange(e) }} />
+                        <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     {this.state.passwordError ? <p><span className="warning">The password must be at least 6 char long, contain a lowercase letter, an uppercase letter and a number</span></p> : ''}
                     <div className="password-container">
-                        <input name="password1" type={this.state.hidden1 ? "password" : "text"} placeholder="Your password" onChange={(e) => { this.handleChange(e) }} />
+                        <input name="password1" type={this.state.hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { this.handleChange(e) }} />
                         <img name="password1" src={eye} className="eye" onClick={this.toggleShow} />
                     </div>
                     {this.state.equalPasswords ? <p><span className="warning">The passwords are not equal</span></p> : ''}
                     <div className="password-container">
-                        <input name="password2" type={this.state.hidden2 ? "password" : "text"} placeholder="Repeat your password" onChange={(e) => { this.handleChange(e) }} />
+                        <input name="password2" type={this.state.hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { this.handleChange(e) }} />
                         <img name="password2" src={eye} className="eye" onClick={this.toggleShow} />
                     </div>
                 </div>
                 <div>
                     <p>
-                        <input type="checkbox" id="" name="" value="" />
+                        <input type="checkbox" id="" name="checkbox" onClick={this.toggleCheck} />
                          I agree all statements in Terms of service.
                         </p>
                 </div>
-                <button disabled={this.state.isDisabled}>Sign up</button>
+                <button onClick={this.submitFormat} name="submit">Sign up</button>
                 <p>Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
             </div>
         );
@@ -126,33 +164,7 @@ export class Register extends Component {
 //    this.setState({
 //        [name]: value
 //    });
-//    if (e.target.name === 'firstname') {
-//        if (e.target.value === '' || e.target.value === null) {
-//            this.setState({
-//                firstnameError: true
-//            })
-//        } else {
-//            this.setState({
-//                firstnameError: false,
-//                firstName: e.target.value
-//            })
-//        }
-//    }
-//    if (e.target.name === 'lastname') {
-//        if (e.target.value === '' || e.target.value === null) {
-//            this.setState({
-//                lastnameError: true
-//            })
-//        } else {
-//            this.setState({
-//                lastnameError: false,
-//                lastName: e.target.value
-//            })
-//        }
-//    }
-//    if (e.target.name === 'email') {
-//        this.validateEmail(e.target.value);
-//    }
+
 //    if (e.target.name === 'password') {
 //        if (e.target.value === '' || e.target.value === null) {
 //            this.setState({
