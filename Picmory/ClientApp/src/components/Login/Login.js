@@ -9,13 +9,25 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            hidden: true
+            hidden: true,
+            username: '',
+            password: ''
         }
         this.toggleShow = this.toggleShow.bind(this);
+        this.validateUsername = this.validateUsername.bind(this);
+        this.validatePassword = this.validatePassword.bind(this);
     }
 
     toggleShow() {
         this.setState({ hidden: !this.state.hidden })
+    }
+
+    validateUsername(e) {
+
+    }
+
+    validatePassword(e) {
+
     }
 
     render() {
@@ -32,7 +44,7 @@ export class Login extends Component {
                     </div>
                 </div>
                 <button>Login</button>
-                <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register"> Sign up here</Link></p>
+                <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );
     }
