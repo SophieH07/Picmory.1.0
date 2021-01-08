@@ -8,6 +8,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using Picmory.Models.RequestModels;
 
 namespace Picmory.Controllers
 {
@@ -35,7 +36,7 @@ namespace Picmory.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] User user)
+        public IActionResult Login([FromBody] LoginUser user)
         {
             string loginPassword = user.Password;
             User databaseUser = (user.Email == null) ? userRepository.GetUserData(user.UserName): userRepository.GetUserDataFromEmail(user.Email);
@@ -47,7 +48,7 @@ namespace Picmory.Controllers
                 }
                 else { return  BadRequest("Wrong Password!"); }
             }
-            else { return BadRequest("Wrong Username!"); }
+            else { return BadRequest("Wrong Username or E-mail!"); }
         }
 
         [HttpPost("checkusernamealreadyexist")]
