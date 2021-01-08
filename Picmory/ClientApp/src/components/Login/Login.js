@@ -36,13 +36,14 @@ export class Login extends Component {
                 <h2>Login</h2>
                 <div className="inputs">
                 <div>
-                    <input placeholder="Email"></input>
+                    <input placeholder="Username or Email"></input>
                 </div>
                 <div className="password-container">
                     <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Password" />
                     <img name="password" src={eye} className="eye" onClick={this.toggleShow} />
                     </div>
                 </div>
+                <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
                 <button>Login</button>
                 <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >

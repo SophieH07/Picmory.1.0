@@ -46,7 +46,7 @@ export class Register extends Component {
     }
 
     validateEmail(email) {
-        const pattern = /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{3,9}[\.][a-z]{2,5}/g;
+        const pattern = /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{2,9}[\.][a-z]{2,5}/g;
         const result = pattern.test(email);
         if (result === true) {
             this.setState({
@@ -166,7 +166,6 @@ export class Register extends Component {
 //    sendFormData(data).then(res => {
 //        if (res.status === 200) {
 //            alert(res.data);
-//            this.props.history.push('/');
 //        } else {
 
 //        }
