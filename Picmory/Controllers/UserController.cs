@@ -37,73 +37,66 @@ namespace Picmory.Controllers
         [HttpGet("userinfo")]
         public string Info()
         {
-            string result = null;
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
                 List<FolderForShow> foldersForShow = folderRepository.GetAllFolders(user);
                 UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, user.ProfilePicture, foldersForShow);
-                result = JsonConvert.SerializeObject(resultUser);
+                return JsonConvert.SerializeObject(resultUser);
             }
-            return result;
+            return null;
         }
        
         [HttpPost("chnagepassword")]
         public IActionResult SetNewPassword([FromBody] string newPassword)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
+                if (newPassword != null) { 
                 User user = userGet.GetUser(HttpContext);
                 user.Password = Hashing.HashPassword(newPassword);
                 userRepository.EditUserData(user);
-                response = Ok(); 
+                return Ok(); }
             }
-            return response;
+            return Unauthorized();
         }
 
         [HttpPost("changethemeandusername")]
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                if (userRepository.UserNameAlreadyUsed(changeData.UserName) && user.UserName != changeData.UserName )
+
+                if (userRepository.UserNameAlreadyUsed(changeData.UserName) && changeData.UserName != user.UserName)
                     { return BadRequest("Used Username!"); }
+                else if (changeData.UserName == null)
+                    { changeData.UserName = user.UserName; }
                 user.UserName = changeData.UserName;
                 user.ColorOne = (ThemeColor)changeData.ColorOne;
                 user.ColorTwo = (ThemeColor)changeData.ColorTwo;
                 userRepository.EditUserData(user);
 
-                response = Ok();                
+                return Ok();                
             }
-            return response;
+            return Unauthorized();
         }
 
         [HttpPost("setprofilepicture")]
         public IActionResult SetProfilePicture([FromBody] string profilePictureId)
         {
-            IActionResult response = Unauthorized();
-            Picture profilePicture = pictureRepository.GetPicture(int.Parse(profilePictureId));
-            if (userGet.HaveUser(HttpContext) && profilePicture != null)
+            
+            int.TryParse(profilePictureId, out int pictureId);
+            if (pictureId ==0) { return BadRequest("Wrong data!"); } 
+            Picture profilePicture = pictureRepository.GetPicture(pictureId);
+            if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
                 user.ProfilePicture = profilePicture;
                 userRepository.EditUserData(user);
-                response = Ok();
+                return Ok();
             }
-            return response;
-        }
-
-        private void ChangeFolderName(string originalUsername, string newUserName)
-        {
-            string originalDirectoryPath = Path.Combine(_hostEnvironment.WebRootPath, originalUsername);
-            string newDirectoryPath = Path.Combine(_hostEnvironment.WebRootPath, newUserName);
-            if (Directory.Exists(originalDirectoryPath))
-            {
-                Directory.Move(originalDirectoryPath, newDirectoryPath);
-            }
+            return Unauthorized();
         }
 
     }

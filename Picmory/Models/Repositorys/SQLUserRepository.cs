@@ -38,6 +38,19 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public User GetUserDataFromEmail(string email)
+        {
+            try
+            {
+                var user = context.Users.Where(a => a.Email == email).Single();
+                return user;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
         public bool EmailAlreadyUsed(string email)
         {
             try

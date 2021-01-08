@@ -9,6 +9,7 @@ namespace Picmory.Models.Repositorys
     {
         User GetUserData(int id);
         User GetUserData(string name);
+        User GetUserDataFromEmail(string email);
         bool EmailAlreadyUsed(string email);
         bool UserNameAlreadyUsed(String name);
         User RegisterNewUser(User user);
