@@ -14,9 +14,16 @@ namespace Picmory.Models.Repositorys
         }
 
 
-        public void AnswerNewFollower(bool accept, int userId, string followerName)
+        public bool AnswerNewFollower(bool accept, User follower, User followed)
         {
-            throw new NotImplementedException();
+            var follow = context.Followers.FirstOrDefault(item => item.Follower == follower && item.Followed == followed);
+            if (follow != null)
+            {
+                follow.Accepted = accept;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public Followers AskNewFollower(User follower, User followed)

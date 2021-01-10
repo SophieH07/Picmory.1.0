@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
+using Picmory.Models.RequestModels;
 using Picmory.Util;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,19 @@ namespace Picmory.Controllers
                 User user = userGet.GetUser(HttpContext);
                 User followedUser = userRepository.GetUserData(followerName);
                 followerRepository.AskNewFollower(user, followedUser);
+                return Ok();
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost("answerfollower")]
+        public IActionResult AnswerFollower([FromBody] FollowerAccept followeraccept)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User followedUser = userGet.GetUser(HttpContext);
+                User followerUser = userRepository.GetUserData(followeraccept.UserName);
+                followerRepository.AnswerNewFollower(followeraccept.Accept,followerUser,followedUser);
                 return Ok();
             }
             return Unauthorized();
