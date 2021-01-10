@@ -10,5 +10,6 @@ namespace Picmory.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Folder> Folders { get; set; }
+        public DbSet<Followers> Followers { get; set; }
     }
 }
