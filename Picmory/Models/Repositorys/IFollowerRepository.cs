@@ -7,7 +7,7 @@ namespace Picmory.Models.Repositorys
 {
     public interface IFollowerRepository
     {
-        public void AskNewFollower(int userId, string followerName);
+        public Followers AskNewFollower(User follower, User followed);
         public void AnswerNewFollower(bool accept, int userId, string followerName);
         public void DeleteFollower(int userId, string followerName);
         public void GetAllFollowers(int userId);
