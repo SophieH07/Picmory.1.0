@@ -8,8 +8,10 @@ using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Picmory.Controllers
 {
@@ -23,6 +25,9 @@ namespace Picmory.Controllers
         private readonly IFolderRepository folderRepository;
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
+
+        public int ResponsePictures { get; private set; }
+
         public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
         {
             this.pictureRepository = pictureRepository;
@@ -32,7 +37,7 @@ namespace Picmory.Controllers
         }
 
 
-        [HttpGet("{pictureId}")]
+        [HttpGet("{pictureid}")]
         public IActionResult GetImageById(string pictureId)
         {
             string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
@@ -45,7 +50,7 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("uploadPicture")]
+        [HttpPost("uploadpicture")]
         public IActionResult UploadPicture()
         {
             IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
@@ -111,15 +116,20 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
-        [HttpGet("getImagesForFolder")]
-        public IActionResult GetImageForFolder(string folderName, string userName, int counter)
+        [HttpGet("getmyimages")]
+        public string GetImageForMe(PictureRequest data)
         {
-            if (userName == null) { userName = userGet.GetUser(HttpContext).UserName; }
-            if (userGet.HaveUser(HttpContext) && folderName != null)
+            if (userGet.HaveUser(HttpContext))
             {
-                pictureRepository.GetPicturesForFolder(userGet.GetUser(HttpContext), folderName, counter);
+                List<ResponsePicture> responsePictures= new List<ResponsePicture>();
+                List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset);
+                foreach (Picture picture in pictures)
+                {
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                }
+                return JsonConvert.SerializeObject(responsePictures);
             }
-            return Unauthorized();
+            return null;
         }
 
 

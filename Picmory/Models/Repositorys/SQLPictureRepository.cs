@@ -49,18 +49,23 @@ namespace Picmory.Models.Repositorys
             return context.Pictures.Include(a => a.Folder).Where(a => a.Id == id).FirstOrDefault();
         }
 
-        public List<Picture> GetPicturesForFolder(User user, string folderName, int counter)
+        public List<Picture> GetPicturesForMe(User user, int offset)
         {
+            List<Picture> picturesForSend = new List<Picture>();
             try
             {
-                List<Picture> pictures = context.Pictures.Where(a => a.Owner == user).ToList();
-                List<Picture> picturesForSend = new List<Picture>();
-               
+                picturesForSend = context.Pictures
+                    .Where(a => a.Owner == user)
+                    .Include(a => a.Folder)
+                    .OrderBy(a => a.UploadDate)
+                    .Take(offset+10)
+                    .Skip(offset)
+                    .ToList();
                 return picturesForSend;
             }
             catch (Exception e)
             {
-                return null;
+                return picturesForSend;
             }
         }
 
