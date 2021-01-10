@@ -7,6 +7,7 @@ namespace Picmory.Models
     public class User
     {
         public User() { }
+       
         public User(ThemeColor colorOne, ThemeColor coloreTwo) 
         {
             ColorOne = colorOne;

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Picmory.Models.RequestResultModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Models.Repositorys
 {
@@ -46,9 +47,22 @@ namespace Picmory.Models.Repositorys
             return false;
         }
 
-        public void GetAllFollowers(int userId)
+        public List<UserPageUser> GetAllFollowers(User user)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List <UserPageUser> followerUsers = new List<UserPageUser>();
+                List<Followers> followers = context.Followers.Include(a => a.Follower).Where(a => a.Followed == user).ToList();
+                foreach (Followers follower in followers)
+                {
+                    followerUsers.Add(new UserPageUser(follower.Follower.UserName));
+                }
+                return followerUsers;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }

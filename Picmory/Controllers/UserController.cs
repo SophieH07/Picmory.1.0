@@ -22,13 +22,15 @@ namespace Picmory.Controllers
         private readonly IFolderRepository folderRepository;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IPictureRepository pictureRepository;
+        private readonly IFollowerRepository followerRepository;
         private readonly UserGet userGet;
 
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository)
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository, IFollowerRepository followerRepository)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
             this.pictureRepository = pictureRepository;
+            this.followerRepository = followerRepository;
             _hostEnvironment = hostEnvironment;
             userGet = new UserGet(userRepository);
         }
@@ -41,7 +43,8 @@ namespace Picmory.Controllers
             {
                 User user = userGet.GetUser(HttpContext);
                 List<FolderForShow> foldersForShow = folderRepository.GetAllFolders(user);
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, user.ProfilePicture, foldersForShow);
+                List<UserPageUser> followers = followerRepository.GetAllFollowers(user);
+                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followers, 0, user.ProfilePicture, foldersForShow);
                 return resultUser;
             }
             return null;
