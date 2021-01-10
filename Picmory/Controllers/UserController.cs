@@ -34,15 +34,15 @@ namespace Picmory.Controllers
         }
 
         
-        [HttpGet("userinfo")]
-        public string Info()
+        [HttpGet("myinfo")]
+        public UserPageUser Info()
         {
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
                 List<FolderForShow> foldersForShow = folderRepository.GetAllFolders(user);
                 UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, 0, 0, user.ProfilePicture, foldersForShow);
-                return JsonConvert.SerializeObject(resultUser);
+                return resultUser;
             }
             return null;
         }
@@ -72,6 +72,10 @@ namespace Picmory.Controllers
                     { return BadRequest("Used Username!"); }
                 else if (changeData.UserName == null)
                     { changeData.UserName = user.UserName; }
+                else if (changeData.ColorOne == null)
+                    { changeData.ColorOne = user.ColorOne; } 
+                else if (changeData.ColorTwo == null)
+                    { changeData.ColorTwo = user.ColorTwo; }
                 user.UserName = changeData.UserName;
                 user.ColorOne = (ThemeColor)changeData.ColorOne;
                 user.ColorTwo = (ThemeColor)changeData.ColorTwo;
