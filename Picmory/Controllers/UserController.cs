@@ -43,8 +43,9 @@ namespace Picmory.Controllers
             {
                 User user = userGet.GetUser(HttpContext);
                 List<FolderForShow> foldersForShow = folderRepository.GetAllFolders(user);
-                List<UserPageUser> followers = followerRepository.GetAllFollowers(user);
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followers, 0, user.ProfilePicture, foldersForShow);
+                List<string> followers = followerRepository.GetAllFollowers(user);
+                List<string> following = followerRepository.GetAllFollowing(user);
+                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followers, following, user.ProfilePicture, foldersForShow);
                 return resultUser;
             }
             return null;

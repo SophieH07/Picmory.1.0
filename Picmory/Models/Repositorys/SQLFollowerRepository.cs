@@ -47,21 +47,66 @@ namespace Picmory.Models.Repositorys
             return false;
         }
 
-        public List<UserPageUser> GetAllFollowers(User user)
+        public List<string> GetAllFollowers(User user)
         {
             try
             {
-                List <UserPageUser> followerUsers = new List<UserPageUser>();
-                List<Followers> followers = context.Followers.Include(a => a.Follower).Where(a => a.Followed == user).ToList();
+                List <string> followerUsers = new List<string>();
+                List<Followers> followers = context.Followers
+                    .Include(a => a.Follower)
+                    .Where(a => a.Followed == user && a.Accepted == true)
+                    .ToList();
                 foreach (Followers follower in followers)
                 {
-                    followerUsers.Add(new UserPageUser(follower.Follower.UserName));
+                    followerUsers.Add(follower.Follower.UserName);
                 }
                 return followerUsers;
             }
             catch (Exception e)
             {
                 return null;
+            }
+        }
+
+        public List<string> GetAllFollowing(User user)
+        {
+            List<string> followedUsers = new List<string>();
+            try
+            {   
+                List<Followers> followers = context.Followers
+                    .Include(a => a.Follower)
+                    .Where(a => a.Follower == user && a.Accepted == true)
+                    .ToList();
+                foreach (Followers follower in followers)
+                {
+                    followedUsers.Add(follower.Followed.UserName);
+                }
+                return followedUsers;
+            }
+            catch (Exception e)
+            {
+                return followedUsers;
+            }
+        }
+
+        public List<string> GetAllFollowRequest(User user)
+        {
+            List<string> followRequestUsers = new List<string>();
+            try
+            {
+                List<Followers> followers = context.Followers
+                    .Include(a => a.Follower)
+                    .Where(a => a.Followed == user && a.Accepted == null)
+                    .ToList();
+                foreach (Followers follower in followers)
+                {
+                    followRequestUsers.Add(follower.Follower.UserName);
+                }
+                return followRequestUsers;
+            }
+            catch (Exception e)
+            {
+                return followRequestUsers;
             }
         }
     }

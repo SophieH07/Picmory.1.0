@@ -4,6 +4,7 @@ using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestModels;
 using Picmory.Util;
+using System.Collections.Generic;
 
 namespace Picmory.Controllers
 {
@@ -35,6 +36,17 @@ namespace Picmory.Controllers
                 return Ok();
             }
             return Unauthorized();
+        }
+
+        [HttpGet("getrequestedfollow")]
+        public List<string> GetFollowingRequest()
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                return followerRepository.GetAllFollowRequest(user);
+            }
+            return null;
         }
 
         [HttpPost("answerfollower")]
