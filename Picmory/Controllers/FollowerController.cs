@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestModels;
 using Picmory.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Picmory.Controllers
 {
@@ -27,6 +22,7 @@ namespace Picmory.Controllers
             this.followerRepository = followerRepository;
             userGet = new UserGet(userRepository);
         }
+
 
         [HttpPost("asknewfollower")]
         public IActionResult AskNewFollower([FromBody] string followerName)
@@ -49,6 +45,19 @@ namespace Picmory.Controllers
                 User followedUser = userGet.GetUser(HttpContext);
                 User followerUser = userRepository.GetUserData(followeraccept.UserName);
                 followerRepository.AnswerNewFollower(followeraccept.Accept,followerUser,followedUser);
+                return Ok();
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost("deletefollower")]
+        public IActionResult DeleteFollower([FromBody] FollowerAccept followeraccept)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User followedUser = userGet.GetUser(HttpContext);
+                User followerUser = userRepository.GetUserData(followeraccept.UserName);
+                followerRepository.DeleteFollower(followerUser, followedUser);
                 return Ok();
             }
             return Unauthorized();

@@ -9,7 +9,7 @@ namespace Picmory.Models.Repositorys
     {
         public Followers AskNewFollower(User follower, User followed);
         public bool AnswerNewFollower(bool accept, User follower, User followed);
-        public void DeleteFollower(int userId, string followerName);
+        public bool DeleteFollower(User follower, User followed);
         public void GetAllFollowers(int userId);
     }
 }

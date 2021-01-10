@@ -34,9 +34,16 @@ namespace Picmory.Models.Repositorys
             return follow;
         }
 
-        public void DeleteFollower(int userId, string followerName)
+        public bool DeleteFollower(User follower, User followed)
         {
-            throw new NotImplementedException();
+            var follow = context.Followers.FirstOrDefault(item => item.Follower == follower && item.Followed == followed);
+            if (follow != null)
+            {
+                context.Followers.Remove(follow);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public void GetAllFollowers(int userId)
