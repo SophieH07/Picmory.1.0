@@ -122,7 +122,7 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 List<ResponsePicture> responsePictures= new List<ResponsePicture>();
-                List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset);
+                List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
                 foreach (Picture picture in pictures)
                 {
                     responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));

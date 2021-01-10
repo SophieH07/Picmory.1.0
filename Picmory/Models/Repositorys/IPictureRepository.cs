@@ -11,7 +11,7 @@ namespace Picmory.Models.Repositorys
         public bool SavePicturePath(int Id, string path);
         public string GetPictureType(int Id);
         public Picture GetPicture(int id);
-        public List<Picture> GetPicturesForMe(User user, int offset);
+        public List<Picture> GetPicturesForMe(User user, int offset, string folderName);
         Success ChangePictureData(PictureChange changeData);
         Success DeletePicture(int pictureId);
     }
