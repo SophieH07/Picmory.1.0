@@ -16,17 +16,23 @@ namespace Picmory.Models.Repositorys
         
        
 
-        public bool ChangeFolderData(User user, Folder originalFolder, string newName, AccessType? newAccess)
+        public Success ChangeFolderData(User user, Folder originalFolder, string newName, AccessType? newAccess)
         {
-            var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName==originalFolder.FolderName);
+            Folder folder = context.Folders
+                .FirstOrDefault(item => item.Owner == user &&
+                                        item.FolderName == originalFolder.FolderName &&
+                                        item.Access == originalFolder.Access);
             if (folder != null)
             {
-                if (newName != null) { folder.FolderName = newName; }
-                if (newAccess != null) { folder.Access = (AccessType)newAccess; } ;
-                context.SaveChanges();
-                return true;
+                if (context.Folders.Where(a => a.Owner == user && a.FolderName == newName).SingleOrDefault() == null) 
+                {
+                    if (newName != null) { folder.FolderName = newName; }
+                    if (newAccess != null) { folder.Access = (AccessType)newAccess; };
+                    context.SaveChanges();
+                    return Success.Successfull;};
+                return Success.FailedByUsedName;
             }
-            return false;
+            return Success.FailedByNotExist;
         }
 
         public bool DeleteFolder(User user, string folderName)
@@ -50,7 +56,7 @@ namespace Picmory.Models.Repositorys
                 List<FolderForShow> foldersForShow = new List<FolderForShow>();
                 foreach (Folder folder in folders)
                 {
-                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
+                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access));
                 }
                 return foldersForShow;
             }

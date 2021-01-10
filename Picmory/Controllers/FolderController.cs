@@ -41,12 +41,19 @@ namespace Picmory.Controllers
         {
             if (userGet.HaveUser(HttpContext))
             {
-                folderRepository.ChangeFolderData(
+                Success success = folderRepository.ChangeFolderData(
                                                 userGet.GetUser(HttpContext),
                                                 changeFolderData.originalFolder,
                                                 changeFolderData.newName,
                                                 changeFolderData.newAccessType);
-                return Ok();
+                switch (success) {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByNotExist:
+                        return BadRequest("Folder doesn't exist!");
+                    case Success.FailedByUsedName:
+                        return BadRequest("Foldername already used!");
+                }     
             }
             return Unauthorized();
         }
