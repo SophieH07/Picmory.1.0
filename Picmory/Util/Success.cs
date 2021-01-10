@@ -9,6 +9,7 @@ namespace Picmory.Util
     {
         Successfull,
         FailedByUsedName,
-        FailedByNotExist
+        FailedByNotExist,
+        FailedByNotExistFolderName
     }
 }

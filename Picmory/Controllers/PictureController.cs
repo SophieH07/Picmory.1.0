@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
+using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
@@ -61,6 +62,32 @@ namespace Picmory.Controllers
                 response = Ok();
             }
             return response;
+        }
+
+        [HttpPost("editpicture")]
+        public IActionResult EditPicture([FromBody] PictureChange changeData)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                Picture picture = pictureRepository.GetPicture(changeData.Id);
+                if (picture == null) { return BadRequest("Not existing picture!"); }
+                if (picture.Owner == user)
+                {
+                    changeData.Owner = user;
+                    Success success = pictureRepository.ChangePictureData(changeData);
+                    switch (success)
+                    {
+                        case Success.Successfull:
+                            return Ok();
+                        case Success.FailedByNotExistFolderName:
+                            return BadRequest("Folder doesn't exist!");
+                        
+                    }
+                }
+                return BadRequest("Not your picture");
+            }
+            return Unauthorized();
         }
 
         [HttpGet("getImagesForFolder")]

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Picmory.Models.RequestModels;
+using Picmory.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,9 +15,28 @@ namespace Picmory.Models.Repositorys
             this.context = context;
         }
 
+        public Success ChangePictureData(PictureChange changeData)
+        {
+            Picture picture = context.Pictures.Find(changeData.Id);
+            if (context.Folders.Where(a => a.Owner == changeData.Owner &&
+                       a.FolderName == changeData.FolderName).SingleOrDefault() != null 
+                || changeData.FolderName == null)
+            {
+                if (changeData.FolderName != null)
+                    { picture.Folder = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault(); }
+                if (changeData.Access != null)
+                    { picture.Access = (AccessType)changeData.Access; }
+                if (changeData.Description != null)
+                    { picture.Description = changeData.Description; }
+                context.SaveChanges();
+                return Success.Successfull;
+            }
+            return Success.FailedByNotExistFolderName;
+        }
+
         public Picture GetPicture(int id)
         {
-            return context.Pictures.Find(id);
+            return context.Pictures.Include(a => a.Folder).Where(a => a.Id == id).FirstOrDefault();
         }
 
         public List<Picture> GetPicturesForFolder(User user, string folderName, int counter)

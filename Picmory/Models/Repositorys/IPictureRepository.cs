@@ -1,4 +1,6 @@
 ﻿
+using Picmory.Models.RequestModels;
+using Picmory.Util;
 using System.Collections.Generic;
 
 namespace Picmory.Models.Repositorys
@@ -10,5 +12,6 @@ namespace Picmory.Models.Repositorys
         public string GetPictureType(int Id);
         public Picture GetPicture(int id);
         public List<Picture> GetPicturesForFolder(User user, string folderName, int counter);
+        Success ChangePictureData(PictureChange changeData);
     }
 }
