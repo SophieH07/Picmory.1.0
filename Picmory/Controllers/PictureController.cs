@@ -48,8 +48,6 @@ namespace Picmory.Controllers
         [HttpPost("uploadPicture")]
         public IActionResult UploadPicture()
         {
-            IActionResult response = Unauthorized();
-
             IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
             Folder folder = folderRepository.GetFolder(userGet.GetUser(HttpContext), HttpContext.Request.Form["FolderName"].ToString());
             UploadPhoto photoData = new UploadPhoto(
@@ -59,9 +57,9 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
             {
                 UploadImage(HttpContext, photoData, uploadedImage);
-                response = Ok();
+                return Ok();
             }
-            return response;
+            return Unauthorized();
         }
 
         [HttpPost("editpicture")]
@@ -85,7 +83,30 @@ namespace Picmory.Controllers
                         
                     }
                 }
-                return BadRequest("Not your picture");
+                return BadRequest("Not your picture!");
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost("deletepicture")]
+        public IActionResult DeletePicture([FromBody] string id)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                int.TryParse(id, out int pictureId);
+                Picture picture = pictureRepository.GetPicture(pictureId);
+                if (picture == null) { return BadRequest("Not existing picture!"); }
+                if (picture.Owner == user)
+                {
+                    Success success = pictureRepository.DeletePicture(pictureId);
+                    if (success == Success.Successfull) 
+                    {
+                        System.IO.File.Delete(_hostEnv.WebRootPath + "/" + pictureId.ToString());
+                        return Ok();
+                    }
+                }
+                return BadRequest("Not your picture!");
             }
             return Unauthorized();
         }

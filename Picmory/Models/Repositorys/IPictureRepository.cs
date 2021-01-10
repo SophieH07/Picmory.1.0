@@ -13,5 +13,6 @@ namespace Picmory.Models.Repositorys
         public Picture GetPicture(int id);
         public List<Picture> GetPicturesForFolder(User user, string folderName, int counter);
         Success ChangePictureData(PictureChange changeData);
+        Success DeletePicture(int pictureId);
     }
 }

@@ -10,6 +10,8 @@ namespace Picmory.Models.Repositorys
     public class SQLPictureRepository : IPictureRepository
     {
         private readonly PicmoryDbContext context;
+        
+        
         public SQLPictureRepository(PicmoryDbContext context)
         {
             this.context = context;
@@ -32,6 +34,14 @@ namespace Picmory.Models.Repositorys
                 return Success.Successfull;
             }
             return Success.FailedByNotExistFolderName;
+        }
+
+        public Success DeletePicture(int pictureId)
+        {
+            Picture picture = context.Pictures.Find(pictureId);
+            context.Pictures.Remove(picture);
+            context.SaveChanges();
+            return Success.Successfull;
         }
 
         public Picture GetPicture(int id)

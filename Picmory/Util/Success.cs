@@ -10,6 +10,11 @@ namespace Picmory.Util
         Successfull,
         FailedByUsedName,
         FailedByNotExist,
-        FailedByNotExistFolderName
+        FailedByNotExistFolderName,
+        FailedByAlreadyRequested,
+        FailedByAlreadyFollowed,
+        FailedByNotRequested,
+        FailedByAlreadyAnswered,
+        FailedByNotAccepted
     }
 }

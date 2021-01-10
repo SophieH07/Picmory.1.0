@@ -32,8 +32,17 @@ namespace Picmory.Controllers
             {
                 User user = userGet.GetUser(HttpContext);
                 User followedUser = userRepository.GetUserData(followerName);
-                followerRepository.AskNewFollower(user, followedUser);
-                return Ok();
+                if (followedUser == null) { return BadRequest("Not exists user with username!"); }
+                Success success = followerRepository.AskNewFollower(user, followedUser);
+                switch (success)
+                {
+                    case (Success.Successfull):
+                        return Ok();
+                    case (Success.FailedByAlreadyRequested):
+                        return BadRequest("Already requested!");
+                    case (Success.FailedByAlreadyFollowed):
+                        return BadRequest("Already followed!");
+                }
             }
             return Unauthorized();
         }
@@ -56,21 +65,39 @@ namespace Picmory.Controllers
             {
                 User followedUser = userGet.GetUser(HttpContext);
                 User followerUser = userRepository.GetUserData(followeraccept.UserName);
-                followerRepository.AnswerNewFollower(followeraccept.Accept,followerUser,followedUser);
-                return Ok();
+                if (followerUser == null) { return BadRequest("Not exists user with username!"); }
+                Success success = followerRepository.AnswerNewFollower(followeraccept.Accept,followerUser,followedUser);
+                switch (success)
+                {
+                    case (Success.Successfull):
+                        return Ok();
+                    case (Success.FailedByAlreadyAnswered):
+                        return BadRequest("Already answered!");
+                    case (Success.FailedByNotRequested):
+                        return BadRequest("Following not requested!");
+                }
             }
             return Unauthorized();
         }
 
         [HttpPost("deletefollower")]
-        public IActionResult DeleteFollower([FromBody] FollowerAccept followeraccept)
+        public IActionResult DeleteFollower([FromBody] string userName)
         {
             if (userGet.HaveUser(HttpContext))
             {
                 User followedUser = userGet.GetUser(HttpContext);
-                User followerUser = userRepository.GetUserData(followeraccept.UserName);
-                followerRepository.DeleteFollower(followerUser, followedUser);
-                return Ok();
+                User followerUser = userRepository.GetUserData(userName);
+                if (followerUser == null) { return BadRequest("Not exists user with username!"); }
+                Success success = followerRepository.DeleteFollower(followerUser, followedUser);
+                switch (success)
+                {
+                    case (Success.Successfull):
+                        return Ok();
+                    case (Success.FailedByNotAccepted):
+                        return BadRequest("Not answered!");
+                    case (Success.FailedByNotExist):
+                        return BadRequest("Following not requested!");
+                }
             }
             return Unauthorized();
         }
