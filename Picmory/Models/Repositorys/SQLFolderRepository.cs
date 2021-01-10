@@ -35,16 +35,16 @@ namespace Picmory.Models.Repositorys
             return Success.FailedByNotExist;
         }
 
-        public bool DeleteFolder(User user, string folderName)
+        public Success DeleteFolder(User user, string folderName)
         {
             var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName == folderName);
             if (folder != null)
             {
                 context.Folders.Remove(folder);
                 context.SaveChanges();
-                return true;
+                return Success.Successfull;
             }
-            return false;
+            return Success.FailedByNotExist;
         }
 
         public List<FolderForShow> GetAllFolders(User user)
@@ -78,11 +78,15 @@ namespace Picmory.Models.Repositorys
             }
         }
 
-        public Folder SaveNewFolder(Folder folder)
+        public Success SaveNewFolder(Folder folder)
         {
-            context.Folders.Add(folder);
-            context.SaveChanges();
-            return folder;
+            if (context.Folders.Where(a => a.Owner == folder.Owner && a.FolderName == folder.FolderName).SingleOrDefault() == null)
+            {
+                context.Folders.Add(folder);
+                context.SaveChanges();
+                return Success.Successfull;
+            }
+            return Success.FailedByUsedName;
         }
     }
 }

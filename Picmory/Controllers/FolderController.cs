@@ -30,8 +30,14 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 Folder newFolder = new Folder(folder.FolderName, folder.Access, userGet.GetUser(HttpContext));
-                folderRepository.SaveNewFolder(newFolder);
-                return Ok();
+                Success success = folderRepository.SaveNewFolder(newFolder);
+                switch (success)
+                {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByUsedName:
+                        return BadRequest("Foldername already used!");
+                }
             }
             return Unauthorized();
         }
@@ -63,9 +69,14 @@ namespace Picmory.Controllers
         {
             if (userGet.HaveUser(HttpContext))
             {
-                bool success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
-                if (success) { return Ok(); }
-                else { return BadRequest("Not existing folder!"); }
+                Success success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
+                switch (success)
+                {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByNotExist:
+                        return BadRequest("Folder doesn't exist!");
+                }
             }
             return Unauthorized();
         }
