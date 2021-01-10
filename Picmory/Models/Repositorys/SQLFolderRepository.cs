@@ -16,13 +16,13 @@ namespace Picmory.Models.Repositorys
         
        
 
-        public bool ChangeFolderData(User user, Folder originalFolder, string newName, AccessType newAccess)
+        public bool ChangeFolderData(User user, Folder originalFolder, string newName, AccessType? newAccess)
         {
             var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName==originalFolder.FolderName);
             if (folder != null)
             {
-                folder.FolderName = newName;
-                folder.Access = newAccess;
+                if (newName != null) { folder.FolderName = newName; }
+                if (newAccess != null) { folder.Access = (AccessType)newAccess; } ;
                 context.SaveChanges();
                 return true;
             }

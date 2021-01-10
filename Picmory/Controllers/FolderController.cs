@@ -27,20 +27,18 @@ namespace Picmory.Controllers
         [HttpPost("createnewfolder")]
         public IActionResult CreateNewFolder([FromBody] Folder folder)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
                 Folder newFolder = new Folder(folder.FolderName, folder.Access, userGet.GetUser(HttpContext));
                 folderRepository.SaveNewFolder(newFolder);
-                response = Ok();
+                return Ok();
             }
-            return response;
+            return Unauthorized();
         }
 
         [HttpPost("changefolderdata")]
         public IActionResult ChangeFolderName(ChangeFolderData changeFolderData)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
                 folderRepository.ChangeFolderData(
@@ -48,21 +46,21 @@ namespace Picmory.Controllers
                                                 changeFolderData.originalFolder,
                                                 changeFolderData.newName,
                                                 changeFolderData.newAccessType);
-                response = Ok();
+                return Ok();
             }
-            return response;
+            return Unauthorized();
         }
     
         [HttpPost("deletefolder")]
-        public IActionResult DeleteFolder(string folderName)
+        public IActionResult DeleteFolder([FromBody]string folderName)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
-                folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
-                response = Ok();
+                bool success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
+                if (success) { return Ok(); }
+                else { return BadRequest("Not existing folder!"); }
             }
-            return response;
+            return Unauthorized();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace Picmory.Models.Repositorys
@@ -22,7 +23,7 @@ namespace Picmory.Models.Repositorys
 
         public User GetUserData(int id)
         {
-            return context.Users.Find(id);
+            return context.Users.Include(a => a.ProfilePicture).Where(a => a.Id == id).Single();
         }
 
         public User GetUserData(string name)
