@@ -28,7 +28,7 @@ namespace Picmory.Models.Repositorys
 
         public Followers AskNewFollower(User follower, User followed)
         {
-            Followers follow = new Followers(followed, follower, false);
+            Followers follow = new Followers(followed, follower, null);
             context.Followers.Add(follow);
             context.SaveChanges();
             return follow;

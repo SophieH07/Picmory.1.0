@@ -9,7 +9,7 @@ namespace Picmory.Models
         public Followers()
         { }
 
-        public Followers(User Followed, User Follower, bool Accepted)
+        public Followers(User Followed, User Follower, bool? Accepted)
         {
             this.Follower = Follower;
             this.Followed = Followed;
@@ -20,6 +20,6 @@ namespace Picmory.Models
         public int ID { get; set; }
         public User Followed { get; set; }
         public User Follower { get; set; }
-        public bool Accepted { get; set; }
+        public bool? Accepted { get; set; }
     }
 }
