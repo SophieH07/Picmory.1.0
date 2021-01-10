@@ -74,15 +74,12 @@ namespace Picmory.Controllers
 
                 if (userRepository.UserNameAlreadyUsed(changeData.UserName) && changeData.UserName != user.UserName)
                     { return BadRequest("Used Username!"); }
-                else if (changeData.UserName == null)
-                    { changeData.UserName = user.UserName; }
-                else if (changeData.ColorOne == null)
-                    { changeData.ColorOne = user.ColorOne; } 
-                else if (changeData.ColorTwo == null)
-                    { changeData.ColorTwo = user.ColorTwo; }
-                user.UserName = changeData.UserName;
-                user.ColorOne = (ThemeColor)changeData.ColorOne;
-                user.ColorTwo = (ThemeColor)changeData.ColorTwo;
+                else if (changeData.UserName != null)
+                    { user.UserName = changeData.UserName; }
+                else if (changeData.ColorOne != null)
+                    { user.ColorOne = (ThemeColor)changeData.ColorOne; } 
+                else if (changeData.ColorTwo != null)
+                    { user.ColorTwo = (ThemeColor)changeData.ColorTwo; }
                 userRepository.EditUserData(user);
 
                 return Ok();                
@@ -97,12 +94,17 @@ namespace Picmory.Controllers
             int.TryParse(profilePictureId, out int pictureId);
             if (pictureId ==0) { return BadRequest("Wrong data!"); } 
             Picture profilePicture = pictureRepository.GetPicture(pictureId);
+            if (profilePicture == null) { return BadRequest("Not your picture!"); }
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                user.ProfilePicture = profilePicture;
-                userRepository.EditUserData(user);
-                return Ok();
+                if (profilePicture.Owner == user)
+                {
+                    user.ProfilePicture = profilePicture;
+                    userRepository.EditUserData(user);
+                    return Ok();
+                }
+                return BadRequest("Not your picture!");
             }
             return Unauthorized();
         }
