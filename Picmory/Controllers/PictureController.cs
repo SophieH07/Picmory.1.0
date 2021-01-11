@@ -23,6 +23,7 @@ namespace Picmory.Controllers
         private readonly string[] AcceptedFileTypes = { "image/gif", "image/png", "image/jpg", "image/jpeg" };
         private readonly IPictureRepository pictureRepository;
         private readonly IFolderRepository folderRepository;
+        private readonly IUserRepository userRepository;
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
 
@@ -30,6 +31,7 @@ namespace Picmory.Controllers
 
         public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
         {
+            this.userRepository = userRepository;
             this.pictureRepository = pictureRepository;
             _hostEnv = hostEnvironment;
             this.folderRepository = folderRepository;
@@ -116,6 +118,8 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
+
+
         [HttpGet("getmyimages")]
         public string GetImageForMe(PictureRequest data)
         {
@@ -130,6 +134,24 @@ namespace Picmory.Controllers
                 return JsonConvert.SerializeObject(responsePictures);
             }
             return null;
+        }
+
+        [HttpGet("getotherimages")]
+        public IActionResult GetImageForUser(PictureRequest data)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User otherUser = userRepository.GetUserData(data.UserId);
+
+                List<ResponsePicture> responsePictures = new List<ResponsePicture>();
+                List<Picture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
+                foreach (Picture picture in pictures)
+                {
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                }
+                return Ok(JsonConvert.SerializeObject(responsePictures));
+            }
+            return Unauthorized();
         }
 
 

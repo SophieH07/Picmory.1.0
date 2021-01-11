@@ -11,11 +11,11 @@ namespace Picmory.Models.Repositorys
     {
         private readonly PicmoryDbContext context;
         
-        
         public SQLPictureRepository(PicmoryDbContext context)
         {
             this.context = context;
         }
+
 
         public Success ChangePictureData(PictureChange changeData)
         {
@@ -78,6 +78,89 @@ namespace Picmory.Models.Repositorys
             catch (Exception e)
             {
                 return pictures;
+            }
+        }
+
+        public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName)
+        {
+            bool followed = null != context.Followers
+                .Where(a => a.Follower == user &&
+                            a.Followed == otherUser &&
+                            a.Accepted == true)
+                .FirstOrDefault();
+            List<Picture> pictures = new List<Picture>();
+            if (followed)
+            {
+                try
+                {
+                    if (folderName == null)
+                    {
+                        return pictures = context.Pictures
+                            .Where(a => a.Owner == otherUser &&
+                                  (a.Access == AccessType.PublicForEveryone ||
+                                   a.Access == AccessType.PublicForFollowers))
+                            .Include(a => a.Folder)
+                            .OrderBy(a => a.UploadDate)
+                            .Take(offset + 10)
+                            .Skip(offset)
+                            .ToList();
+                    }
+                    else
+                    {
+                        return pictures = context.Pictures
+                           .Where(a => a.Owner == otherUser &&
+                                  a.Folder.FolderName == folderName &&
+                                 (a.Folder.Access == AccessType.PublicForEveryone ||
+                                  a.Folder.Access == AccessType.PublicForFollowers) &&
+                                 (a.Access == AccessType.PublicForEveryone ||
+                                  a.Access == AccessType.PublicForFollowers))
+                           .Include(a => a.Folder)
+                           .OrderBy(a => a.UploadDate)
+                           .Take(offset + 10)
+                           .Skip(offset)
+                           .ToList();
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    return pictures;
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (folderName == null)
+                    {
+                        return pictures = context.Pictures
+                            .Where(a => a.Owner == otherUser &&
+                                  (a.Access == AccessType.PublicForEveryone))
+                            .Include(a => a.Folder)
+                            .OrderBy(a => a.UploadDate)
+                            .Take(offset + 10)
+                            .Skip(offset)
+                            .ToList();
+                    }
+                    else
+                    {
+                        return pictures = context.Pictures
+                           .Where(a => a.Owner == otherUser &&
+                                  a.Folder.FolderName == folderName &&
+                                  a.Folder.Access == AccessType.PublicForEveryone &&
+                                  a.Access == AccessType.PublicForEveryone )
+                           .Include(a => a.Folder)
+                           .OrderBy(a => a.UploadDate)
+                           .Take(offset + 10)
+                           .Skip(offset)
+                           .ToList();
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    return pictures;
+                }
             }
         }
 
