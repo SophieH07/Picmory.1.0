@@ -9,16 +9,13 @@ namespace Picmory.Models.RequestResultModels
     public class FolderForShow
     {
         public FolderForShow() { }
-        public FolderForShow(string folderName, AccessType access, string owner)
+        public FolderForShow(string folderName, AccessType access)
         {
             FolderName = folderName;
             Access = access;
-            Owner = owner;
-
         }
 
       
-        public string Owner { get; set; }
         public string FolderName { get; set; }
         public AccessType Access { get; set; }
     }

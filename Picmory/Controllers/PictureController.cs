@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
+using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Picmory.Controllers
 {
@@ -20,10 +23,15 @@ namespace Picmory.Controllers
         private readonly string[] AcceptedFileTypes = { "image/gif", "image/png", "image/jpg", "image/jpeg" };
         private readonly IPictureRepository pictureRepository;
         private readonly IFolderRepository folderRepository;
+        private readonly IUserRepository userRepository;
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
+
+        public int ResponsePictures { get; private set; }
+
         public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
         {
+            this.userRepository = userRepository;
             this.pictureRepository = pictureRepository;
             _hostEnv = hostEnvironment;
             this.folderRepository = folderRepository;
@@ -31,7 +39,7 @@ namespace Picmory.Controllers
         }
 
 
-        [HttpGet("{pictureId}")]
+        [HttpGet("{pictureid}")]
         public IActionResult GetImageById(string pictureId)
         {
             string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
@@ -44,11 +52,9 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("uploadPicture")]
+        [HttpPost("uploadpicture")]
         public IActionResult UploadPicture()
         {
-            IActionResult response = Unauthorized();
-
             IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
             Folder folder = folderRepository.GetFolder(userGet.GetUser(HttpContext), HttpContext.Request.Form["FolderName"].ToString());
             UploadPhoto photoData = new UploadPhoto(
@@ -58,18 +64,92 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
             {
                 UploadImage(HttpContext, photoData, uploadedImage);
-                response = Ok();
+                return Ok();
             }
-            return response;
+            return Unauthorized();
         }
 
-        [HttpGet("getImagesForFolder")]
-        public IActionResult GetImageForFolder(string folderName, string userName, int counter)
+        [HttpPost("editpicture")]
+        public IActionResult EditPicture([FromBody] PictureChange changeData)
         {
-            if (userName == null) { userName = userGet.GetUser(HttpContext).UserName; }
-            if (userGet.HaveUser(HttpContext) && folderName != null)
+            if (userGet.HaveUser(HttpContext))
             {
-                pictureRepository.GetPicturesForFolder(userGet.GetUser(HttpContext), folderName, counter);
+                User user = userGet.GetUser(HttpContext);
+                Picture picture = pictureRepository.GetPicture(changeData.Id);
+                if (picture == null) { return BadRequest("Not existing picture!"); }
+                if (picture.Owner == user)
+                {
+                    changeData.Owner = user;
+                    Success success = pictureRepository.ChangePictureData(changeData);
+                    switch (success)
+                    {
+                        case Success.Successfull:
+                            return Ok();
+                        case Success.FailedByNotExistFolderName:
+                            return BadRequest("Folder doesn't exist!");
+                        
+                    }
+                }
+                return BadRequest("Not your picture!");
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost("deletepicture")]
+        public IActionResult DeletePicture([FromBody] string id)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                int.TryParse(id, out int pictureId);
+                Picture picture = pictureRepository.GetPicture(pictureId);
+                if (picture == null) { return BadRequest("Not existing picture!"); }
+                if (picture.Owner == user)
+                {
+                    Success success = pictureRepository.DeletePicture(pictureId);
+                    if (success == Success.Successfull) 
+                    {
+                        System.IO.File.Delete(_hostEnv.WebRootPath + "/" + pictureId.ToString());
+                        return Ok();
+                    }
+                }
+                return BadRequest("Not your picture!");
+            }
+            return Unauthorized();
+        }
+
+
+
+        [HttpGet("getmyimages")]
+        public string GetImageForMe(PictureRequest data)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                List<ResponsePicture> responsePictures= new List<ResponsePicture>();
+                List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
+                foreach (Picture picture in pictures)
+                {
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                }
+                return JsonConvert.SerializeObject(responsePictures);
+            }
+            return null;
+        }
+
+        [HttpGet("getotherimages")]
+        public IActionResult GetImageForUser(PictureRequest data)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User otherUser = userRepository.GetUserData(data.UserId);
+                if (otherUser == null) { return BadRequest("Not existing user!"); }
+                List<ResponsePicture> responsePictures = new List<ResponsePicture>();
+                List<Picture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
+                foreach (Picture picture in pictures)
+                {
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                }
+                return Ok(JsonConvert.SerializeObject(responsePictures));
             }
             return Unauthorized();
         }

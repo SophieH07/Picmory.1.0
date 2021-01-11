@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Picmory.Models.RequestModels;
+using Picmory.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,28 +10,157 @@ namespace Picmory.Models.Repositorys
     public class SQLPictureRepository : IPictureRepository
     {
         private readonly PicmoryDbContext context;
+        
         public SQLPictureRepository(PicmoryDbContext context)
         {
             this.context = context;
         }
 
-        public Picture GetPicture(int id)
+
+        public Success ChangePictureData(PictureChange changeData)
         {
-            return context.Pictures.Find(id);
+            Picture picture = context.Pictures.Find(changeData.Id);
+            if (context.Folders.Where(a => a.Owner == changeData.Owner &&
+                       a.FolderName == changeData.FolderName).SingleOrDefault() != null 
+                || changeData.FolderName == null)
+            {
+                if (changeData.FolderName != null)
+                    { picture.Folder = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault(); }
+                if (changeData.Access != null)
+                    { picture.Access = (AccessType)changeData.Access; }
+                if (changeData.Description != null)
+                    { picture.Description = changeData.Description; }
+                context.SaveChanges();
+                return Success.Successfull;
+            }
+            return Success.FailedByNotExistFolderName;
         }
 
-        public List<Picture> GetPicturesForFolder(User user, string folderName, int counter)
+        public Success DeletePicture(int pictureId)
         {
+            Picture picture = context.Pictures.Find(pictureId);
+            context.Pictures.Remove(picture);
+            context.SaveChanges();
+            return Success.Successfull;
+        }
+
+        public Picture GetPicture(int id)
+        {
+            return context.Pictures.Include(a => a.Folder).Where(a => a.Id == id).FirstOrDefault();
+        }
+
+        public List<Picture> GetPicturesForMe(User user, int offset, string folderName)
+        {
+            List<Picture> pictures = new List<Picture>();
             try
             {
-                List<Picture> pictures = context.Pictures.Where(a => a.Owner == user).ToList();
-                List<Picture> picturesForSend = new List<Picture>();
-               
-                return picturesForSend;
+                if (folderName == null)
+                {
+                    return pictures = context.Pictures
+                        .Where(a => a.Owner == user)
+                        .Include(a => a.Folder)
+                        .OrderBy(a => a.UploadDate)
+                        .Take(offset + 10)
+                        .Skip(offset)
+                        .ToList();
+                }
+                else
+                {
+                    return pictures = context.Pictures
+                       .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
+                       .Include(a => a.Folder)
+                       .OrderBy(a => a.UploadDate)
+                       .Take(offset + 10)
+                       .Skip(offset)
+                       .ToList();
+                }
             }
             catch (Exception e)
             {
-                return null;
+                return pictures;
+            }
+        }
+
+        public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName)
+        {
+            bool followed = null != context.Followers
+                .Where(a => a.Follower == user &&
+                            a.Followed == otherUser &&
+                            a.Accepted == true)
+                .FirstOrDefault();
+            List<Picture> pictures = new List<Picture>();
+            if (followed)
+            {
+                try
+                {
+                    if (folderName == null)
+                    {
+                        return pictures = context.Pictures
+                            .Where(a => a.Owner == otherUser &&
+                                  (a.Access == AccessType.PublicForEveryone ||
+                                   a.Access == AccessType.PublicForFollowers))
+                            .Include(a => a.Folder)
+                            .OrderBy(a => a.UploadDate)
+                            .Take(offset + 10)
+                            .Skip(offset)
+                            .ToList();
+                    }
+                    else
+                    {
+                        return pictures = context.Pictures
+                           .Where(a => a.Owner == otherUser &&
+                                  a.Folder.FolderName == folderName &&
+                                 (a.Folder.Access == AccessType.PublicForEveryone ||
+                                  a.Folder.Access == AccessType.PublicForFollowers) &&
+                                 (a.Access == AccessType.PublicForEveryone ||
+                                  a.Access == AccessType.PublicForFollowers))
+                           .Include(a => a.Folder)
+                           .OrderBy(a => a.UploadDate)
+                           .Take(offset + 10)
+                           .Skip(offset)
+                           .ToList();
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    return pictures;
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (folderName == null)
+                    {
+                        return pictures = context.Pictures
+                            .Where(a => a.Owner == otherUser &&
+                                  (a.Access == AccessType.PublicForEveryone))
+                            .Include(a => a.Folder)
+                            .OrderBy(a => a.UploadDate)
+                            .Take(offset + 10)
+                            .Skip(offset)
+                            .ToList();
+                    }
+                    else
+                    {
+                        return pictures = context.Pictures
+                           .Where(a => a.Owner == otherUser &&
+                                  a.Folder.FolderName == folderName &&
+                                  a.Folder.Access == AccessType.PublicForEveryone &&
+                                  a.Access == AccessType.PublicForEveryone )
+                           .Include(a => a.Folder)
+                           .OrderBy(a => a.UploadDate)
+                           .Take(offset + 10)
+                           .Skip(offset)
+                           .ToList();
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    return pictures;
+                }
             }
         }
 
