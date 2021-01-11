@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import "./Register.css";
 import eye from '../../img/eye.png';
 
@@ -19,7 +20,7 @@ export class Register extends Component {
     }
 
     toggleShow(e) {
-        if (e.target.name == "password1") {
+        if (e.target.name === "password1") {
             this.setState({ hidden1: !this.state.hidden1 });
         } else {
             this.setState({ hidden2: !this.state.hidden2 });
@@ -87,6 +88,22 @@ export class Register extends Component {
         }
     }
 
+    checkIfUsernameAlreadyExists() {
+        axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', {
+            username: this.state.username
+        }).then(result => {
+            alert(result.data);
+        })
+    }
+
+    checkIfEmailAlreadyExists() {
+        axios.post('https://localhost:44386/authentication/checkemailalreadyexist', {
+            email: this.state.email
+        }).then(result => {
+            console.log(result);
+        })
+    }
+
     handleChange(e) {
         if (e.target.name === 'username') {
             this.validateUsername(e.target.value);
@@ -106,10 +123,20 @@ export class Register extends Component {
     }
 
     submitForm() {
+        this.checkIfUsernameAlreadyExists()
+        //this.checkIfEmailAlreadyExists();
         if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
             this.setState({
                 formIsFull: true
             })
+            axios.post('https://localhost:44386/authentication/register', {
+                UserName: this.state.username,
+                Email: this.state.email,
+                Password: this.state.password
+            }).then(result => {
+                console.log(result);
+            })
+
         } else {
             this.setState({
                 formIsFull: false
@@ -134,12 +161,12 @@ export class Register extends Component {
                     {this.state.passwordError ? <p><span className="warning">The password must be at least 6 char long, contain a lowercase letter, an uppercase letter and a number</span></p> : ''}
                     <div className="password-container">
                         <input name="password1" type={this.state.hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { this.handleChange(e) }} />
-                        <img name="password1" src={eye} className="eye" onClick={this.toggleShow} />
+                        <img name="password1" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
                     </div>
                     {this.state.equalPasswords ? <p><span className="warning">The passwords are not equal</span></p> : ''}
                     <div className="password-container">
                         <input name="password2" type={this.state.hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { this.handleChange(e) }} />
-                        <img name="password2" src={eye} className="eye" onClick={this.toggleShow} />
+                        <img name="password2" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
                     </div>
                 </div>
                 <div>
