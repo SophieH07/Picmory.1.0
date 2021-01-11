@@ -142,7 +142,7 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 User otherUser = userRepository.GetUserData(data.UserId);
-
+                if (otherUser == null) { return BadRequest("Not existing user!"); }
                 List<ResponsePicture> responsePictures = new List<ResponsePicture>();
                 List<Picture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
                 foreach (Picture picture in pictures)
