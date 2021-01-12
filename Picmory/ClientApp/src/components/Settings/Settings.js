@@ -141,9 +141,9 @@ export class Settings extends Component {
                             <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Change password" onChange={(e) => { this.handleChange(e) }} />
                             <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
                         </div>
-                        <button>SAVE PASSWORD</button>
                     </div>
                     <div>
+                        <button>SAVE PASSWORD</button>
                         <button className="delete">DELETE ACCOUNT</button>
                         <button className="cancel">CANCEL</button>
                     </div>
