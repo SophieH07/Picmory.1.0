@@ -47,7 +47,7 @@ export class Register extends Component {
     }
 
     validateEmail(email) {
-        const pattern = /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{2,9}[\.][a-z]{2,5}/g;
+        const pattern = new RegExp(/[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{2,9}[\.][a-z]{2,5}/g);
         const result = pattern.test(email);
         if (result === true) {
             this.setState({
@@ -88,29 +88,47 @@ export class Register extends Component {
         }
     }
 
-    checkIfUsernameAlreadyExists() {
-        axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', {
-            username: this.state.username
+    checkIfUsernameAlreadyExists(usernameString) {
+        axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', usernameString, {
+            headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            alert(result.data);
+            if (result) {
+                this.setState({
+                    usernameAlreadyExist: true
+                })
+            } else {
+                this.setState({
+                    usernameAlreadyExist: false
+                })
+            }
         })
     }
 
-    checkIfEmailAlreadyExists() {
-        axios.post('https://localhost:44386/authentication/checkemailalreadyexist', {
-            email: this.state.email
+    checkIfEmailAlreadyExists(emailString) {
+        axios.post('https://localhost:44386/authentication/checkemailalreadyexist', emailString, {
+            headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result);
+            if (result) {
+                this.setState({
+                    emailAlreadyExist: true
+                })
+            } else {
+                this.setState({
+                    emailAlreadyExist: false
+                })
+            }
         })
     }
 
     handleChange(e) {
         if (e.target.name === 'username') {
             this.validateUsername(e.target.value);
+            this.checkIfUsernameAlreadyExists(e.target.value);
         }
 
         if (e.target.name === 'email') {
             this.validateEmail(e.target.value);
+            this.checkIfEmailAlreadyExists(e.target.value);
         }
 
         if (e.target.name === 'password1') {
@@ -123,8 +141,6 @@ export class Register extends Component {
     }
 
     submitForm() {
-        this.checkIfUsernameAlreadyExists()
-        //this.checkIfEmailAlreadyExists();
         if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
             this.setState({
                 formIsFull: true
@@ -151,10 +167,12 @@ export class Register extends Component {
                 <h2>Create Account</h2>
                 <div className="input-fields">
                     {this.state.usernameError ? <p><span className="warning">The username cannot be null</span></p> : ''}
+                    {this.state.usernameAlreadyExist ? <p><span className="warning">The username is already taken</span></p> : ''}
                     <div>
                         <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     <div>
+                        {this.state.emailAlreadyExist ? <p><span className="warning">There is already a user with this email address</span></p> : ''}
                         {this.state.emailError ? <p><span className="warning">Please enter a valid email address</span></p> : ''}
                         <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
@@ -172,7 +190,7 @@ export class Register extends Component {
                 <div>
                     <p className="underline">
                         <input type="checkbox" id="" name="checkbox" onClick={this.toggleCheck} />
-                         I agree all statements in <Link tag={Link}>Terms of service</Link>.
+                         I agree all statements in <Link tag={Link} to='/register'>Terms of service</Link>.
                         </p>
                 </div>
                 <button onClick={this.submitForm} name="submit">Sign up</button>
@@ -190,12 +208,4 @@ export class Register extends Component {
 //        email: this.state.email,
 //        password: this.state.password
 //    }
-//    sendFormData(data).then(res => {
-//        if (res.status === 200) {
-//            alert(res.data);
-//        } else {
-
-//        }
-//    });
-//}
 
