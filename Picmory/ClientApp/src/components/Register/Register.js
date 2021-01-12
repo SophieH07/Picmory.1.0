@@ -88,11 +88,13 @@ export class Register extends Component {
         }
     }
 
-    checkIfUsernameAlreadyExists(usernameString) {
+    checkIfUsernameAlreadyExists(username) {
+        let usernameString = '"' + username + '"'
         axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', usernameString, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            if (result) {
+            console.log(result)
+            if (result.data) {
                 this.setState({
                     usernameAlreadyExist: true
                 })
@@ -104,11 +106,13 @@ export class Register extends Component {
         })
     }
 
-    checkIfEmailAlreadyExists(emailString) {
+    checkIfEmailAlreadyExists(email) {
+        let emailString = '"' + email + '"'
         axios.post('https://localhost:44386/authentication/checkemailalreadyexist', emailString, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            if (result) {
+            console.log(result)
+            if (result.data) {
                 this.setState({
                     emailAlreadyExist: true
                 })
@@ -140,19 +144,27 @@ export class Register extends Component {
         }
     }
 
+    registration() {
+        const data = {
+            UserName: this.state.username,
+            Email: this.state.email,
+            Password: this.state.password
+        }
+
+        axios.post('https://localhost:44386/authentication/register', data, {
+            headers: { 'Content-Type': 'application/json' }
+        }).then(result => {
+            console.log(result);
+        })
+    }
+
+
     submitForm() {
         if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
             this.setState({
                 formIsFull: true
             })
-            axios.post('https://localhost:44386/authentication/register', {
-                UserName: this.state.username,
-                Email: this.state.email,
-                Password: this.state.password
-            }).then(result => {
-                console.log(result);
-            })
-
+            this.registration()
         } else {
             this.setState({
                 formIsFull: false
