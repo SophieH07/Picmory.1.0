@@ -11,7 +11,6 @@ export class Layout extends Component {
         };
 
         return (
-
             <div>
                 <NavMenu />
                 <Container style={containerStyle}>

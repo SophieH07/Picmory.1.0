@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css";
 import eye from '../../img/eye.png';
@@ -42,18 +42,23 @@ export class Login extends Component {
     login() {
         const data = {
             UserName: this.state.usernameOrEmail,
-            Email: this.state.usernameOrEmail,
+            //Email: this.state.usernameOrEmail,
             Password: this.state.password
         }
 
-        axios.post('https://localhost:44386/authentication/login', data, {
+        axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             console.log(result);
+        }).catch(err => {
+            console.log(err.response.data);
         })
     }
 
     render() {
+        //if (this.isLoggedIn) {
+        //    return <Redirect to={{ pathname: `/user/${this.state.authToken}`, state: this.state.loggedIn }}/>
+        //} else {
         return (
             <div className="login-main">
                 <h2>Login</h2>
@@ -71,5 +76,6 @@ export class Login extends Component {
                 <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );
+        //}
     }
 }

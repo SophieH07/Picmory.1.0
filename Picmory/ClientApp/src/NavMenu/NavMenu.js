@@ -11,7 +11,7 @@ export class NavMenu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            collapsed: true
+            collapsed: true,
         };
         this.toggleNavbar = this.toggleNavbar.bind(this);
     }

@@ -25,7 +25,6 @@ namespace Picmory.Controllers
             _config = config;
         }
 
-
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
@@ -62,7 +61,6 @@ namespace Picmory.Controllers
         {
             return userRepository.EmailAlreadyUsed(email);
         }
-
 
         private IActionResult SaveUser(User user)
         {

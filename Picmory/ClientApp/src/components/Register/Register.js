@@ -12,7 +12,7 @@ export class Register extends Component {
         this.state = {
             hidden1: true,
             hidden2: true,
-            isChecked: false
+            isChecked: false,
         }
         this.toggleShow = this.toggleShow.bind(this);
         this.toggleCheck = this.toggleCheck.bind(this);
@@ -96,11 +96,9 @@ export class Register extends Component {
 
     //checks from database if username is alredy taken
     checkIfUsernameAlreadyExists(username) {
-        let usernameString = '"' + username + '"'
-        axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', usernameString, {
+        axios.post('/authentication/checkusernamealreadyexist', JSON.stringify(username), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result)
             if (result.data) {
                 this.setState({
                     usernameAlreadyExist: true
@@ -115,11 +113,9 @@ export class Register extends Component {
 
     //checks from database if email is already registered
     checkIfEmailAlreadyExists(email) {
-        let emailString = '"' + email + '"'
-        axios.post('https://localhost:44386/authentication/checkemailalreadyexist', emailString, {
+        axios.post('/authentication/checkemailalreadyexist', JSON.stringify(email), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result)
             if (result.data) {
                 this.setState({
                     emailAlreadyExist: true
@@ -131,7 +127,6 @@ export class Register extends Component {
             }
         })
     }
-
 
     //handles changes in input fields and call related functions
     handleChange(e) {
@@ -166,10 +161,12 @@ export class Register extends Component {
             Password: this.state.password
         }
 
-        axios.post('https://localhost:44386/authentication/register', data, {
+        axios.post('/authentication/register', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result.data.token);
+            console.log(result);
+        }).catch(err => {
+            console.log(err.response.data)
         })
     }
 
@@ -193,22 +190,22 @@ export class Register extends Component {
             <div className="register">
                 <h2>Create Account</h2>
                 <div className="input-fields">
-                    {this.state.usernameError ? <p><span className="warning">The username cannot be null</span></p> : ''}
-                    {this.state.usernameAlreadyExist ? <p><span className="warning">The username is already taken</span></p> : ''}
+                    {this.state.usernameError ? <p className="warning">The username cannot be null.</p> : ''}
+                    {this.state.usernameAlreadyExist ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
                     <div>
                         <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
                     <div>
-                        {this.state.emailAlreadyExist ? <p><span className="warning">There is already a user with this email address</span></p> : ''}
-                        {this.state.emailError ? <p><span className="warning">Please enter a valid email address</span></p> : ''}
+                        {this.state.emailAlreadyExist ? <p className="warning">There is already a user with this email address.</p> : ''}
+                        {this.state.emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
                         <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { this.handleChange(e) }} />
                     </div>
-                    {this.state.passwordError ? <p><span className="warning">The password must be at least 6 char long, contain a lowercase letter, an uppercase letter and a number</span></p> : ''}
+                    {this.state.passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
                     <div className="password-container">
                         <input name="password1" type={this.state.hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { this.handleChange(e) }} />
                         <img name="password1" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
                     </div>
-                    {this.state.equalPasswords ? <p><span className="warning">The passwords are not equal</span></p> : ''}
+                    {this.state.equalPasswords ? <p className="warning">The passwords are not equal.</p> : ''}
                     <div className="password-container">
                         <input name="password2" type={this.state.hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { this.handleChange(e) }} />
                         <img name="password2" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />

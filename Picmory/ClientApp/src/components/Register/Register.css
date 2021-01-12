@@ -38,7 +38,8 @@
 .warning {
     background-color: yellow;
     color: black;
-    border-radius: 4px 4px;
+    border: solid;
+    border-color: orange;
 }
 
 .eye {
