@@ -1,10 +1,25 @@
 ﻿import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
 export class Profile extends Component {
     static displayName = Profile.name;
+
+    componentDidMount() {
+        axios.get("/user/myinfo").then(result => {
+            console.log(result);
+            this.setState({
+                username: result.data.username,
+                profilePicture: result.data.profilePicture,
+                followers: result.data.followers,
+                following: result.data.following,
+                folders: result.data.folders,
+                pictures: result.data.pictures
+            })
+        })
+    }
 
     render() {
         return (

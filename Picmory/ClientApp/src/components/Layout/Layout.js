@@ -9,7 +9,6 @@ export class Layout extends Component {
         const containerStyle = {
             textAlign: '-webkit-center'
         };
-
         return (
             <div>
                 <NavMenu />

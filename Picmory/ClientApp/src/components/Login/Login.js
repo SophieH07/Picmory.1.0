@@ -49,33 +49,39 @@ export class Login extends Component {
         axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            this.setState({
+                isLoggedIn: true
+            })
             console.log(result);
         }).catch(err => {
-            console.log(err.response.data);
+            this.setState({
+                loginError: err.response.data,
+                isLoggedIn: false
+            })
         })
     }
 
     render() {
-        //if (this.isLoggedIn) {
-        //    return <Redirect to={{ pathname: `/user/${this.state.authToken}`, state: this.state.loggedIn }}/>
-        //} else {
-        return (
-            <div className="login-main">
-                <h2>Login</h2>
-                <div className="inputs">
-                    <div>
-                        <input name="usernameOrEmail" placeholder="Username or Email" onChange={(e) => { this.handleChange(e) }}></input>
+        if (this.state.isLoggedIn) {
+            return <Redirect to={{ pathname: `/user/${this.state.usernameOrEmail}` }} />
+        } else {
+            return (
+                <div className="login-main">
+                    <h2>Login</h2>
+                    <div className="inputs">
+                        <div>
+                            <input name="usernameOrEmail" placeholder="Username or Email" onChange={(e) => { this.handleChange(e) }}></input>
+                        </div>
+                        <div className="password-container">
+                            <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Password" onChange={(e) => { this.handleChange(e) }} />
+                            <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
+                        </div>
                     </div>
-                    <div className="password-container">
-                        <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Password" onChange={(e) => { this.handleChange(e) }} />
-                        <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
-                    </div>
-                </div>
-                <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
-                <button onClick={this.login}>Login</button>
-                <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
-            </div >
-        );
-        //}
+                    <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
+                    <button onClick={this.login}>Login</button>
+                    <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
+                </div >
+            );
+        }
     }
 }
