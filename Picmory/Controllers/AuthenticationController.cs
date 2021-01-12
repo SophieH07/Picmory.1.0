@@ -8,6 +8,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using Picmory.Models.RequestModels;
 
 namespace Picmory.Controllers
 {
@@ -28,34 +29,26 @@ namespace Picmory.Controllers
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            IActionResult response = BadRequest("Wrong Data!");
-            if (!userRepository.UserNameAlreadyUsed(user.UserName) && user.Email != null)
-            {
-                user.Password = Hashing.HashPassword(user.Password);
-                User newUser = userRepository.RegisterNewUser(user);
-                var tokenString = GenerateJSONWebToken(newUser);
-                response = Ok(new { token = tokenString });
-            }
-            return response;
+            return (!userRepository.UserNameAlreadyUsed(user.UserName) &&
+                    user.Email != null &&
+                    !userRepository.EmailAlreadyUsed(user.Email)) ?
+                SaveUser(user) : BadRequest("Wrong Data!");
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] User user)
+        public IActionResult Login([FromBody] LoginUser user)
         {
-            IActionResult response;
             string loginPassword = user.Password;
-            User databaseUser = userRepository.GetUserData(user.UserName);
+            User databaseUser = (user.Email == null) ? userRepository.GetUserData(user.UserName): userRepository.GetUserDataFromEmail(user.Email);
             if (databaseUser != null) {
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                    var tokenString = GenerateJSONWebToken(databaseUser);
-                    response = Ok(new { token = tokenString });
+                   return Ok(new { token = GenerateJSONWebToken(databaseUser) });
                 }
-                else { response =  BadRequest("Wrong Password!"); }
+                else { return  BadRequest("Wrong Password!"); }
             }
-            else { response = BadRequest("Wrong Username!"); }
-            return response;
+            else { return BadRequest("Wrong Username or E-mail!"); }
         }
 
         [HttpPost("checkusernamealreadyexist")]
@@ -70,6 +63,14 @@ namespace Picmory.Controllers
             return userRepository.EmailAlreadyUsed(email);
         }
 
+
+        private IActionResult SaveUser(User user)
+        {
+            user.Password = Hashing.HashPassword(user.Password);
+            User newUser = userRepository.RegisterNewUser(user);
+            var tokenString = GenerateJSONWebToken(newUser);
+            return Ok(new { token = tokenString });
+        }
 
         private string GenerateJSONWebToken(User userInfo)
         {

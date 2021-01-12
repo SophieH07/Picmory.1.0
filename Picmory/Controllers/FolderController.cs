@@ -27,42 +27,58 @@ namespace Picmory.Controllers
         [HttpPost("createnewfolder")]
         public IActionResult CreateNewFolder([FromBody] Folder folder)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
                 Folder newFolder = new Folder(folder.FolderName, folder.Access, userGet.GetUser(HttpContext));
-                folderRepository.SaveNewFolder(newFolder);
-                response = Ok();
+                Success success = folderRepository.SaveNewFolder(newFolder);
+                switch (success)
+                {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByUsedName:
+                        return BadRequest("Foldername already used!");
+                }
             }
-            return response;
+            return Unauthorized();
         }
 
         [HttpPost("changefolderdata")]
         public IActionResult ChangeFolderName(ChangeFolderData changeFolderData)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
-                folderRepository.ChangeFolderData(
+                Success success = folderRepository.ChangeFolderData(
                                                 userGet.GetUser(HttpContext),
                                                 changeFolderData.originalFolder,
                                                 changeFolderData.newName,
                                                 changeFolderData.newAccessType);
-                response = Ok();
+                switch (success) {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByNotExist:
+                        return BadRequest("Folder doesn't exist!");
+                    case Success.FailedByUsedName:
+                        return BadRequest("Foldername already used!");
+                }     
             }
-            return response;
+            return Unauthorized();
         }
     
         [HttpPost("deletefolder")]
-        public IActionResult DeleteFolder(string folderName)
+        public IActionResult DeleteFolder([FromBody]string folderName)
         {
-            IActionResult response = Unauthorized();
             if (userGet.HaveUser(HttpContext))
             {
-                folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
-                response = Ok();
+                Success success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
+                switch (success)
+                {
+                    case Success.Successfull:
+                        return Ok();
+                    case Success.FailedByNotExist:
+                        return BadRequest("Folder doesn't exist!");
+                }
             }
-            return response;
+            return Unauthorized();
         }
     }
 }
