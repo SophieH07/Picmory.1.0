@@ -19,10 +19,12 @@ export class Login extends Component {
         this.login = this.login.bind(this);
     }
 
+    //toggles eye image for show/hide password
     toggleShow() {
         this.setState({ hidden: !this.state.hidden })
     }
 
+    //handles changes in input fields and saves state variables
     handleChange(e) {
         if (e.target.name === 'usernameOrEmail') {
             this.setState({
@@ -36,6 +38,7 @@ export class Login extends Component {
         }
     }
 
+    //login
     login() {
         const data = {
             UserName: this.state.usernameOrEmail,
