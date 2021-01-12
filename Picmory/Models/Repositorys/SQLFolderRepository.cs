@@ -16,29 +16,35 @@ namespace Picmory.Models.Repositorys
         
        
 
-        public bool ChangeFolderData(User user, Folder originalFolder, string newName, AccessType newAccess)
+        public Success ChangeFolderData(User user, Folder originalFolder, string newName, AccessType? newAccess)
         {
-            var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName==originalFolder.FolderName);
+            Folder folder = context.Folders
+                .FirstOrDefault(item => item.Owner == user &&
+                                        item.FolderName == originalFolder.FolderName &&
+                                        item.Access == originalFolder.Access);
             if (folder != null)
             {
-                folder.FolderName = newName;
-                folder.Access = newAccess;
-                context.SaveChanges();
-                return true;
+                if (context.Folders.Where(a => a.Owner == user && a.FolderName == newName).SingleOrDefault() == null) 
+                {
+                    if (newName != null) { folder.FolderName = newName; }
+                    if (newAccess != null) { folder.Access = (AccessType)newAccess; };
+                    context.SaveChanges();
+                    return Success.Successfull;};
+                return Success.FailedByUsedName;
             }
-            return false;
+            return Success.FailedByNotExist;
         }
 
-        public bool DeleteFolder(User user, string folderName)
+        public Success DeleteFolder(User user, string folderName)
         {
             var folder = context.Folders.FirstOrDefault(item => item.Owner == user && item.FolderName == folderName);
             if (folder != null)
             {
                 context.Folders.Remove(folder);
                 context.SaveChanges();
-                return true;
+                return Success.Successfull;
             }
-            return false;
+            return Success.FailedByNotExist;
         }
 
         public List<FolderForShow> GetAllFolders(User user)
@@ -50,7 +56,7 @@ namespace Picmory.Models.Repositorys
                 List<FolderForShow> foldersForShow = new List<FolderForShow>();
                 foreach (Folder folder in folders)
                 {
-                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access, user.UserName));
+                    foldersForShow.Add(new FolderForShow(folder.FolderName, folder.Access));
                 }
                 return foldersForShow;
             }
@@ -72,11 +78,15 @@ namespace Picmory.Models.Repositorys
             }
         }
 
-        public Folder SaveNewFolder(Folder folder)
+        public Success SaveNewFolder(Folder folder)
         {
-            context.Folders.Add(folder);
-            context.SaveChanges();
-            return folder;
+            if (context.Folders.Where(a => a.Owner == folder.Owner && a.FolderName == folder.FolderName).SingleOrDefault() == null)
+            {
+                context.Folders.Add(folder);
+                context.SaveChanges();
+                return Success.Successfull;
+            }
+            return Success.FailedByUsedName;
         }
     }
 }

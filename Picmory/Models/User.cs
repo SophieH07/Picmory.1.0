@@ -1,12 +1,15 @@
 ﻿using Picmory.Util;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Picmory.Models
 {
     public class User
     {
         public User() { }
+       
         public User(ThemeColor colorOne, ThemeColor coloreTwo) 
         {
             ColorOne = colorOne;

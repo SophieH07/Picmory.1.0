@@ -6,6 +6,6 @@ namespace Picmory.Models.RequestModels
     {
         public Folder originalFolder { get; set; }
         public string newName { get; set; }
-        public AccessType newAccessType { get; set; }
+        public AccessType? newAccessType { get; set; }
     }
 }
