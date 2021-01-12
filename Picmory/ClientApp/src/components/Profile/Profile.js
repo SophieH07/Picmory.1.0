@@ -30,14 +30,14 @@ export class Profile extends Component {
                     <p>0 followers 0 following</p>
                     <div>
                         <div className="upload-pic">
-                            <Link>upload picture +</Link>
+                            <Link to="/">upload picture +</Link>
                         </div>
                     </div>
                     <div className="folders">
                         <div className="folder">
-                            <Link>folder<img className="pencil" src={pencil} alt="edit" /></Link>
+                            <Link to="/">folder<img className="pencil" src={pencil} alt="edit" /></Link>
                         </div>
-                        <div className="folder new"><Link>new folder +</Link></div>
+                        <div className="folder new"><Link to="/">new folder +</Link></div>
                     </div>
                 </div>
                 <div className="right-side">
