@@ -212,12 +212,3 @@ export class Register extends Component {
     }
 }
 
-//submitForm(e){
-//    e.preventDefault();
-//    const data = {
-//        firstName: this.state.firstName,
-//        lastName: this.state.lastName,
-//        email: this.state.email,
-//        password: this.state.password
-//    }
-

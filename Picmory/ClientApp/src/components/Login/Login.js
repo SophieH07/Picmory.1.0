@@ -16,6 +16,7 @@ export class Login extends Component {
         }
         this.toggleShow = this.toggleShow.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.validateLogin = this.validateLogin.bind(this);
     }
 
     toggleShow() {
@@ -35,11 +36,15 @@ export class Login extends Component {
         }
     }
 
-    validateLogin(usernameOrEmail, password) {
-        axios.post('https://localhost:44386/authentication/login', {
-            UserName: usernameOrEmail,
-            Email: usernameOrEmail,
-            password: password
+    validateLogin() {
+        const data = {
+            UserName: this.state.usernameOrEmail,
+            Email: this.state.usernameOrEmail,
+            Password: this.state.password
+        }
+
+        axios.post('https://localhost:44386/authentication/login', data, {
+            headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             console.log(result);
         })
@@ -51,15 +56,15 @@ export class Login extends Component {
                 <h2>Login</h2>
                 <div className="inputs">
                     <div>
-                        <input name="usernameOrEmail" placeholder="Username or Email"></input>
+                        <input name="usernameOrEmail" placeholder="Username or Email" onChange={(e) => { this.handleChange(e) }}></input>
                     </div>
                     <div className="password-container">
-                        <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Password" />
+                        <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Password" onChange={(e) => { this.handleChange(e) }} />
                         <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
                     </div>
                 </div>
                 <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
-                <button>Login</button>
+                <button onClick={this.validateLogin}>Login</button>
                 <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );
