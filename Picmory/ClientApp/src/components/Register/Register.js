@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import "./Register.css";
+import "../Common.css";
 import eye from '../../img/eye.png';
 
 export class Register extends Component {
@@ -218,7 +219,7 @@ export class Register extends Component {
                         </p>
                 </div>
                 <button onClick={this.submitForm} name="submit">Sign up</button>
-                <p className="back-to-login underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
+                <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
             </div>
         );
     }

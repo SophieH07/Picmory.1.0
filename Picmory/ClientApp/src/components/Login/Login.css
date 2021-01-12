@@ -10,49 +10,6 @@
     width: 100%;
 }
 
-.inputs {
-    text-align: -webkit-center;
-}
-
-    .inputs input {
-        margin-bottom: 10px;
-        max-width: 300px;
-        width: 100%;
-        height: auto;
-        padding-right: 30px;
-    }
-
-.password-container {
-    display: block;
-    position: relative;
-    max-width: 300px;
-    width: 100%;
-    height: auto;
-}
-
-.eye {
-    position: absolute;
-    max-width: 20px;
-    cursor: pointer;
-    top: 4px;
-    right: 4%;
-}
-
 .forgot-password {
     margin-bottom: 5px;
-}
-
-.back-to-register {
-    margin-top: 10px;
-}
-
-.underline a:hover {
-    text-decoration: underline;
-}
-
-.warning {
-    background-color: yellow;
-    color: black;
-    border: solid;
-    border-color: orange;
 }

@@ -5,6 +5,7 @@ import { Home } from './components/Home/Home';
 import { Register } from './components/Register/Register';
 import { Login } from './components/Login/Login';
 import { Profile } from './components/Profile/Profile';
+import { Settings } from './components/Settings/Settings';
 import './custom.css'
 
 export default class App extends Component {
@@ -16,7 +17,8 @@ export default class App extends Component {
                 <Route exact path='/' component={Home} />
                 <Route path='/login' component={Login} />
                 <Route path='/register' component={Register} />
-                <Route path='/user/:token' component={Profile}/>
+                <Route path='/profile' component={Profile}/>
+                <Route path='/settings' component={Settings}/>
             </Layout>
         );
     }

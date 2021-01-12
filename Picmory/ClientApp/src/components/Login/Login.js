@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css";
+import "../Common.css";
 import eye from '../../img/eye.png';
 
 export class Login extends Component {
@@ -56,13 +57,10 @@ export class Login extends Component {
     }
 
     render() {
-        //if (this.isLoggedIn) {
-        //    return <Redirect to={{ pathname: `/user/${this.state.authToken}`, state: this.state.loggedIn }}/>
-        //} else {
         return (
             <div className="login-main">
                 <h2>Login</h2>
-                <div className="inputs">
+                <div className="input-fields">
                     <div>
                         <input name="usernameOrEmail" placeholder="Username or Email" onChange={(e) => { this.handleChange(e) }}></input>
                     </div>
@@ -73,9 +71,8 @@ export class Login extends Component {
                 </div>
                 <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
                 <button onClick={this.login}>Login</button>
-                <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
+                <p className="back underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );
-        //}
     }
 }

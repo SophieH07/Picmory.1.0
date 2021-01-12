@@ -51,7 +51,7 @@ namespace Picmory.Controllers
             return null;
         }
        
-        [HttpPost("chnagepassword")]
+        [HttpPost("changepassword")]
         public IActionResult SetNewPassword([FromBody] string newPassword)
         {
             if (userGet.HaveUser(HttpContext))
