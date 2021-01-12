@@ -9,6 +9,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using Picmory.Models.RequestModels;
+using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Picmory.Controllers
 {
@@ -25,7 +27,7 @@ namespace Picmory.Controllers
             _config = config;
         }
 
-
+        [Produces("application/json")]
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
@@ -44,7 +46,8 @@ namespace Picmory.Controllers
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                   return Ok(new { token = GenerateJSONWebToken(databaseUser) });
+                    Response.Cookies.Append("Bearer $", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+                    return Ok();
                 }
                 else { return  BadRequest("Wrong Password!"); }
             }
@@ -52,7 +55,7 @@ namespace Picmory.Controllers
         }
 
         [HttpPost("checkusernamealreadyexist")]
-        public bool CheckUsername([FromBody] string username)
+        public bool CheckUsername([FromBody] string username)  
         {
             return userRepository.UserNameAlreadyUsed(username);
         }
