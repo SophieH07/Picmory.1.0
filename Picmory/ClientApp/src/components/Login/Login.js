@@ -16,7 +16,7 @@ export class Login extends Component {
         }
         this.toggleShow = this.toggleShow.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.validateLogin = this.validateLogin.bind(this);
+        this.login = this.login.bind(this);
     }
 
     toggleShow() {
@@ -36,7 +36,7 @@ export class Login extends Component {
         }
     }
 
-    validateLogin() {
+    login() {
         const data = {
             UserName: this.state.usernameOrEmail,
             Email: this.state.usernameOrEmail,
@@ -64,7 +64,7 @@ export class Login extends Component {
                     </div>
                 </div>
                 <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
-                <button onClick={this.validateLogin}>Login</button>
+                <button onClick={this.login}>Login</button>
                 <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );

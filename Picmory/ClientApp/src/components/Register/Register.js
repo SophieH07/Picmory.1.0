@@ -19,6 +19,7 @@ export class Register extends Component {
         this.submitForm = this.submitForm.bind(this);
     }
 
+    //toggles eye image for show/hide password
     toggleShow(e) {
         if (e.target.name === "password1") {
             this.setState({ hidden1: !this.state.hidden1 });
@@ -27,12 +28,14 @@ export class Register extends Component {
         }
     }
 
+    //checks if checkbox is checked or not
     toggleCheck() {
         this.setState({
             isChecked: !this.state.isChecked
         })
     }
 
+    //checks if username is not empty
     validateUsername(username) {
         if (username !== '') {
             this.setState({
@@ -46,6 +49,7 @@ export class Register extends Component {
         }
     }
 
+    //checks if email has correct format
     validateEmail(email) {
         const pattern = new RegExp(/[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{2,9}[\.][a-z]{2,5}/g);
         const result = pattern.test(email);
@@ -61,6 +65,7 @@ export class Register extends Component {
         }
     }
 
+    //checks if password is at least 6 char long, has number, lowercase and uppercase letters
     validatePassword(password) {
         const pattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
         const validInput = pattern.test(password);
@@ -76,6 +81,7 @@ export class Register extends Component {
         }
     }
 
+    //checks if both password input fields are equal
     checkIfPasswordsAreEqual(confirmPassword) {
         if (this.state.password === confirmPassword) {
             this.setState({
@@ -88,6 +94,7 @@ export class Register extends Component {
         }
     }
 
+    //checks from database if username is alredy taken
     checkIfUsernameAlreadyExists(username) {
         let usernameString = '"' + username + '"'
         axios.post('https://localhost:44386/authentication/checkusernamealreadyexist', usernameString, {
@@ -106,6 +113,7 @@ export class Register extends Component {
         })
     }
 
+    //checks from database if email is already registered
     checkIfEmailAlreadyExists(email) {
         let emailString = '"' + email + '"'
         axios.post('https://localhost:44386/authentication/checkemailalreadyexist', emailString, {
@@ -124,15 +132,21 @@ export class Register extends Component {
         })
     }
 
+
+    //handles changes in input fields and call related functions
     handleChange(e) {
         if (e.target.name === 'username') {
             this.validateUsername(e.target.value);
-            this.checkIfUsernameAlreadyExists(e.target.value);
+            if (this.state.usernameError === false) {
+                this.checkIfUsernameAlreadyExists(e.target.value);
+            }
         }
 
         if (e.target.name === 'email') {
             this.validateEmail(e.target.value);
-            this.checkIfEmailAlreadyExists(e.target.value);
+            if (this.state.emailError === false) {
+                this.checkIfEmailAlreadyExists(e.target.value);
+            }
         }
 
         if (e.target.name === 'password1') {
@@ -144,7 +158,8 @@ export class Register extends Component {
         }
     }
 
-    registration() {
+    //send user data to backend to save into database
+    register() {
         const data = {
             UserName: this.state.username,
             Email: this.state.email,
@@ -154,17 +169,17 @@ export class Register extends Component {
         axios.post('https://localhost:44386/authentication/register', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result);
+            console.log(result.data.token);
         })
     }
 
-
+    //when sign up button clicked, checks if everything is correct, then call register function
     submitForm() {
-        if (this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
+        if (this.state.emailAlreadyExist === false && this.state.usernameAlreadyExist === false && this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
             this.setState({
                 formIsFull: true
             })
-            this.registration()
+            this.register()
         } else {
             this.setState({
                 formIsFull: false
