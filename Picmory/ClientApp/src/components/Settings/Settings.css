@@ -10,12 +10,20 @@
     width: 100%;
 }
 
-.input-fields label {
-    margin-right: 10px;
+.profile-picture {
+    margin-bottom: 10px;
+}
+
+.themes {
+    margin-bottom: 10px;
 }
 
 .settings button
 .input-fields div {
+    margin-bottom: 10px;
+}
+
+.save-password {
     margin-bottom: 10px;
 }
 

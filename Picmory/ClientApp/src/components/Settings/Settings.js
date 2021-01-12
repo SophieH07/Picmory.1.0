@@ -3,12 +3,21 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../Common.css';
 import './Settings.css';
+import eye from '../../img/eye.png';
 
 export class Settings extends Component {
     static displayName = Settings.name;
 
     constructor(props) {
         super(props);
+        this.state = {
+            hidden: true
+        }
+        this.toggleShow = this.toggleShow.bind(this);
+    }
+
+    toggleShow() {
+        this.setState({ hidden: !this.state.hidden })
     }
 
     changeProfilePicture(picture) {
@@ -117,8 +126,7 @@ export class Settings extends Component {
                         <button>Pick picture</button>
                     </div>
                     <div>
-                        <label>Change username</label>
-                        <input name="username" placeholder="original username" type="text" onChange={(e) => this.handleChange(e)} />
+                        <input name="username" placeholder="Change username" type="text" onChange={(e) => this.handleChange(e)} />
                     </div>
                     <div className="themes">
                         <h4>Change themes</h4>
@@ -126,15 +134,19 @@ export class Settings extends Component {
                         <p>~colors~</p>
                         <p>Theme Two</p>
                         <p>~colors~</p>
+                        <button>SAVE USERNAME AND COLORS</button>
                     </div>
-                    <button>SAVE USERNAME AND COLORS</button>
                     <div>
-                        <label>Change password</label>
-                        <input name="password" placeholder="password" type="password" onChange={(e) => this.handleChange(e)} />
+                        <div className="password-container">
+                            <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Change password" onChange={(e) => { this.handleChange(e) }} />
+                            <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
+                        </div>
+                        <button>SAVE PASSWORD</button>
                     </div>
-                    <button>SAVE PASSWORD</button>
-                    <button className="delete">DELETE ACCOUNT</button>
-                    <button className="cancel">CANCEL</button>
+                    <div>
+                        <button className="delete">DELETE ACCOUNT</button>
+                        <button className="cancel">CANCEL</button>
+                    </div>
                 </div>
             </div>
         )
