@@ -26,7 +26,6 @@ namespace Picmory.Controllers
             _config = config;
         }
 
-        //{"UserName":"Kornél","Password":"kornel", "Email": "kornel@gmail.com"}
 
         [Produces("application/json")]
         [HttpPost("register")]
@@ -47,12 +46,12 @@ namespace Picmory.Controllers
         public IActionResult Login([FromBody] LoginUser user)
         {
             string loginPassword = user.Password;
-            User databaseUser = (user.Email == null) ? userRepository.GetUserData(user.UserName): userRepository.GetUserDataFromEmail(user.Email);
+            User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) ? userRepository.GetUserData(user.UserName) : userRepository.GetUserDataFromEmail(user.UserName);
             if (databaseUser != null) {
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePicture.Id, databaseUser.ColorOne, databaseUser.ColorTwo);
+                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePicture, databaseUser.ColorOne, databaseUser.ColorTwo);
                     Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                     return Ok(userData);
                 }
