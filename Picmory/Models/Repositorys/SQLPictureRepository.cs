@@ -46,7 +46,7 @@ namespace Picmory.Models.Repositorys
 
         public Picture GetPicture(int id)
         {
-            return context.Pictures.Include(a => a.Folder).Where(a => a.Id == id).FirstOrDefault();
+            return context.Pictures.Include(a => a.Folder).Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();
         }
 
         public List<Picture> GetPicturesForMe(User user, int offset, string folderName)

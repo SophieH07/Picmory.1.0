@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PictureController :ControllerBase
@@ -27,7 +26,6 @@ namespace Picmory.Controllers
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
 
-        public int ResponsePictures { get; private set; }
 
         public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
         {
@@ -42,12 +40,16 @@ namespace Picmory.Controllers
         [HttpGet("{pictureid}")]
         public IActionResult GetImageById(string pictureId)
         {
-            string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
-            if (userGet.HaveUser(HttpContext) && pictureType != null)
+            Picture pictureInDB = pictureRepository.GetPicture(int.Parse(pictureId));
+            if (userGet.HaveUser(HttpContext) && pictureInDB.Type != null)
             {
-                string path = CreatePathForRetrive(pictureId, pictureType);
+                User user = userGet.GetUser(HttpContext);
+                if (pictureInDB.Access != AccessType.Private || (user.Id == pictureInDB.Owner.Id) ) { 
+                string path = CreatePathForRetrive(pictureId, pictureInDB.Type);
                 Byte[] picture = System.IO.File.ReadAllBytes(path);
-                return File(picture, pictureType);
+                return File(picture, pictureInDB.Type);
+                }
+                return BadRequest("Private picture!");
             }
             return Unauthorized();
         }
