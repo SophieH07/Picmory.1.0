@@ -27,7 +27,6 @@ namespace Picmory.Controllers
         }
 
 
-        [Produces("application/json")]
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
@@ -42,6 +41,7 @@ namespace Picmory.Controllers
             return BadRequest("Wrong Data!");
         }
 
+        [Produces("application/json")]
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginUser user)
         {
