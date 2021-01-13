@@ -82,20 +82,25 @@ namespace Picmory.Controllers
                 if (picture.Owner == user)
                 {
                     changeData.Owner = user;
-                    Success success = pictureRepository.ChangePictureData(changeData);
-                    switch (success)
+                    Success result = ValidateAccess(changeData, picture);
+                    switch (result)
                     {
                         case Success.Successfull:
+                            pictureRepository.ChangePictureData(changeData);
                             return Ok();
+                        case Success.FailedByWrongAccessFolder:
+                            return BadRequest("Wrong access picture for " + picture.Folder.FolderName + " folder!");
+                        case Success.FailedByWrongAccessNewFolder:
+                            return BadRequest("Wrong access picture for " + changeData.FolderName + " folder!");
                         case Success.FailedByNotExistFolderName:
-                            return BadRequest("Folder doesn't exist!");
-                        
+                            return BadRequest("Don't have " + changeData.FolderName + " folder");
                     }
                 }
                 return BadRequest("Not your picture!");
             }
             return Unauthorized();
         }
+
 
         [HttpPost("deletepicture")]
         public IActionResult DeletePicture([FromBody] string id)
@@ -193,7 +198,34 @@ namespace Picmory.Controllers
             string filePathWithoutType = Path.Combine(_hostEnv.WebRootPath, savedImageData.Id.ToString());
             pictureRepository.SavePicturePath(savedImageData.Id, filePathWithoutType);
             return (filePathWithoutType + "." + uploadedImage.ContentType.ToString().Substring(LenghtOfPictureTypeFirstPart));
-        } 
+        }
+
+        private Success ValidateAccess(PictureChange changeData, Picture picture)
+        {
+            if (changeData.FolderName != null && changeData.Access != null)
+            {
+                Folder newFolder = folderRepository.GetFolder(picture.Owner, changeData.FolderName);
+                if (newFolder == null) { return Success.FailedByNotExistFolderName; }
+                else if (!(changeData.Access <= newFolder.Access)) { return Success.FailedByWrongAccessNewFolder; }
+                else { return Success.Successfull; }
+            }
+            else if (changeData.FolderName != null && changeData.Access == null) 
+            {
+                Folder newFolder = folderRepository.GetFolder(picture.Owner, changeData.FolderName);
+                if (newFolder == null) { return Success.FailedByNotExistFolderName; }
+                else if (!(picture.Access <= newFolder.Access)) { return Success.FailedByWrongAccessNewFolder; }
+                else { return Success.Successfull; }
+            }
+            else if (changeData.FolderName == null && changeData.Access != null) 
+            {
+                if (!(changeData.Access <= picture.Folder.Access)) { return Success.FailedByWrongAccessFolder; }
+                else { return Success.Successfull;  }
+            }
+            else
+            {
+                return Success.Successfull;
+            }
+        }
         
     }
 }

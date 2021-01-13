@@ -12,7 +12,7 @@ namespace Picmory.Models.Repositorys
         public string GetPictureType(int Id);
         public Picture GetPicture(int id);
         public List<Picture> GetPicturesForMe(User user, int offset, string folderName);
-        Success ChangePictureData(PictureChange changeData);
+        bool ChangePictureData(PictureChange changeData);
         Success DeletePicture(int pictureId);
         public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName);
     }

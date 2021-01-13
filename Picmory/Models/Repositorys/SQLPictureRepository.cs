@@ -17,23 +17,20 @@ namespace Picmory.Models.Repositorys
         }
 
 
-        public Success ChangePictureData(PictureChange changeData)
+        public bool ChangePictureData(PictureChange changeData)
         {
             Picture picture = context.Pictures.Find(changeData.Id);
-            if (context.Folders.Where(a => a.Owner == changeData.Owner &&
-                       a.FolderName == changeData.FolderName).SingleOrDefault() != null 
-                || changeData.FolderName == null)
-            {
+            if (picture == null) { return false; }
+            else {
                 if (changeData.FolderName != null)
-                    { picture.Folder = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault(); }
+                { picture.Folder = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault(); }
                 if (changeData.Access != null)
-                    { picture.Access = (AccessType)changeData.Access; }
+                { picture.Access = (AccessType)changeData.Access; }
                 if (changeData.Description != null)
-                    { picture.Description = changeData.Description; }
+                { picture.Description = changeData.Description; }
                 context.SaveChanges();
-                return Success.Successfull;
             }
-            return Success.FailedByNotExistFolderName;
+            return true;
         }
 
         public Success DeletePicture(int pictureId)
