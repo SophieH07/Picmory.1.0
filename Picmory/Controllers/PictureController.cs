@@ -157,6 +157,8 @@ namespace Picmory.Controllers
         }
 
 
+
+
         private bool ImageTypeIsValid(IFormFile uploadedImage)
         {
             return (AcceptedFileTypes.Contains(uploadedImage.ContentType));
