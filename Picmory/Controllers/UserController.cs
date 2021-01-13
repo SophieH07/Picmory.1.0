@@ -13,7 +13,7 @@ using System.IO;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase

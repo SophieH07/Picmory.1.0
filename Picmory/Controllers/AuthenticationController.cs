@@ -9,7 +9,6 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using Picmory.Models.RequestModels;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 
 namespace Picmory.Controllers
@@ -31,10 +30,15 @@ namespace Picmory.Controllers
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            return (!userRepository.UserNameAlreadyUsed(user.UserName) &&
+            if (!userRepository.UserNameAlreadyUsed(user.UserName) &&
                     user.Email != null &&
-                    !userRepository.EmailAlreadyUsed(user.Email)) ?
-                SaveUser(user) : BadRequest("Wrong Data!");
+                    !userRepository.EmailAlreadyUsed(user.Email))
+            {
+                User databaseUser = SaveUser(user);
+                Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+                return Ok();
+            }
+            return BadRequest("Wrong Data!");
         }
 
         [HttpPost("login")]
@@ -46,8 +50,9 @@ namespace Picmory.Controllers
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                    Response.Cookies.Append("Bearer $", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
-                    return Ok();
+                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePicture.Id, databaseUser.ColorOne, databaseUser.ColorTwo);
+                    Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+                    return Ok(userData);
                 }
                 else { return  BadRequest("Wrong Password!"); }
             }
@@ -66,12 +71,13 @@ namespace Picmory.Controllers
             return userRepository.EmailAlreadyUsed(email);
         }
 
-        private IActionResult SaveUser(User user)
+
+
+        private User SaveUser(User user)
         {
             user.Password = Hashing.HashPassword(user.Password);
             User newUser = userRepository.RegisterNewUser(user);
-            var tokenString = GenerateJSONWebToken(newUser);
-            return Ok(new { token = tokenString });
+            return newUser;
         }
 
         private string GenerateJSONWebToken(User userInfo)
@@ -88,7 +94,7 @@ namespace Picmory.Controllers
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(120),
+                expires: DateTime.Now.AddDays(365),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
