@@ -26,13 +26,15 @@ namespace Picmory.Controllers
             _config = config;
         }
 
+        //{"UserName":"Kornél","Password":"kornel", "Email": "kornel@gmail.com"}
+
         [Produces("application/json")]
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            if (!userRepository.UserNameAlreadyUsed(user.UserName) &&
-                    user.Email != null &&
-                    !userRepository.EmailAlreadyUsed(user.Email))
+            if (user.Email != null && user.UserName != null &&
+                !userRepository.UserNameAlreadyUsed(user.UserName) &&
+                !userRepository.EmailAlreadyUsed(user.Email))
             {
                 User databaseUser = SaveUser(user);
                 Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
