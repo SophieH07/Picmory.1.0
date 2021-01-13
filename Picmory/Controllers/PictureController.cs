@@ -59,17 +59,19 @@ namespace Picmory.Controllers
         {
             IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
             Folder folder = folderRepository.GetFolder(userGet.GetUser(HttpContext), HttpContext.Request.Form["FolderName"].ToString());
+            if (folder == null) { return BadRequest("Not existing folder!"); }
             UploadPhoto photoData = new UploadPhoto(
                                                 HttpContext.Request.Form["Description"].ToString(),
                                                 HttpContext.Request.Form["Access"].ToString(),
                                                 folder);
-            if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
+            if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage) && ImageDataIsValid(photoData))
             {
                 UploadImage(HttpContext, photoData, uploadedImage);
                 return Ok();
             }
             return Unauthorized();
         }
+
 
         [HttpPost("editpicture")]
         public IActionResult EditPicture([FromBody] PictureChange changeData)
@@ -227,5 +229,10 @@ namespace Picmory.Controllers
             }
         }
         
+        private bool ImageDataIsValid(UploadPhoto photoData)
+        {
+            if (photoData.Folder.Access >= photoData.Access) { return true; }
+            else { return false; }
+        }
     }
 }
