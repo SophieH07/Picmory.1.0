@@ -143,9 +143,11 @@ export class Settings extends Component {
                         </div>
                     </div>
                     <div>
-                        <button>SAVE PASSWORD</button>
+                        <div>
+                            <button>SAVE PASSWORD</button>
+                        </div>
                         <button className="delete">DELETE ACCOUNT</button>
-                        <button className="cancel">CANCEL</button>
+                        <button className="cancel"><Link to='/user'>CANCEL</Link></button>
                     </div>
                 </div>
             </div>
