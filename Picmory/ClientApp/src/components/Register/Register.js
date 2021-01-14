@@ -207,7 +207,7 @@ export class Register extends Component {
                         <div>
                             {this.state.emailAlreadyExist ? <p className="warning">There is already a user with this email address.</p> : ''}
                             {this.state.emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
-                            <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { this.handleChange(e) }} />
+                            <input id="email" name="email" placeholder="Your email*" type="email" onChange={(e) => { this.handleChange(e) }} />
                         </div>
                         {this.state.passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
                         <div className="password-container">
