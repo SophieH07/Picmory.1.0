@@ -19,11 +19,13 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private IConfiguration _config;
-    
+        private readonly UserGet userGet;
+
         public AuthenticationController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
             _config = config;
+            userGet = new UserGet(userRepository);
         }
 
 
@@ -72,6 +74,17 @@ namespace Picmory.Controllers
             return userRepository.EmailAlreadyUsed(email);
         }
 
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                Response.Cookies.Delete("Bearer");
+                return Ok();
+                
+            }
+            return Unauthorized();
+        }
 
 
         private User SaveUser(User user)
