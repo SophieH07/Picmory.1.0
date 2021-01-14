@@ -1,236 +1,175 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import "./Register.css";
 import eye from '../../img/eye.png';
 
-export class Register extends Component {
-    static displayName = Register.name;
+const Register = props => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            hidden1: true,
-            hidden2: true,
-            isChecked: false,
-        }
-        this.toggleShow = this.toggleShow.bind(this);
-        this.toggleCheck = this.toggleCheck.bind(this);
-        this.submitForm = this.submitForm.bind(this);
-    }
+    const [hidden1, setHidden1] = useState(true);
+    const [hidden2, setHidden2] = useState(true);
+    const [isChecked, setIsChecked] = useState(false);
+    const [username, setUsername] = useState('');
+    const [usernameError, setUsernameError] = useState(false);
+    const [usernameAlreadyExists, setUsernameAlreadyExists] = useState(false);
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState(false);
+    const [emailAlreadyExists, setEmailAlreadyExists] = useState(false);
+    const [password, setPassword] = useState('');
+    const [equalPassword, setEqualPassword] = useState(true);
+    const [passwordError, setPasswordError] = useState(false);
+    const [formIsFull, setFormIsFull] = useState(false);
 
-    //toggles eye image for show/hide password
-    toggleShow(e) {
-        if (e.target.name === "password1") {
-            this.setState({ hidden1: !this.state.hidden1 });
-        } else {
-            this.setState({ hidden2: !this.state.hidden2 });
-        }
-    }
-
-    //checks if checkbox is checked or not
-    toggleCheck() {
-        this.setState({
-            isChecked: !this.state.isChecked
-        })
-    }
-
-    //checks if username is not empty
-    validateUsername(username) {
+    const validateUsername = username => {
         if (username !== '') {
-            this.setState({
-                username: username,
-                usernameError: false
-            })
+            setUsername(username);
+            setUsernameError(false);
         } else {
-            this.setState({
-                usernameError: true
-            })
+            setUsernameError(true);
         }
     }
 
-    //checks if email has correct format
-    validateEmail(email) {
+    const validateEmail = email => {
         const pattern = new RegExp(/[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{2,9}[\.][a-z]{2,5}/g);
         const result = pattern.test(email);
         if (result === true) {
-            this.setState({
-                emailError: false,
-                email: email
-            })
+            setEmail(email);
+            setEmailError(false);
         } else {
-            this.setState({
-                emailError: true
-            })
+            setEmailError(true);
         }
     }
 
-    //checks if password is at least 6 char long, has number, lowercase and uppercase letters
-    validatePassword(password) {
+    const validatePassword = password => {
         const pattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
         const validInput = pattern.test(password);
         if (validInput === true) {
-            this.setState({
-                passwordError: false,
-                password: password
-            })
+            setPassword(password);
+            setPasswordError(false);
         } else {
-            this.setState({
-                passwordError: true
-            })
+            setPasswordError(true);
         }
     }
 
-    //checks if both password input fields are equal
-    checkIfPasswordsAreEqual(confirmPassword) {
-        if (this.state.password === confirmPassword) {
-            this.setState({
-                equalPasswords: false
-            })
-        } else {
-            this.setState({
-                equalPasswords: true
-            })
+    const checkIfPasswordsAreEqual = confirmPassword => {
+        if (confirmPassword !== '') {
+            if (password === confirmPassword) {
+                setEqualPassword(true);
+            } else {
+                setEqualPassword(false);
+            }
         }
     }
 
-    //checks from database if username is alredy taken
-    checkIfUsernameAlreadyExists(username) {
+    const checkIfUsernameAlreadyExists = username => {
         axios.post('/authentication/checkusernamealreadyexist', JSON.stringify(username), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             if (result.data) {
-                this.setState({
-                    usernameAlreadyExist: true
-                })
+                setUsernameAlreadyExists(true);
             } else {
-                this.setState({
-                    usernameAlreadyExist: false
-                })
+                setUsernameAlreadyExists(false);
             }
         })
     }
 
-    //checks from database if email is already registered
-    checkIfEmailAlreadyExists(email) {
+    const checkIfEmailAlreadyExists = email => {
         axios.post('/authentication/checkemailalreadyexist', JSON.stringify(email), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             if (result.data) {
-                this.setState({
-                    emailAlreadyExist: true
-                })
+                setEmailAlreadyExists(true);
             } else {
-                this.setState({
-                    emailAlreadyExist: false
-                })
+                setEmailAlreadyExists(false);
             }
         })
     }
 
-    //handles changes in input fields and call related functions
-    handleChange(e) {
+    const handleChange = e => {
         if (e.target.name === 'username') {
-            this.validateUsername(e.target.value);
-            if (this.state.usernameError === false) {
-                this.checkIfUsernameAlreadyExists(e.target.value);
+            validateUsername(e.target.value);
+            if (usernameError === false) {
+                checkIfUsernameAlreadyExists(e.target.value);
             }
         }
 
         if (e.target.name === 'email') {
-            this.validateEmail(e.target.value);
-            if (this.state.emailError === false) {
-                this.checkIfEmailAlreadyExists(e.target.value);
+            validateEmail(e.target.value);
+            if (emailError === false) {
+                checkIfEmailAlreadyExists(e.target.value);
             }
         }
 
         if (e.target.name === 'password1') {
-            this.validatePassword(e.target.value);
+            validatePassword(e.target.value);
         }
 
         if (e.target.name === 'password2') {
-            this.checkIfPasswordsAreEqual(e.target.value);
+            checkIfPasswordsAreEqual(e.target.value);
         }
     }
 
-    //send user data to backend to save into database
-    register() {
+    const register = () => {
         const data = {
-            UserName: this.state.username,
-            Email: this.state.email,
-            Password: this.state.password
+            UserName: username,
+            Email: email,
+            Password: password
         }
 
         axios.post('/authentication/register', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            this.setState({
-                isLoggedIn: true
-            })
             console.log(result);
         }).catch(err => {
-            this.setState({
-                loginError: err.response.data,
-                isLoggedIn: false
-            })
+            console.log(err.response.data)
         })
     }
 
-    //when sign up button clicked, checks if everything is correct, then call register function
-    submitForm() {
-        if (this.state.emailAlreadyExist === false && this.state.usernameAlreadyExist === false && this.state.isChecked === true && this.state.username !== '' && this.state.email !== '' && this.state.emailError === false && this.state.password !== '' && this.state.passwordError === false && this.state.equalPasswords === false) {
-            this.setState({
-                formIsFull: true
-            })
-            this.register()
+    const submitForm = () => {
+        if (emailAlreadyExists === false && usernameAlreadyExists === false && isChecked === true && username !== '' && email !== '' && emailError === false && password !== '' && passwordError === false && equalPassword === true) {
+            setFormIsFull(true);
+            register();
         } else {
-            this.setState({
-                formIsFull: false
-            })
+            setFormIsFull(false);
             alert("Oops, something is still missing or wrong!");
         }
     }
 
-    render() {
-        if (this.state.isLoggedIn) {
-            return <Redirect to={{ pathname: `/user/${this.state.username}` }} />
-        } else {
-            return (
-                <div className="register">
-                    <h2>Create Account</h2>
-                    <div className="input-fields">
-                        {this.state.usernameError ? <p className="warning">The username cannot be null.</p> : ''}
-                        {this.state.usernameAlreadyExist ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
-                        <div>
-                            <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { this.handleChange(e) }} />
-                        </div>
-                        <div>
-                            {this.state.emailAlreadyExist ? <p className="warning">There is already a user with this email address.</p> : ''}
-                            {this.state.emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
-                            <input id="email" name="email" placeholder="Your email*" type="email" onChange={(e) => { this.handleChange(e) }} />
-                        </div>
-                        {this.state.passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
-                        <div className="password-container">
-                            <input name="password1" type={this.state.hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { this.handleChange(e) }} />
-                            <img name="password1" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
-                        </div>
-                        {this.state.equalPasswords ? <p className="warning">The passwords are not equal.</p> : ''}
-                        <div className="password-container">
-                            <input name="password2" type={this.state.hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { this.handleChange(e) }} />
-                            <img name="password2" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
-                        </div>
-                    </div>
-                    <div>
-                        <p className="underline">
-                            <input type="checkbox" id="" name="checkbox" onClick={this.toggleCheck} />
+    return (
+        <div className="register">
+            <h2>Create Account</h2>
+            <div className="input-fields">
+                {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
+                {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
+                <div>
+                    <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { handleChange(e) }} />
+                </div>
+                <div>
+                    {emailAlreadyExists ? <p className="warning">There is already a user with this email address.</p> : ''}
+                    {emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
+                    <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { handleChange(e) }} />
+                </div>
+                {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
+                <div className="password-container">
+                    <input name="password1" type={hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { handleChange(e) }} />
+                    <img name="password1" src={eye} className="eye" onClick={() => setHidden1(!hidden1)} alt="toggleShowHide" />
+                </div>
+                {equalPassword ? '' : <p className="warning">The passwords are not equal.</p>}
+                <div className="password-container">
+                    <input name="password2" type={hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { handleChange(e) }} />
+                    <img name="password2" src={eye} className="eye" onClick={() => setHidden2(!hidden2)} alt="toggleShowHide" />
+                </div>
+            </div>
+            <div>
+                <p className="underline">
+                    <input type="checkbox" id="" name="checkbox" onClick={() => setIsChecked(!isChecked)} />
                          I agree all statements in <Link tag={Link} to='/register'>Terms of service</Link>.
                         </p>
-                    </div>
-                    <button onClick={this.submitForm} name="submit">Sign up</button>
-                    <p className="back-to-login underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
-                </div>
-            );
-        }
-    }
+            </div>
+            <button onClick={submitForm} name="submit">Sign up</button>
+            <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
+        </div>
+    );
 }
 
+export default Register;
