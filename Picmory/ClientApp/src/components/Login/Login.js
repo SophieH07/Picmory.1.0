@@ -49,21 +49,21 @@ export class Login extends Component {
         axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            //console.log(result);
             this.setState({
-                isLoggedIn: true
+                loggedIn: true
             })
-            console.log(result);
         }).catch(err => {
+            console.log(err);
             this.setState({
-                loginError: err.response.data,
-                isLoggedIn: false
+                loggedIn: false
             })
         })
     }
 
     render() {
-        if (this.state.isLoggedIn) {
-            return <Redirect to={{ pathname: `/user/${this.state.usernameOrEmail}` }} />
+        if (this.state.loggedIn) {
+            return <Redirect to={{ pathname: `/user` }} />
         } else {
             return (
                 <div className="login-main">
