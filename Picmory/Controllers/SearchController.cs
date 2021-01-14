@@ -1,11 +1,55 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Picmory.Models;
+using Picmory.Models.Repositorys;
+using Picmory.Models.RequestModels;
+using Picmory.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Picmory.Controllers
 {
-    public class SearchController
+    [ApiController]
+    [Route("[controller]")]
+    public class SearchController : ControllerBase
     {
+        private readonly IUserRepository userRepository;
+        private readonly IFolderRepository folderRepository;
+        private readonly IPictureRepository pictureRepository;
+        private readonly IFollowerRepository followerRepository;
+        private readonly UserGet userGet;
+
+        public SearchController(IUserRepository userRepository, IFolderRepository folderRepository, IPictureRepository pictureRepository, IFollowerRepository followerRepository)
+        {
+            this.userRepository = userRepository;
+            this.folderRepository = folderRepository;
+            this.pictureRepository = pictureRepository;
+            this.followerRepository = followerRepository;
+            userGet = new UserGet(userRepository);
+        }
+
+        [Produces("application/json")]
+        [HttpGet("suggestions")]
+        public IActionResult Suggestions([FromBody] string term)
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                if (!term.Contains(" "))
+                {
+
+                }
+                List<User> foundUsersInDB = userRepository.GetUsersForTerm(term);
+                List <SearchUser> foundUsers = new List<SearchUser>();
+                foreach (User userInDB in foundUsersInDB)
+                {
+                    foundUsers.Add(new SearchUser(userInDB.UserName, (userInDB.ProfilePicture==null)? 0 : userInDB.ProfilePicture.Id));
+                }
+                return Ok(foundUsers);
+               
+            }
+            return Unauthorized();
+        }
     }
 }

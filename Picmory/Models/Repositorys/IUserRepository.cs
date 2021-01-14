@@ -14,5 +14,6 @@ namespace Picmory.Models.Repositorys
         bool UserNameAlreadyUsed(String name);
         User RegisterNewUser(User user);
         User EditUserData(User user);
+        List<User> GetUsersForTerm(string term);
     }
 }

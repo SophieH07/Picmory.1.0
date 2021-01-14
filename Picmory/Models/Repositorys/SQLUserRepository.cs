@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Picmory.Models.Repositorys
@@ -81,6 +82,20 @@ namespace Picmory.Models.Repositorys
             context.Users.Add(user);
             context.SaveChanges();
             return user;
+        }
+
+        public List<User> GetUsersForTerm(string term)
+        {
+            List<User> resultUsers = new List<User>();
+            try
+            {
+                return resultUsers = context.Users.Where(a => a.UserName.Contains(term)).Include(a => a.ProfilePicture).Take(5).ToList();
+               
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }
