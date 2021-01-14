@@ -10,10 +10,8 @@ const Login = props => {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
-    console.log(usernameOrEmail + ' ' + password);
-
     const [username, setUsername] = useState('');
-    
+
     const toggleShow = () => {
         setHidden(!hidden);
     }
@@ -28,8 +26,8 @@ const Login = props => {
         axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            console.log(result);
             setLoggedIn(true);
+            props.handleLogIn(result.data.userName, result.data.pictureId, result.data.coloreOne, result.data.coloreTwo);
             setUsername(result.data.userName);
         }).catch(err => {
             console.log(err);

@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import "./Register.css";
@@ -19,6 +19,9 @@ const Register = props => {
     const [equalPassword, setEqualPassword] = useState(true);
     const [passwordError, setPasswordError] = useState(false);
     const [formIsFull, setFormIsFull] = useState(false);
+    const [loadingUsername, setLoadingUsername] = useState(false);
+    const [loadingEmail, setLoadingEmail] = useState(false);
+    const [loadingSendingForm, setLoadingSendingForm] = useState(false);
 
     const validateUsername = username => {
         if (username !== '') {
@@ -62,9 +65,11 @@ const Register = props => {
     }
 
     const checkIfUsernameAlreadyExists = username => {
+        setLoadingUsername(true);
         axios.post('/authentication/checkusernamealreadyexist', JSON.stringify(username), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            setLoadingUsername(false);
             if (result.data) {
                 setUsernameAlreadyExists(true);
             } else {
@@ -74,9 +79,11 @@ const Register = props => {
     }
 
     const checkIfEmailAlreadyExists = email => {
+        setLoadingEmail(true);
         axios.post('/authentication/checkemailalreadyexist', JSON.stringify(email), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            setLoadingEmail(false);
             if (result.data) {
                 setEmailAlreadyExists(true);
             } else {
@@ -110,6 +117,7 @@ const Register = props => {
     }
 
     const register = () => {
+        setLoadingSendingForm(true);
         const data = {
             UserName: username,
             Email: email,
@@ -119,15 +127,17 @@ const Register = props => {
         axios.post('/authentication/register', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            setLoadingSendingForm(false);
             console.log(result);
+            setFormIsFull(true);
         }).catch(err => {
+            setLoadingSendingForm(false);
             console.log(err.response.data)
         })
     }
 
     const submitForm = () => {
         if (emailAlreadyExists === false && usernameAlreadyExists === false && isChecked === true && username !== '' && email !== '' && emailError === false && password !== '' && passwordError === false && equalPassword === true) {
-            setFormIsFull(true);
             register();
         } else {
             setFormIsFull(false);
@@ -135,41 +145,48 @@ const Register = props => {
         }
     }
 
-    return (
-        <div className="register">
-            <h2>Create Account</h2>
-            <div className="input-fields">
-                {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
-                {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
-                <div>
-                    <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { handleChange(e) }} />
+    if (formIsFull) {
+        return <Redirect to="/login" />
+    } else {
+        return (
+            <div className="register">
+                <h2>Create Account</h2>
+                <div className="input-fields">
+                    {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
+                    {loadingUsername ? <p className="warning">Loading...</p> : ''}
+                    {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
+                    <div>
+                        <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { handleChange(e) }} />
+                    </div>
+                    <div>
+                        {loadingEmail ? <p className="warning">Loading...</p> : ''}
+                        {emailAlreadyExists ? <p className="warning">There is already a user with this email address.</p> : ''}
+                        {emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
+                        <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { handleChange(e) }} />
+                    </div>
+                    {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
+                    <div className="password-container">
+                        <input name="password1" type={hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { handleChange(e) }} />
+                        <img name="password1" src={eye} className="eye" onClick={() => setHidden1(!hidden1)} alt="toggleShowHide" />
+                    </div>
+                    {equalPassword ? '' : <p className="warning">The passwords are not equal.</p>}
+                    <div className="password-container">
+                        <input name="password2" type={hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { handleChange(e) }} />
+                        <img name="password2" src={eye} className="eye" onClick={() => setHidden2(!hidden2)} alt="toggleShowHide" />
+                    </div>
                 </div>
                 <div>
-                    {emailAlreadyExists ? <p className="warning">There is already a user with this email address.</p> : ''}
-                    {emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
-                    <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { handleChange(e) }} />
-                </div>
-                {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
-                <div className="password-container">
-                    <input name="password1" type={hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { handleChange(e) }} />
-                    <img name="password1" src={eye} className="eye" onClick={() => setHidden1(!hidden1)} alt="toggleShowHide" />
-                </div>
-                {equalPassword ? '' : <p className="warning">The passwords are not equal.</p>}
-                <div className="password-container">
-                    <input name="password2" type={hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { handleChange(e) }} />
-                    <img name="password2" src={eye} className="eye" onClick={() => setHidden2(!hidden2)} alt="toggleShowHide" />
-                </div>
-            </div>
-            <div>
-                <p className="underline">
-                    <input type="checkbox" id="" name="checkbox" onClick={() => setIsChecked(!isChecked)} />
+                    <p className="underline">
+                        <input type="checkbox" id="" name="checkbox" onClick={() => setIsChecked(!isChecked)} />
                          I agree all statements in <Link tag={Link} to='/register'>Terms of service</Link>.
                         </p>
+                </div>
+                {loadingSendingForm ? <p className="warning">Loading...</p> : ''}
+                <button onClick={submitForm} name="submit">Sign up</button>
+                <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
             </div>
-            <button onClick={submitForm} name="submit">Sign up</button>
-            <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
-        </div>
-    );
+        );
+    }
 }
 
 export default Register;

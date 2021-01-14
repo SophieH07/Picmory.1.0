@@ -5,8 +5,28 @@ import './NavMenu.css';
 import logo from "../../img/PicmoryLogoTransparent.png";
 import name from "../../img/transparentNameOnly.png";
 
-export function NavMenu() {
+export function NavMenu(props) {
     const [collapsed, setCollapsed] = useState(true);
+
+    const contentUser = (
+        <ul className="navbar-nav flex-grow">
+            <NavItem>
+                <NavLink tag={Link} className="text-dark" to={{ pathname: `/user/${props.username}` }}>
+                    <img src={ props.profilePicture} alt="profile pic"/>{props.username}</NavLink>
+            </NavItem >
+        </ul>
+    );
+
+    const contentNoUser = (
+        <ul className="navbar-nav flex-grow">
+            <NavItem>
+                <NavLink tag={Link} className="text-dark" to="/login">Log in</NavLink>
+            </NavItem>
+            <NavItem>
+                <NavLink tag={Link} className="text-dark" to="/register">Sign up</NavLink>
+            </NavItem>
+        </ul>
+    )
 
     return (
         <header>
@@ -17,17 +37,7 @@ export function NavMenu() {
                     </NavbarBrand>
                     <NavbarToggler onClick={() => setCollapsed(!collapsed)} className="mr-2" />
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-                        <ul className="navbar-nav flex-grow">
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/login">Log in</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/register">Sign up</NavLink>
-                            </NavItem>
-                        </ul>
+                        {props.loggedIn ? contentUser : contentNoUser }
                     </Collapse>
                 </Container>
             </Navbar>

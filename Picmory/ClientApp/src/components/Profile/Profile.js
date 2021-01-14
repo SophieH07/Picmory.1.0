@@ -1,11 +1,12 @@
-﻿import React  from "react";
+﻿import React from "react";
 import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
-export function Profile() {
+const Profile = props => {
     return (
         <div className="profile" >
+            <h3>{props.loggedIn}</h3>
             <div className="left-side">
                 <img className="profile-pic" alt="profile pic" />
                 <p className="username">username here</p>
@@ -28,3 +29,5 @@ export function Profile() {
         </div>
     );
 }
+
+export default Profile;
