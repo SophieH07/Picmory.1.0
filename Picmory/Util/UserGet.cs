@@ -9,12 +9,14 @@ namespace Picmory.Util
 {
     public class UserGet
     {
-        private IUserRepository userRepository;
+        private readonly IUserRepository userRepository;
 
         public UserGet(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
         }
+
+
         public User GetUser(HttpContext context)
         {
             SecurityToken jsonToken;
