@@ -11,12 +11,14 @@ const Login = props => {
     const [password, setPassword] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const toggleShow = () => {
         setHidden(!hidden);
     }
 
     const login = () => {
+        setLoading(true);
         const data = {
             UserName: usernameOrEmail,
             //Email: state.usernameOrEmail,
@@ -26,9 +28,10 @@ const Login = props => {
         axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            setLoggedIn(true);
             props.handleLogIn(result.data.userName, result.data.pictureId, result.data.coloreOne, result.data.coloreTwo);
-            setUsername(result.data.userName);
+            setUsername(result.data.userName); //stays empty
+            setLoading(false);
+            setLoggedIn(true);
         }).catch(err => {
             console.log(err);
             setLoggedIn(false);
@@ -40,6 +43,7 @@ const Login = props => {
     } else {
         return (
             <div className="login-main">
+                {loading ? <p>Loading...</p> : ''}
                 <h2>Login</h2>
                 <form>
                     <div className="inputs">
