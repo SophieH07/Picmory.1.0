@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import logo from "../../img/PicmoryLogoTransparent.png";
@@ -11,10 +12,14 @@ export function NavMenu(props) {
     const contentUser = (
         <ul className="navbar-nav flex-grow">
             <NavItem>
-                <NavLink tag={Link} className="text-dark" to={{ pathname: `/user/${props.username}` }}>
-                    <img src={ props.profilePicture} alt="profile pic"/>{props.username}</NavLink>
+                <NavDropdown as={NavItem } title={props.username} className="text-dark" >
+                    <NavDropdown.Item href={`/user/${props.username}`}>Profile</NavDropdown.Item>
+                    <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/">Log out</NavDropdown.Item>
+                </NavDropdown>
             </NavItem >
-        </ul>
+        </ul >
     );
 
     const contentNoUser = (
@@ -37,7 +42,7 @@ export function NavMenu(props) {
                     </NavbarBrand>
                     <NavbarToggler onClick={() => setCollapsed(!collapsed)} className="mr-2" />
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-                        {props.loggedIn ? contentUser : contentNoUser }
+                        {props.loggedIn ? contentUser : contentNoUser}
                     </Collapse>
                 </Container>
             </Navbar>
