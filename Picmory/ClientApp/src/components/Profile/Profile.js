@@ -13,18 +13,18 @@ const Profile = props => {
     const [colorOne, setColorOne] = useState(0);
     const [colorTwo, setColorTwo] = useState(0);
 
-
     useEffect(() => {
-        axios.get('user/myinfo').then(res => {
-            if (res.status === 200) {
-                setUsername(res.data.userName);
-                setEmail(res.data.email);
-                setProfilePic(res.data.profilePictureId);
-                setFollowers(res.data.followers);
+        const result = async () => {
+            const response = await axios.get('/user/myinfo');
 
-            }
-        })
+            setUsername(response.data.userName);
+            setEmail(response.data.email);
+            setProfilePic(response.data.profilePictureId);
+            setFollowers(response.data.followers);
+        }
+        result();
     }, [])
+
 
     return (
         <div className="profile" >

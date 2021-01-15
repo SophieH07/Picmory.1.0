@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { useHistory, BrowserRouter as Router, Route } from "react-router-dom";
 import { NavMenu } from './components/NavMenu/NavMenu';
 import { Home } from './components/Home/Home';
 import Register from './components/Register/Register';
@@ -11,30 +11,26 @@ import './custom.css'
 
 function App() {
 
-    const [username, setUsername] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    //useEffect(() => {
-    //    const checkAuthentication = async () => {
-    //        setIsAuthenticated(await studentService.isAuthenticated());
-    //        setIsLoading(false);
-    //    };
-
-    //    checkAuthentication();
-    //}, [studentService]);
-
+    const [isLoading, setIsLoading] = useState(true);
+    const history = useHistory();
 
     useEffect(() => {
         const loggedInUserName = localStorage.getItem("username");
         if (loggedInUserName !== null) {
-            setUsername(loggedInUserName);
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            history.push(`/user/${loggedInUserName}`);
         }
-        console.log(username);
-    }, [username]);
+    }, [history, isAuthenticated]);
 
     const handleLogOut = () => {
         setIsAuthenticated(false);
         localStorage.clear();
+    }
+
+    if (isLoading) {
+        return null;
     }
 
     return (
