@@ -9,7 +9,6 @@ const Login = props => {
     const [hidden, setHidden] = useState(true);
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -17,7 +16,8 @@ const Login = props => {
         setHidden(!hidden);
     }
 
-    const login = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         setLoading(true);
         const data = {
             UserName: usernameOrEmail,
@@ -29,16 +29,14 @@ const Login = props => {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             setUsername(result.data.userName);
+            props.handleLogIn();
             setLoading(false);
-            localStorage.setItem('username', result.data.userName);
-            setLoggedIn(true);
         }).catch(err => {
             console.log(err);
-            setLoggedIn(false);
         })
     }
 
-    if (loggedIn) {
+    if (localStorage.getItem('username')) {
         return <Redirect to={{ pathname: `/user/${username}` }} />
     } else {
         return (
@@ -57,7 +55,7 @@ const Login = props => {
                     </div>
                 </form>
                 <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
-                <button onClick={login}>Login</button>
+                <button type="submit" onClick={(e) => handleSubmit(e) }>Login</button>
                 <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
             </div >
         );

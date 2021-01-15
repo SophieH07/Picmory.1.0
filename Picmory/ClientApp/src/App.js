@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { NavMenu } from './components/NavMenu/NavMenu';
 import { Home } from './components/Home/Home';
@@ -9,25 +9,13 @@ import './custom.css'
 
 function App() {
 
-    const [username, setUsername] = useState('');
-    const [profilePic, setProfilePic] = useState(0);
-    const [colorOne, setColorOne] = useState(0);
-    const [colorTwo, setColorTwo] = useState(0);
-
-    useEffect(() => {
-        const loggedInUserName = localStorage.getItem("username");
-        if (loggedInUserName !== null) {
-            setUsername(loggedInUserName);
-        }
-    }, []);
-
     return (
         <div className="main" >
-            <NavMenu username={username} />
+            <NavMenu />
             <Route exact path='/' component={Home} />
-            <Route path='/login' render={props => (<Login  {...props} username={username} />)} />
+            <Route path='/login' component={Login} />
             <Route path='/register' component={Register} />
-            <Route path={`/user/:username`} render={props => (<Profile  {...props} username={username} />)} />
+            <Route path='/user/:username' component={Profile} />
         </div>
     );
 }

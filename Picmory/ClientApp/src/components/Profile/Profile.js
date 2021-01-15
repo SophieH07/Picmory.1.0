@@ -1,13 +1,15 @@
-﻿import React from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
 const Profile = props => {
-    if (props.username !== null) {
+
+    const username = localStorage.getItem('username');
+
+    if (username !== '') {
         return (
             <div className="profile" >
-                <h3>{ }</h3>
                 <div className="left-side">
                     <img className="profile-pic" alt="profile pic" />
                     <p className="username">username here</p>
@@ -30,7 +32,7 @@ const Profile = props => {
             </div>
         );
     } else {
-        return <Redirect to="/login" />
+        return <Redirect to="/" />
     }
 }
 
