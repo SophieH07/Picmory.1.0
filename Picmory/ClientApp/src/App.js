@@ -33,6 +33,7 @@ function App() {
     }, [username]);
 
     const handleLogOut = () => {
+        setIsAuthenticated(false);
         localStorage.clear();
     }
 

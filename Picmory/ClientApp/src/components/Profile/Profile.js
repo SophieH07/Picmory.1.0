@@ -1,16 +1,38 @@
-﻿import React from "react";
+﻿import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
 const Profile = props => {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [profilePic, setProfilePic] = useState(0);
+    const [followed, setFollowed] = useState(0);
+    const [followers, setFollowers] = useState('');
+    const [colorOne, setColorOne] = useState(0);
+    const [colorTwo, setColorTwo] = useState(0);
+
+
+    useEffect(() => {
+        axios.get('user/myinfo').then(res => {
+            if (res.status === 200) {
+                setUsername(res.data.userName);
+                setEmail(res.data.email);
+                setProfilePic(res.data.profilePictureId);
+                setFollowers(res.data.followers);
+
+            }
+        })
+    }, [])
 
     return (
         <div className="profile" >
             <div className="left-side">
                 <img className="profile-pic" alt="profile pic" />
-                <p className="username">username here</p>
-                <p>0 followers 0 following</p>
+                <p className="username">{username}</p>
+                <p className="username">{email}</p>
+                <p>{followers} followers 0 following</p>
                 <div>
                     <div className="upload-pic">
                         <Link to="/">upload picture +</Link>

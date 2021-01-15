@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import UserContext from "../../contexts/UserContext";
 import axios from 'axios';
@@ -50,7 +50,7 @@ const Login = props => {
                     </div>
                     <div className="password-container">
                         <input name="password" value={password} type={hidden ? "password" : "text"} placeholder="Password" onChange={(e) => { setPassword(e.target.value) }} />
-                        <img name="password" src={eye} className="eye" onClick={setHidden(!hidden)} alt="toggleShowHide" />
+                        <img name="password" src={eye} className="eye" onClick={() => setHidden(!hidden)} alt="toggleShowHide" />
                     </div>
                 </div>
             </form>
