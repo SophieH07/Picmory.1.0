@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Picmory.Models.RequestModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,10 +87,10 @@ namespace Picmory.Models.Repositorys
 
         public List<User> GetUsersForTerm(string term)
         {
-            List<User> resultUsers = new List<User>();
+            List<SearchUser> resultUsers = new List<SearchUser>();
             try
             {
-                return resultUsers = context.Users.Where(a => a.UserName.Contains(term)).Include(a => a.ProfilePicture).Take(5).ToList();
+                return resultUsers = (SearchUser)context.Users.Where(a => a.UserName.Contains(term)).Include(a => a.ProfilePicture).Select(a => new SearchUser() { a.UserName, a.ProfilePicture.Id }).Take(5).ToList();
                
             }
             catch (Exception e)
