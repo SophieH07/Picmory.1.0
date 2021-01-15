@@ -11,9 +11,9 @@ export function NavMenu(props) {
 
     const contentUser = (
         <ul className="navbar-nav flex-grow">
-            <NavItem>
-                <img className="profile-pic" src={`https://localhost:44386/picture/${props.profilPicture}`} alt="profpic" />
-            </NavItem>
+            //<NavItem>
+            //    <img className="profile-pic" src={`https://localhost:44386/picture/${props.profilPicture}`} alt="profpic" />
+            //</NavItem>
             <NavItem>
                 <NavDropdown as={NavItem} title={props.username} className="text-dark" >
                     <NavDropdown.Item href={`/user/${props.username}`}>Profile</NavDropdown.Item>
@@ -45,7 +45,7 @@ export function NavMenu(props) {
                     </NavbarBrand>
                     <NavbarToggler onClick={() => setCollapsed(!collapsed)} className="mr-2" />
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
-                        {props.loggedIn ? contentUser : contentNoUser}
+                        {props.username !== '' ? contentUser : contentNoUser}
                     </Collapse>
                 </Container>
             </Navbar>

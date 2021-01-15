@@ -28,9 +28,9 @@ const Login = props => {
         axios.post('/authentication/login', data, {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
-            props.handleLogIn(result.data.userName, result.data.pictureId, result.data.coloreOne, result.data.coloreTwo);
             setUsername(result.data.userName);
             setLoading(false);
+            localStorage.setItem('username', result.data.userName);
             setLoggedIn(true);
         }).catch(err => {
             console.log(err);

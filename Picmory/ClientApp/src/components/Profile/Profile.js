@@ -4,7 +4,7 @@ import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
 const Profile = props => {
-    if (props.loggedIn) {
+    if (props.username !== null) {
         return (
             <div className="profile" >
                 <h3>{ }</h3>

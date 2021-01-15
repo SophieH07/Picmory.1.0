@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route } from 'react-router';
 import { NavMenu } from './components/NavMenu/NavMenu';
 import { Home } from './components/Home/Home';
@@ -9,31 +9,25 @@ import './custom.css'
 
 function App() {
 
-    const [state, setState] = useState({
-        loggedIn: false,
-        username: '',
-        profilePic: 0,
-        colorOne: 0,
-        colorTwo: 0
-    });
+    const [username, setUsername] = useState('');
+    const [profilePic, setProfilePic] = useState(0);
+    const [colorOne, setColorOne] = useState(0);
+    const [colorTwo, setColorTwo] = useState(0);
 
-    const handleLogin = (username, profilePic, colorOne, colorTwo) => {
-        setState({
-            loggedIn: true,
-            username: username,
-            profilePic: profilePic,
-            colorOne: colorOne,
-            colorTwo: colorTwo
-        });
-    }
+    useEffect(() => {
+        const loggedInUserName = localStorage.getItem("username");
+        if (loggedInUserName !== null) {
+            setUsername(loggedInUserName);
+        }
+    }, []);
 
     return (
         <div className="main" >
-            <NavMenu profilPicture={state.profilePic} username={state.username} loggedIn={state.loggedIn} />
+            <NavMenu username={username} />
             <Route exact path='/' component={Home} />
-            <Route path='/login' render={props => (<Login  {...props} username={state.username} loggedIn={state.loggedIn} handleLogIn={handleLogin} />)} />
+            <Route path='/login' render={props => (<Login  {...props} username={username} />)} />
             <Route path='/register' component={Register} />
-            <Route path={`/user/${state.username}`} render={props => (<Profile  {...props} loggedIn={state.loggedIn} />)} />
+            <Route path={`/user/:username`} render={props => (<Profile  {...props} username={username} />)} />
         </div>
     );
 }
