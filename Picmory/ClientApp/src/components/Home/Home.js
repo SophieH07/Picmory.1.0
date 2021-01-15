@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import "./Home.css";
 import name from '../../img/transparentNameOnly.png';
 
-export function Home() {
+export function Home(props) {
     return (
         <div className="home">
             <h1>Welcome on</h1>

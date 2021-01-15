@@ -129,7 +129,6 @@ const Register = props => {
         }).then(result => {
             setLoadingSendingForm(false);
             console.log(result);
-            setFormIsFull(true);
         }).catch(err => {
             setLoadingSendingForm(false);
             console.log(err.response.data)
@@ -138,6 +137,7 @@ const Register = props => {
 
     const submitForm = () => {
         if (emailAlreadyExists === false && usernameAlreadyExists === false && isChecked === true && username !== '' && email !== '' && emailError === false && password !== '' && passwordError === false && equalPassword === true) {
+            setFormIsFull(true);
             register();
         } else {
             setFormIsFull(false);
@@ -145,48 +145,44 @@ const Register = props => {
         }
     }
 
-    if (formIsFull) {
-        return <Redirect to="/login" />
-    } else {
-        return (
-            <div className="register">
-                <h2>Create Account</h2>
-                <div className="input-fields">
-                    {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
-                    {loadingUsername ? <p className="warning">Loading...</p> : ''}
-                    {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
-                    <div>
-                        <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { handleChange(e) }} />
-                    </div>
-                    <div>
-                        {loadingEmail ? <p className="warning">Loading...</p> : ''}
-                        {emailAlreadyExists ? <p className="warning">There is already a user with this email address.</p> : ''}
-                        {emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
-                        <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { handleChange(e) }} />
-                    </div>
-                    {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
-                    <div className="password-container">
-                        <input name="password1" type={hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { handleChange(e) }} />
-                        <img name="password1" src={eye} className="eye" onClick={() => setHidden1(!hidden1)} alt="toggleShowHide" />
-                    </div>
-                    {equalPassword ? '' : <p className="warning">The passwords are not equal.</p>}
-                    <div className="password-container">
-                        <input name="password2" type={hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { handleChange(e) }} />
-                        <img name="password2" src={eye} className="eye" onClick={() => setHidden2(!hidden2)} alt="toggleShowHide" />
-                    </div>
+    return (
+        <div className="register">
+            <h2>Create Account</h2>
+            <div className="input-fields">
+                {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
+                {loadingUsername ? <p className="warning">Loading...</p> : ''}
+                {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
+                <div>
+                    <input id="name" name="username" placeholder="Your username*" type="text" onChange={(e) => { handleChange(e) }} />
                 </div>
                 <div>
-                    <p className="underline">
-                        <input type="checkbox" id="" name="checkbox" onClick={() => setIsChecked(!isChecked)} />
+                    {loadingEmail ? <p className="warning">Loading...</p> : ''}
+                    {emailAlreadyExists ? <p className="warning">There is already a user with this email address.</p> : ''}
+                    {emailError ? <p className="warning">Please enter a valid email address.</p> : ''}
+                    <input id="email" name="email" placeholder="Your email*" type="text" onChange={(e) => { handleChange(e) }} />
+                </div>
+                {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
+                <div className="password-container">
+                    <input name="password1" type={hidden1 ? "password" : "text"} placeholder="Your password*" onChange={(e) => { handleChange(e) }} />
+                    <img name="password1" src={eye} className="eye" onClick={() => setHidden1(!hidden1)} alt="toggleShowHide" />
+                </div>
+                {equalPassword ? '' : <p className="warning">The passwords are not equal.</p>}
+                <div className="password-container">
+                    <input name="password2" type={hidden2 ? "password" : "text"} placeholder="Repeat your password*" onChange={(e) => { handleChange(e) }} />
+                    <img name="password2" src={eye} className="eye" onClick={() => setHidden2(!hidden2)} alt="toggleShowHide" />
+                </div>
+            </div>
+            <div>
+                <p className="underline">
+                    <input type="checkbox" id="" name="checkbox" onClick={() => setIsChecked(!isChecked)} />
                          I agree all statements in <Link tag={Link} to='/register'>Terms of service</Link>.
                         </p>
-                </div>
-                {loadingSendingForm ? <p className="warning">Loading...</p> : ''}
-                <button onClick={submitForm} name="submit">Sign up</button>
-                <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
             </div>
-        );
-    }
+            {loadingSendingForm ? <p className="warning">Loading...</p> : ''}
+            <button onClick={submitForm} name="submit">Sign up</button>
+            <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
+        </div>
+    );
 }
 
 export default Register;
