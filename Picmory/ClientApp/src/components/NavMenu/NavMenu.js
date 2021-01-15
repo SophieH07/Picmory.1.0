@@ -12,7 +12,10 @@ export function NavMenu(props) {
     const contentUser = (
         <ul className="navbar-nav flex-grow">
             <NavItem>
-                <NavDropdown as={NavItem } title={props.username} className="text-dark" >
+                <img className="profile-pic" src={`https://localhost:44386/picture/${props.profilPicture}`} alt="profpic" />
+            </NavItem>
+            <NavItem>
+                <NavDropdown as={NavItem} title={props.username} className="text-dark" >
                     <NavDropdown.Item href={`/user/${props.username}`}>Profile</NavDropdown.Item>
                     <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>
                     <NavDropdown.Divider />

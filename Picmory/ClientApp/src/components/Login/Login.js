@@ -29,7 +29,7 @@ const Login = props => {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
             props.handleLogIn(result.data.userName, result.data.pictureId, result.data.coloreOne, result.data.coloreTwo);
-            setUsername(result.data.userName); //stays empty
+            setUsername(result.data.userName);
             setLoading(false);
             setLoggedIn(true);
         }).catch(err => {

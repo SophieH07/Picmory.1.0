@@ -1,16 +1,17 @@
 ﻿a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
+
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .navbar {
@@ -18,10 +19,16 @@ html {
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .4);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .4);
 }
 
 .navbar-logo-name {
+    height: 100%;
+    max-height: 30px;
+    width: auto;
+}
+
+.profile-pic {
     height: 100%;
     max-height: 30px;
     width: auto;
