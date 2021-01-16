@@ -25,7 +25,6 @@ const Profile = props => {
         result();
     }, [])
 
-
     return (
         <div className="profile" >
             <div className="left-side">
