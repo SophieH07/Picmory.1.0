@@ -138,6 +138,7 @@ const Register = props => {
                 })
 
                 localStorage.setItem('username', username);
+                setRegisterError('');
                 setIsAuthenticated(true);
                 setLoadingSendingForm(false);
                 console.log(result);
