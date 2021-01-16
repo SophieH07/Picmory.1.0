@@ -140,15 +140,13 @@ const Register = props => {
                 localStorage.setItem('username', username);
                 setRegisterError('');
                 setIsAuthenticated(true);
-                setLoadingSendingForm(false);
                 console.log(result);
                 const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
                 history.push(referrer);
             } catch (err) {
                 setRegisterError("Something is still missing or wrong!");
-                setLoadingSendingForm(false);
-
             }
+            setLoadingSendingForm(false);
 
         } else {
             setRegisterError("Something is still missing or wrong!");
