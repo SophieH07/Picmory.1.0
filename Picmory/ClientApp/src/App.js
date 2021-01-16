@@ -5,6 +5,7 @@ import { Home } from './components/Home/Home';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Profile from './components/Profile/Profile';
+import Settings from './components/Settings/Settings';
 import { UserContext } from "./contexts/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './custom.css'
@@ -19,7 +20,6 @@ function App() {
         const loggedInUserName = localStorage.getItem("username");
         if (loggedInUserName !== null) {
             setIsAuthenticated(true);
-            history.push(`/user/${loggedInUserName}`);
         }
         setIsLoading(false);
     }, [history, isAuthenticated]);
@@ -42,6 +42,7 @@ function App() {
                     <Route path='/login' component={props => (<Login  {...props} />)} />
                     <Route path='/register' component={Register} />
                     <ProtectedRoute path='/user/:username' component={props => (<Profile  {...props} />)} />
+                    <ProtectedRoute path='/:username/settings' component={props => (<Settings  {...props} />)} />
                 </UserContext.Provider>
             </Router>
         </div>

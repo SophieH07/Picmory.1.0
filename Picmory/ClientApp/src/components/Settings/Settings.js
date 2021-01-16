@@ -1,156 +1,156 @@
-﻿import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+﻿import React, { useState } from "react";
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '../Common.css';
 import './Settings.css';
 import eye from '../../img/eye.png';
 
-export class Settings extends Component {
-    static displayName = Settings.name;
+const Settings = props => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            hidden: true
-        }
-        this.toggleShow = this.toggleShow.bind(this);
-    }
+    const [hidden, setHidden] = useState(true);
+    const [username, setUsername] = useState('');
+    const [colorOne, setColorOne] = useState('');
+    const [colorTwo, setColorTwo] = useState('');
+    const [usernameError, setUsernameError] = useState(false);
+    const [usernameAlreadyExists, setUsernameAlreadyExists] = useState(false);
+    const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [loadingUsername, setLoadingUsername] = useState(false);
+    const [loadingEmail, setLoadingEmail] = useState(false);
+    const [loadingSendingForm, setLoadingSendingForm] = useState(false);
+    const [changeError, setChangeError] = useState('');
+    const history = useHistory();
+    const location = useLocation();
 
-    toggleShow() {
-        this.setState({ hidden: !this.state.hidden })
-    }
-
-    changeProfilePicture(picture) {
+    const changeProfilePicture = picture => {
         //...
     }
 
-    validateUsername(username) {
+    const validateUsername = username => {
         if (username !== '') {
-            this.setState({
-                username: username,
-                usernameError: false
-            })
+            setUsername(username);
+            setUsernameError(false);
         } else {
-            this.setState({
-                usernameError: true
-            })
+            setUsernameError(true);
         }
     }
 
-    checkIfUsernameAlreadyExists(username) {
+    const checkIfUsernameAlreadyExists = username => {
+        setLoadingUsername(true);
         axios.post('/authentication/checkusernamealreadyexist', JSON.stringify(username), {
             headers: { 'Content-Type': 'application/json' }
         }).then(result => {
+            setLoadingUsername(false);
             if (result.data) {
-                this.setState({
-                    usernameAlreadyExist: true
-                })
+                setUsernameAlreadyExists(true);
             } else {
-                this.setState({
-                    usernameAlreadyExist: false
-                })
+                setUsernameAlreadyExists(false);
             }
         })
     }
 
-    validatePassword(password) {
+    const validatePassword = password => {
         const pattern = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
         const validInput = pattern.test(password);
         if (validInput === true) {
-            this.setState({
-                passwordError: false,
-                password: password
-            })
+            setPassword(password);
+            setPasswordError(false);
         } else {
-            this.setState({
-                passwordError: true
-            })
+            setPasswordError(true);
         }
     }
 
-    setNewDataInDatabase() {
+    const setNewDataInDatabase = e => {
+        e.preventDefault();
+        setLoadingSendingForm(true);
         const data = {
-            UserName: this.state.username,
-            ColorOne: this.state.colorOne,
-            ColorTwo: this.state.colorTwo
+            UserName: username,
+            ColorOne: colorOne,
+            ColorTwo: colorTwo
         }
-        if (this.state.username !== '' && this.state.usernameAlreadyExist === false) {
+        if (username !== '' && !usernameAlreadyExists) {
             axios.post("/user/changethemeandusername", data).then(result => {
                 console.log(result);
+                setLoadingSendingForm(false);
+                //const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+                //history.push(referrer);
+
             })
+
         } else {
-            alert("something is wrong with the new username");
+            setLoadingSendingForm(false);
+            setChangeError("something is wrong with the username or the colors");
         }
     }
 
-    setNewPasswordInDatabase() {
-        if (this.state.password !== '' && this.state.passwordError === false) {
-            axios.post("/user/changepassword", JSON.stringify(this.sate.password)).then(result => {
+    const setNewPasswordInDatabase = e => {
+        e.preventDefault();
+        setLoadingSendingForm(true);
+
+        if (password !== '' && !passwordError) {
+            axios.post("/user/changepassword", JSON.stringify(password)).then(result => {
                 console.log(result);
+                setLoadingSendingForm(false);
             })
         } else {
-            alert("something wrong with the new password");
+            setLoadingSendingForm(false);
+            setChangeError("something wrong with the new password");
         }
-
     }
 
-    handleChange(e) {
+    const handleChange = e => {
         if (e.target.name === 'username') {
-            this.validateUsername(e.target.value);
-            if (this.state.usernameError === false) {
-                this.checkIfUsernameAlreadyExists(e.target.value);
+            validateUsername(e.target.value);
+            if (!usernameError) {
+                checkIfUsernameAlreadyExists(e.target.value);
             }
         }
         if (e.target.name === "colorOne") {
-            this.setState({
-                colorOne: e.target.value
-            })
+            setColorOne(e.target.value);
         }
         if (e.target.name === "colorTwo") {
-            this.setState({
-                colorTwo: e.target.value
-            })
+            setColorTwo(e.target.value);
         }
         if (e.target.name === "password") {
-            this.validatePassword(e.target.value)
+            validatePassword(e.target.value)
         }
     }
 
-    render() {
-        return (
-            <div className="settings">
-                <div className="input-fields">
-                    <div className="profile-picture">
-                        <h4>Change profile picture</h4>
-                        <img alt="profile picture" />
-                        <button>Pick picture</button>
-                    </div>
-                    <div>
-                        <input name="username" placeholder="Change username" type="text" onChange={(e) => this.handleChange(e)} />
-                    </div>
-                    <div className="themes">
-                        <h4>Change themes</h4>
-                        <p>Theme One</p>
-                        <p>~colors~</p>
-                        <p>Theme Two</p>
-                        <p>~colors~</p>
-                        <button>SAVE USERNAME AND COLORS</button>
-                    </div>
-                    <div>
-                        <div className="password-container">
-                            <input name="password" type={this.state.hidden ? "password" : "text"} placeholder="Change password" onChange={(e) => { this.handleChange(e) }} />
-                            <img name="password" src={eye} className="eye" onClick={this.toggleShow} alt="toggleShowHide" />
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <button>SAVE PASSWORD</button>
-                        </div>
-                        <button className="delete">DELETE ACCOUNT</button>
-                        <button className="cancel"><Link to='/user'>CANCEL</Link></button>
+    return (
+        <div className="settings">
+            <div className="input-fields">
+                <div className="profile-picture">
+                    <h4>Change profile picture</h4>
+                    <img alt="profile" />
+                    <button>Pick picture</button>
+                </div>
+                <div>
+                    <input name="username" placeholder="Change username" type="text" onChange={(e) => handleChange(e)} />
+                </div>
+                <div className="themes">
+                    <h4>Change themes</h4>
+                    <p>Theme One</p>
+                    <p>~colors~</p>
+                    <p>Theme Two</p>
+                    <p>~colors~</p>
+                    <button onClick={(e) => setNewDataInDatabase(e)}>SAVE USERNAME AND COLORS</button>
+                </div>
+                <div>
+                    <div className="password-container">
+                        <input name="password" type={hidden ? "password" : "text"} placeholder="Change password" onChange={(e) => { handleChange(e) }} />
+                        <img name="password" src={eye} className="eye" onClick={() => setHidden(!hidden)} alt="toggleShowHide" />
                     </div>
                 </div>
+                <div>
+                    <div>
+                        <button onClick={(e) => setNewPasswordInDatabase(e)}>SAVE PASSWORD</button>
+                    </div>
+                    <button className="delete">DELETE ACCOUNT</button>
+                    <button className="cancel"><Link to='/user'>CANCEL</Link></button>
+                </div>
             </div>
-        )
-    }
+        </div>
+    )
 }
+
+export default Settings;

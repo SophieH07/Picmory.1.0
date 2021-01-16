@@ -1,9 +1,21 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect } from "react";
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import UserContext from "../../contexts/UserContext";
 import "./Home.css";
 import name from '../../img/transparentNameOnly.png';
 
 export function Home(props) {
+    const [isAuthenticated] = useContext(UserContext);
+    const history = useHistory();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+            history.push(referrer);
+        }
+    })
+
     return (
         <div className="home">
             <h1>Welcome on</h1>
