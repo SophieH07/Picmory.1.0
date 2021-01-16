@@ -1,19 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
 using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -35,9 +30,9 @@ namespace Picmory.Controllers
             userGet = new UserGet(userRepository);
         }
 
-        
+        [Produces("application/json")]
         [HttpGet("myinfo")]
-        public UserPageUser Info()
+        public IActionResult Info()
         {
             if (userGet.HaveUser(HttpContext))
             {
@@ -46,9 +41,9 @@ namespace Picmory.Controllers
                 List<string> followers = followerRepository.GetAllFollowers(user);
                 List<string> following = followerRepository.GetAllFollowing(user);
                 UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followers, following, user.ProfilePicture, foldersForShow);
-                return resultUser;
+                return Ok(resultUser);
             }
-            return null;
+            return Unauthorized();
         }
        
         [HttpPost("changepassword")]

@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PictureController :ControllerBase
@@ -27,7 +26,6 @@ namespace Picmory.Controllers
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
 
-        public int ResponsePictures { get; private set; }
 
         public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
         {
@@ -42,12 +40,16 @@ namespace Picmory.Controllers
         [HttpGet("{pictureid}")]
         public IActionResult GetImageById(string pictureId)
         {
-            string pictureType = pictureRepository.GetPictureType(int.Parse(pictureId));
-            if (userGet.HaveUser(HttpContext) && pictureType != null)
+            Picture pictureInDB = pictureRepository.GetPicture(int.Parse(pictureId));
+            if (userGet.HaveUser(HttpContext) && pictureInDB.Type != null)
             {
-                string path = CreatePathForRetrive(pictureId, pictureType);
+                User user = userGet.GetUser(HttpContext);
+                if (pictureInDB.Access != AccessType.Private || (user.Id == pictureInDB.Owner.Id) ) { 
+                string path = CreatePathForRetrive(pictureId, pictureInDB.Type);
                 Byte[] picture = System.IO.File.ReadAllBytes(path);
-                return File(picture, pictureType);
+                return File(picture, pictureInDB.Type);
+                }
+                return BadRequest("Private picture!");
             }
             return Unauthorized();
         }
@@ -57,17 +59,19 @@ namespace Picmory.Controllers
         {
             IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
             Folder folder = folderRepository.GetFolder(userGet.GetUser(HttpContext), HttpContext.Request.Form["FolderName"].ToString());
+            if (folder == null) { return BadRequest("Not existing folder!"); }
             UploadPhoto photoData = new UploadPhoto(
                                                 HttpContext.Request.Form["Description"].ToString(),
                                                 HttpContext.Request.Form["Access"].ToString(),
                                                 folder);
-            if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
+            if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage) && ImageDataIsValid(photoData))
             {
                 UploadImage(HttpContext, photoData, uploadedImage);
                 return Ok();
             }
             return Unauthorized();
         }
+
 
         [HttpPost("editpicture")]
         public IActionResult EditPicture([FromBody] PictureChange changeData)
@@ -80,20 +84,25 @@ namespace Picmory.Controllers
                 if (picture.Owner == user)
                 {
                     changeData.Owner = user;
-                    Success success = pictureRepository.ChangePictureData(changeData);
-                    switch (success)
+                    Success result = ValidateAccess(changeData, picture);
+                    switch (result)
                     {
                         case Success.Successfull:
+                            pictureRepository.ChangePictureData(changeData);
                             return Ok();
+                        case Success.FailedByWrongAccessFolder:
+                            return BadRequest("Wrong access picture for " + picture.Folder.FolderName + " folder!");
+                        case Success.FailedByWrongAccessNewFolder:
+                            return BadRequest("Wrong access picture for " + changeData.FolderName + " folder!");
                         case Success.FailedByNotExistFolderName:
-                            return BadRequest("Folder doesn't exist!");
-                        
+                            return BadRequest("Don't have " + changeData.FolderName + " folder");
                     }
                 }
                 return BadRequest("Not your picture!");
             }
             return Unauthorized();
         }
+
 
         [HttpPost("deletepicture")]
         public IActionResult DeletePicture([FromBody] string id)
@@ -155,6 +164,8 @@ namespace Picmory.Controllers
         }
 
 
+
+
         private bool ImageTypeIsValid(IFormFile uploadedImage)
         {
             return (AcceptedFileTypes.Contains(uploadedImage.ContentType));
@@ -189,7 +200,39 @@ namespace Picmory.Controllers
             string filePathWithoutType = Path.Combine(_hostEnv.WebRootPath, savedImageData.Id.ToString());
             pictureRepository.SavePicturePath(savedImageData.Id, filePathWithoutType);
             return (filePathWithoutType + "." + uploadedImage.ContentType.ToString().Substring(LenghtOfPictureTypeFirstPart));
-        } 
+        }
+
+        private Success ValidateAccess(PictureChange changeData, Picture picture)
+        {
+            if (changeData.FolderName != null && changeData.Access != null)
+            {
+                Folder newFolder = folderRepository.GetFolder(picture.Owner, changeData.FolderName);
+                if (newFolder == null) { return Success.FailedByNotExistFolderName; }
+                else if (!(changeData.Access <= newFolder.Access)) { return Success.FailedByWrongAccessNewFolder; }
+                else { return Success.Successfull; }
+            }
+            else if (changeData.FolderName != null && changeData.Access == null) 
+            {
+                Folder newFolder = folderRepository.GetFolder(picture.Owner, changeData.FolderName);
+                if (newFolder == null) { return Success.FailedByNotExistFolderName; }
+                else if (!(picture.Access <= newFolder.Access)) { return Success.FailedByWrongAccessNewFolder; }
+                else { return Success.Successfull; }
+            }
+            else if (changeData.FolderName == null && changeData.Access != null) 
+            {
+                if (!(changeData.Access <= picture.Folder.Access)) { return Success.FailedByWrongAccessFolder; }
+                else { return Success.Successfull;  }
+            }
+            else
+            {
+                return Success.Successfull;
+            }
+        }
         
+        private bool ImageDataIsValid(UploadPhoto photoData)
+        {
+            if (photoData.Folder.Access >= photoData.Access) { return true; }
+            else { return false; }
+        }
     }
 }

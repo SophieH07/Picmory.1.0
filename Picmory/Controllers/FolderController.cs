@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FolderController : ControllerBase

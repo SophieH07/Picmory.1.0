@@ -15,6 +15,9 @@ namespace Picmory.Util
         FailedByAlreadyFollowed,
         FailedByNotRequested,
         FailedByAlreadyAnswered,
-        FailedByNotAccepted
+        FailedByNotAccepted,
+        FailedByWrongAccessNewFolder,
+        FailedByWrongAccessFolder
+
     }
 }
