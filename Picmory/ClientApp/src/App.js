@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { NavMenu } from './components/NavMenu/NavMenu';
 import { Home } from './components/Home/Home';
 import Register from './components/Register/Register';
@@ -14,7 +14,6 @@ function App() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const history = useHistory();
 
     useEffect(() => {
         const loggedInUserName = localStorage.getItem("username");
@@ -22,7 +21,7 @@ function App() {
             setIsAuthenticated(true);
         }
         setIsLoading(false);
-    }, [history, isAuthenticated]);
+    }, [isAuthenticated]);
 
     const handleLogOut = () => {
         setIsAuthenticated(false);
