@@ -11,6 +11,7 @@ const Login = props => {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [loginError, setLoginError] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
     const history = useHistory();
     const location = useLocation();
@@ -29,19 +30,23 @@ const Login = props => {
             })
 
             localStorage.setItem('username', result.data.userName);
+            setLoginError('');
             setIsAuthenticated(true);
             setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (e) {
-            console.log(e);
+            setLoginError(e.response.data);
+            setLoading(false);
+            console.log(e.response.data);
         }
     }
 
     return (
         <div className="login-main">
             {loading ? <p>Loading...</p> : ''}
+            {loginError === '' ? '' : <p className="warning">{loginError}</p>}
             <h2>Login</h2>
             <form>
                 <div className="inputs">

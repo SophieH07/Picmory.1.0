@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from "react";
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import UserContext from "../../contexts/UserContext";
 import axios from 'axios';
 import "./Register.css";
 import eye from '../../img/eye.png';
@@ -18,10 +19,13 @@ const Register = props => {
     const [password, setPassword] = useState('');
     const [equalPassword, setEqualPassword] = useState(true);
     const [passwordError, setPasswordError] = useState(false);
-    const [formIsFull, setFormIsFull] = useState(false);
     const [loadingUsername, setLoadingUsername] = useState(false);
     const [loadingEmail, setLoadingEmail] = useState(false);
     const [loadingSendingForm, setLoadingSendingForm] = useState(false);
+    const [registerError, setRegisterError] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
+    const history = useHistory();
+    const location = useLocation();
 
     const validateUsername = username => {
         if (username !== '') {
@@ -116,32 +120,39 @@ const Register = props => {
         }
     }
 
-    const register = () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setLoadingSendingForm(true);
-        const data = {
-            UserName: username,
-            Email: email,
-            Password: password
-        }
 
-        axios.post('/authentication/register', data, {
-            headers: { 'Content-Type': 'application/json' }
-        }).then(result => {
-            setLoadingSendingForm(false);
-            console.log(result);
-        }).catch(err => {
-            setLoadingSendingForm(false);
-            console.log(err.response.data)
-        })
-    }
+        if (isChecked && equalPassword) {
 
-    const submitForm = () => {
-        if (emailAlreadyExists === false && usernameAlreadyExists === false && isChecked === true && username !== '' && email !== '' && emailError === false && password !== '' && passwordError === false && equalPassword === true) {
-            setFormIsFull(true);
-            register();
+            const data = {
+                UserName: username,
+                Email: email,
+                Password: password
+            }
+
+            try {
+                const result = await axios.post('/authentication/register', data, {
+                    headers: { 'Content-Type': 'application/json' }
+                })
+
+                localStorage.setItem('username', username);
+                setIsAuthenticated(true);
+                setLoadingSendingForm(false);
+                console.log(result);
+                const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+                history.push(referrer);
+            } catch (err) {
+                setRegisterError("Something is still missing or wrong!");
+                setLoadingSendingForm(false);
+
+            }
+
         } else {
-            setFormIsFull(false);
-            alert("Oops, something is still missing or wrong!");
+            setRegisterError("Something is still missing or wrong!");
+            setLoadingSendingForm(false);
+
         }
     }
 
@@ -178,8 +189,9 @@ const Register = props => {
                          I agree all statements in <Link tag={Link} to='/register'>Terms of service</Link>.
                         </p>
             </div>
-            {loadingSendingForm ? <p className="warning">Loading...</p> : ''}
-            <button onClick={submitForm} name="submit">Sign up</button>
+            {loadingSendingForm ? <p>Loading...</p> : ''}
+            {registerError === '' ? '' : <p className="warning">{registerError}</p>}
+            <button onClick={(e) => handleSubmit(e)} name="submit">Sign up</button>
             <p className="back underline">Already have an account? Yay! <Link tag={Link} to="/login"> Login here</Link></p>
         </div>
     );

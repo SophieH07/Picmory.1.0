@@ -12,18 +12,29 @@ const Profile = props => {
     const [followers, setFollowers] = useState('');
     const [colorOne, setColorOne] = useState(0);
     const [colorTwo, setColorTwo] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const result = async () => {
-            const response = await axios.get('/user/myinfo');
+        try {
+            const result = async () => {
+                const response = await axios.get('/user/myinfo');
+                setUsername(response.data.userName);
+                setEmail(response.data.email);
+                setProfilePic(response.data.profilePictureId);
+                setFollowers(response.data.followers);
+                setFollowed(response.data.followers);
+                setIsLoading(false);
+            }
+            result();
 
-            setUsername(response.data.userName);
-            setEmail(response.data.email);
-            setProfilePic(response.data.profilePictureId);
-            setFollowers(response.data.followers);
+        } catch (e) {
+            console.log(e);
         }
-        result();
     }, [])
+
+    if (isLoading) {
+        return (<div><p>Loading...</p></div>)
+    }
 
     return (
         <div className="profile" >

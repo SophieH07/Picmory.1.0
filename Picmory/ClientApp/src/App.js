@@ -19,9 +19,9 @@ function App() {
         const loggedInUserName = localStorage.getItem("username");
         if (loggedInUserName !== null) {
             setIsAuthenticated(true);
-            setIsLoading(false);
             history.push(`/user/${loggedInUserName}`);
         }
+        setIsLoading(false);
     }, [history, isAuthenticated]);
 
     const handleLogOut = () => {
