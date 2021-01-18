@@ -50,7 +50,7 @@ const Login = props => {
             {loginError === '' ? '' : <p className="warning">{loginError}</p>}
             <h2>Login</h2>
             <form>
-                <div className="inputs">
+                <div className="input-fields">
                     <div>
                         <input name="usernameOrEmail" value={usernameOrEmail} placeholder="Username or Email" onChange={(e) => { setUsernameOrEmail(e.target.value) }}></input>
                     </div>

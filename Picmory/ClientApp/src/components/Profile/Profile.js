@@ -39,7 +39,7 @@ const Profile = props => {
     return (
         <div className="profile" >
             <div className="left-side">
-                <img className="profile-pic" alt="profile pic" />
+                <img alt={`https://localhost:44386/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
                 <p className="username">{email}</p>
                 <p>{followers} followers 0 following</p>
