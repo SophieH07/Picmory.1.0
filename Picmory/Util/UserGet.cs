@@ -33,6 +33,7 @@ namespace Picmory.Util
             SecurityToken jsonToken;
             var handler = new JwtSecurityTokenHandler();
             string cookie = context.Request.Cookies["Bearer"];
+            if (cookie == null) { return false; }
             if (cookie.Length < 235) { return false; }
             try { jsonToken = handler.ReadToken(cookie); }
             catch { return false; }
