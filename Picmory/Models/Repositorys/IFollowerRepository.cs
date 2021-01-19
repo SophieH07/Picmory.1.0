@@ -13,7 +13,9 @@ namespace Picmory.Models.Repositorys
         public Success AnswerNewFollower(bool accept, User follower, User followed);
         public Success DeleteFollower(User follower, User followed);
         public List<string> GetAllFollowers(User user);
+        public int GetAllFollowersNumber(User user);
         public List<string> GetAllFollowing(User user);
+        public int GetAllFollowingNumber(User user);
         public List<string> GetAllFollowRequest(User user);
     }
 }
