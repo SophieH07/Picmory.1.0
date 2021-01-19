@@ -9,12 +9,14 @@ namespace Picmory.Util
 {
     public class UserGet
     {
-        private IUserRepository userRepository;
+        private readonly IUserRepository userRepository;
 
         public UserGet(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
         }
+
+
         public User GetUser(HttpContext context)
         {
             SecurityToken jsonToken;
@@ -31,6 +33,7 @@ namespace Picmory.Util
             SecurityToken jsonToken;
             var handler = new JwtSecurityTokenHandler();
             string cookie = context.Request.Cookies["Bearer"];
+            if (cookie == null) { return false; }
             if (cookie.Length < 235) { return false; }
             try { jsonToken = handler.ReadToken(cookie); }
             catch { return false; }
