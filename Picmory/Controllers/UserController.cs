@@ -104,5 +104,16 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
+        [HttpPost("deleteuser")]
+        public IActionResult Deleteuser()
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User userToDelete = userGet.GetUser(HttpContext);
+                userRepository.DeleteUser(userToDelete);
+                return Ok();
+            }
+            return Unauthorized();
+        }
     }
 }

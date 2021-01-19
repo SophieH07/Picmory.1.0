@@ -40,12 +40,7 @@ namespace Picmory.Controllers
                 {
 
                 }
-                List<User> foundUsersInDB = userRepository.GetUsersForTerm(term);
-                List <SearchUser> foundUsers = new List<SearchUser>();
-                foreach (User userInDB in foundUsersInDB)
-                {
-                    foundUsers.Add(new SearchUser(userInDB.UserName, (userInDB.ProfilePicture==null)? 0 : userInDB.ProfilePicture.Id));
-                }
+                List <SearchUser> foundUsers = userRepository.GetUsersForTerm(term);
                 return Ok(foundUsers);
                
             }

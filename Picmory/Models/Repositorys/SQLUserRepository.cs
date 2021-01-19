@@ -85,18 +85,27 @@ namespace Picmory.Models.Repositorys
             return user;
         }
 
-        public List<User> GetUsersForTerm(string term)
+        public List<SearchUser> GetUsersForTerm(string term)
         {
             List<SearchUser> resultUsers = new List<SearchUser>();
             try
             {
-                return resultUsers = (SearchUser)context.Users.Where(a => a.UserName.Contains(term)).Include(a => a.ProfilePicture).Select(a => new SearchUser() { a.UserName, a.ProfilePicture.Id }).Take(5).ToList();
-               
+                return resultUsers = context.Users
+                    .Where(a => a.UserName
+                    .Contains(term))
+                    .Include(a => a.ProfilePicture)
+                    .Select(a => new SearchUser { UserName = a.UserName, PictureId = a.ProfilePicture.Id }).Take(5).ToList();
             }
             catch (Exception e)
             {
                 return null;
             }
+        }
+
+        public void DeleteUser(User userToDelete)
+        {
+            context.Users.Remove(userToDelete);
+            context.SaveChanges(); 
         }
     }
 }
