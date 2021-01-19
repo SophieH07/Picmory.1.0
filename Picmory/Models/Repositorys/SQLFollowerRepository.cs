@@ -82,6 +82,21 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public int GetAllFollowersNumber(User user)
+        {
+            try
+            {
+                return context.Followers
+                    .Include(a => a.Follower)
+                    .Where(a => a.Followed == user && a.Accepted == true)
+                    .Count();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
         public List<string> GetAllFollowing(User user)
         {
             List<string> followedUsers = new List<string>();
@@ -100,6 +115,21 @@ namespace Picmory.Models.Repositorys
             catch (Exception e)
             {
                 return followedUsers;
+            }
+        }
+
+        public int GetAllFollowingNumber(User user)
+        {
+            try
+            {
+                return context.Followers
+                    .Include(a => a.Follower)
+                    .Where(a => a.Follower == user && a.Accepted == true)
+                    .Count();
+            }
+            catch (Exception e)
+            {
+                return 0;
             }
         }
 
