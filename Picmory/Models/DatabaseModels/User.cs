@@ -1,4 +1,5 @@
 ﻿using Picmory.Util;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
@@ -42,6 +43,7 @@ namespace Picmory.Models
         [Timestamp]
         [Column("RegistrationDate")]
         public byte[] RegistrationTime { get; set; }
+        public List<Folder> Folder { get; set; }
 
     }
 }

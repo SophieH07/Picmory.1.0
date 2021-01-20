@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Picmory.Models
 {
-    public class Followers
+    public class Follower
     {
-        public Followers()
+        public Follower()
         { }
 
-        public Followers(User Followed, User Follower, bool? Accepted)
+        public Follower(User Followed, User Follower, bool? Accepted)
         {
-            this.Follower = Follower;
+            this.FollowerUser = Follower;
             this.Followed = Followed;
             this.Accepted = Accepted;
         }
@@ -19,7 +19,7 @@ namespace Picmory.Models
         [Key]
         public int ID { get; set; }
         public User Followed { get; set; }
-        public User Follower { get; set; }
+        public User FollowerUser { get; set; }
         public bool? Accepted { get; set; }
     }
 }

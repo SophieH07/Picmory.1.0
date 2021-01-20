@@ -81,7 +81,7 @@ namespace Picmory.Models.Repositorys
         public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName)
         {
             bool followed = null != context.Followers
-                .Where(a => a.Follower == user &&
+                .Where(a => a.FollowerUser == user &&
                             a.Followed == otherUser &&
                             a.Accepted == true)
                 .FirstOrDefault();
