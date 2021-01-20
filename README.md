@@ -6,3 +6,4 @@
 <p>Save your memories by pictures on Picmory!</p>
 <p>Picmory is a social media website created with ASP.NET, React and MySQL</p>
 <p>The team had 3 members, Zsófia Szaniszló - frontend, Máté Major - backend, Mihály Horváth - automated tester.</p>
+<p>We are currently working on this project, so feel free to check out other branches since you might not find the latest implementations on master branch yet.</p>
