@@ -24,7 +24,18 @@ namespace Picmory.Models.Repositorys
 
         public User GetUserData(int id)
         {
-            return context.Users.Where(a => a.Id == id).Single();
+            try
+            { 
+                return context.Users.Where(a => a.Id == id).Single();
+            }
+            catch (InvalidOperationException exc)
+            {
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
+            }
         }
 
         public User GetUserData(string name)
@@ -34,9 +45,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.UserName == name).Single();
                 return user;
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return null;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
             }
         }
 
@@ -47,9 +62,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.Email == email).Single();
                 return user;
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return null;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
             }
         }
 
@@ -92,6 +111,13 @@ namespace Picmory.Models.Repositorys
             context.SaveChanges();
             return user;
         }
+       
+        public void DeleteUser(User userToDelete)
+        {
+            context.Users.Remove(userToDelete);
+            context.SaveChanges(); 
+        }
+
 
         public List<SearchUser> GetUsersForTerm(string term)
         {
@@ -109,10 +135,5 @@ namespace Picmory.Models.Repositorys
             }
         }
 
-        public void DeleteUser(User userToDelete)
-        {
-            context.Users.Remove(userToDelete);
-            context.SaveChanges(); 
-        }
     }
 }
