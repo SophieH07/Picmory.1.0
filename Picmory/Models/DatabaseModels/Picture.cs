@@ -1,4 +1,5 @@
 ﻿using Picmory.Util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,22 +23,25 @@ namespace Picmory.Models
 
         [Key]
         public int Id { get; set; }
+        [MaxLength(150)]
         public string Path { get; set; }
         [Required]
+        [MaxLength(500)]
         public string Description { get; set; }
         [Required]
         public AccessType Access { get; set; }
         [Required]
+        [MaxLength(50)]
         public string Type { get; set; }
         [Required]
         [ForeignKey("PictureOwner")]
         public User Owner { get; set; }
         [Required]
-        [ForeignKey("FolderData")]
         public Folder Folder { get; set; }
         [Timestamp]
         [Column("UploadDate")]
-        public byte[] UploadDate { get; set; }
+        public DateTime UploadDate { get; set; }
         public List <Like> Likes { get; set; }
+        public List<Tag> Tags { get; set; }
     }
 }

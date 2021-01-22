@@ -7,10 +7,10 @@ namespace Picmory.Models.RequestModels
     {
         public NavBarUser()
         {}
-        public NavBarUser(string userName, Picture profilePicture, ThemeColor colorOne, ThemeColor colorTwo)
+        public NavBarUser(string userName, int  profilePictureId, ThemeColor colorOne, ThemeColor colorTwo)
         {
             this.UserName = userName;
-            this.PictureId = profilePicture==null ? 0 :  profilePicture.Id;
+            this.PictureId = profilePictureId;
             this.ColorOne = colorOne;
             this.ColorTwo = colorTwo;
         }

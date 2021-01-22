@@ -53,7 +53,7 @@ namespace Picmory.Controllers
                 string originalPassword = databaseUser.Password;
                 if (Hashing.ValidatePassword(loginPassword, originalPassword))
                 {
-                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePicture, databaseUser.ColorOne, databaseUser.ColorTwo);
+                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePictureID, databaseUser.ColorOne, databaseUser.ColorTwo);
                     Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                     return Ok(userData);
                 }

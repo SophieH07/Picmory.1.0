@@ -10,8 +10,8 @@ using Picmory.Models;
 namespace Picmory.Migrations
 {
     [DbContext(typeof(PicmoryDbContext))]
-    [Migration("20210120082932_Like Table")]
-    partial class LikeTable
+    [Migration("20210121125758_Initialize DB")]
+    partial class InitializeDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,9 +33,10 @@ namespace Picmory.Migrations
 
                     b.Property<string>("FolderName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("FolderOwner")
+                    b.Property<int>("FolderOwner")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -45,7 +46,7 @@ namespace Picmory.Migrations
                     b.ToTable("Folders");
                 });
 
-            modelBuilder.Entity("Picmory.Models.Followers", b =>
+            modelBuilder.Entity("Picmory.Models.Follower", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -58,14 +59,14 @@ namespace Picmory.Migrations
                     b.Property<int?>("FollowedId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FollowerId")
+                    b.Property<int?>("FollowerUserId")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("FollowedId");
 
-                    b.HasIndex("FollowerId");
+                    b.HasIndex("FollowerUserId");
 
                     b.ToTable("Followers");
                 });
@@ -104,34 +105,76 @@ namespace Picmory.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("FolderData")
+                    b.Property<int?>("FolderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("PictureOwner")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<byte[]>("UploadDate")
+                    b.Property<DateTime>("UploadDate")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("datetime2")
                         .HasColumnName("UploadDate");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FolderData");
+                    b.HasIndex("FolderId");
 
                     b.HasIndex("PictureOwner");
 
                     b.ToTable("Pictures");
+                });
+
+            modelBuilder.Entity("Picmory.Models.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("PictureId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tag")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PictureId");
+
+                    b.HasIndex("Tag");
+
+                    b.ToTable("Tag");
+                });
+
+            modelBuilder.Entity("Picmory.Models.TagName", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("TagData")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TagName");
                 });
 
             modelBuilder.Entity("Picmory.Models.User", b =>
@@ -148,28 +191,30 @@ namespace Picmory.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("ProfPicture")
+                    b.Property<int>("ProfilePictureID")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RegistrationTime")
+                    b.Property<DateTime>("RegistrationTime")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("datetime2")
                         .HasColumnName("RegistrationDate");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProfPicture");
 
                     b.ToTable("Users");
                 });
@@ -178,24 +223,26 @@ namespace Picmory.Migrations
                 {
                     b.HasOne("Picmory.Models.User", "Owner")
                         .WithMany("Folder")
-                        .HasForeignKey("FolderOwner");
+                        .HasForeignKey("FolderOwner")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Picmory.Models.Followers", b =>
+            modelBuilder.Entity("Picmory.Models.Follower", b =>
                 {
                     b.HasOne("Picmory.Models.User", "Followed")
                         .WithMany()
                         .HasForeignKey("FollowedId");
 
-                    b.HasOne("Picmory.Models.User", "Follower")
+                    b.HasOne("Picmory.Models.User", "FollowerUser")
                         .WithMany()
-                        .HasForeignKey("FollowerId");
+                        .HasForeignKey("FollowerUserId");
 
                     b.Navigation("Followed");
 
-                    b.Navigation("Follower");
+                    b.Navigation("FollowerUser");
                 });
 
             modelBuilder.Entity("Picmory.Models.Like", b =>
@@ -204,22 +251,22 @@ namespace Picmory.Migrations
                         .WithMany()
                         .HasForeignKey("LikeOwner");
 
-                    b.HasOne("Picmory.Models.Picture", null)
+                    b.HasOne("Picmory.Models.Picture", "Picture")
                         .WithMany("Likes")
                         .HasForeignKey("PictureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Picture");
                 });
 
             modelBuilder.Entity("Picmory.Models.Picture", b =>
                 {
                     b.HasOne("Picmory.Models.Folder", "Folder")
                         .WithMany()
-                        .HasForeignKey("FolderData")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FolderId");
 
                     b.HasOne("Picmory.Models.User", "Owner")
                         .WithMany()
@@ -232,18 +279,30 @@ namespace Picmory.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Picmory.Models.User", b =>
+            modelBuilder.Entity("Picmory.Models.Tag", b =>
                 {
-                    b.HasOne("Picmory.Models.Picture", "ProfilePicture")
-                        .WithMany()
-                        .HasForeignKey("ProfPicture");
+                    b.HasOne("Picmory.Models.Picture", "Picture")
+                        .WithMany("Tags")
+                        .HasForeignKey("PictureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("ProfilePicture");
+                    b.HasOne("Picmory.Models.TagName", "TagName")
+                        .WithMany()
+                        .HasForeignKey("Tag")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Picture");
+
+                    b.Navigation("TagName");
                 });
 
             modelBuilder.Entity("Picmory.Models.Picture", b =>
                 {
                     b.Navigation("Likes");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Picmory.Models.User", b =>

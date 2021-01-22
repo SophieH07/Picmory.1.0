@@ -1,5 +1,6 @@
 ﻿using Picmory.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,9 +24,11 @@ namespace Picmory.Models
 
         [Key]
         public int Id { get; set; }
+        [Required]
         [ForeignKey("FolderOwner")]
         public User Owner { get; set; }
         [Required]
+        [MaxLength(50)]
         public string FolderName { get; set; }
         [Required]
         public AccessType Access { get; set; }

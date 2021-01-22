@@ -25,7 +25,7 @@ namespace Picmory.Models.Repositorys
 
         public User GetUserData(int id)
         {
-            return context.Users.Include(a => a.ProfilePicture).Where(a => a.Id == id).Single();
+            return context.Users.Where(a => a.Id == id).Single();
         }
 
         public User GetUserData(string name)
@@ -93,8 +93,7 @@ namespace Picmory.Models.Repositorys
                 return resultUsers = context.Users
                     .Where(a => a.UserName
                     .Contains(term))
-                    .Include(a => a.ProfilePicture)
-                    .Select(a => new SearchUser { UserName = a.UserName, PictureId = a.ProfilePicture.Id }).Take(5).ToList();
+                    .Select(a => new SearchUser { UserName = a.UserName, PictureId = a.ProfilePictureID }).Take(5).ToList();
             }
             catch (Exception e)
             {

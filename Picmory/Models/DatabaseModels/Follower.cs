@@ -18,7 +18,9 @@ namespace Picmory.Models
 
         [Key]
         public int ID { get; set; }
+        [Required]
         public User Followed { get; set; }
+        [Required]
         public User FollowerUser { get; set; }
         public bool? Accepted { get; set; }
     }

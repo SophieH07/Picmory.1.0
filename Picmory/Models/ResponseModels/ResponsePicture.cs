@@ -12,7 +12,7 @@ namespace Picmory.Models.RequestModels
         {
         }
 
-        public ResponsePicture(int Id, string Description, string FolderName, AccessType Access, byte[] UploadTime)
+        public ResponsePicture(int Id, string Description, string FolderName, AccessType Access, DateTime UploadTime)
         {
             this.Id = Id;
             this.Description = Description;
@@ -26,6 +26,6 @@ namespace Picmory.Models.RequestModels
         public string Description { get; set; }
         public string FolderName { get; set; }
         public AccessType Access { get; set; }
-        public byte[] UploadTime  { get; set; }
+        public DateTime UploadTime  { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Picmory.Util;
+﻿using Picmory.Models.DatabaseModels;
+using Picmory.Util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Picmory.Models
 {
-    public class User
+    public class User : IDateCreatedAndUpdated
     {
         public User() { }
        
@@ -32,18 +34,19 @@ namespace Picmory.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [MaxLength(50)]
         public string UserName { get; set; }
+        [Required]
+        [MaxLength(50)]
         public string Email { get; set; }
         [Required]
+        [MaxLength(100)]
         public string Password { get; set; }
         public ThemeColor ColorOne { get; set; }
         public ThemeColor ColorTwo { get; set; }
-        [ForeignKey("ProfPicture")]
-        public Picture ProfilePicture { get; set; }
-        [Timestamp]
-        [Column("RegistrationDate")]
-        public byte[] RegistrationTime { get; set; }
+        public int ProfilePictureID { get; set; }    
         public List<Folder> Folder { get; set; }
-
+        public DateTime DateCreated { get; set; }
+        public DateTime? DateUpdated { get; set; }
     }
 }

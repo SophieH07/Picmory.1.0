@@ -37,7 +37,7 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), user.ProfilePicture, folderRepository.GetAllFolders(user));
+                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), user.ProfilePictureID, folderRepository.GetAllFolders(user));
                 return Ok(resultUser);
             }
             return Unauthorized();
@@ -92,7 +92,7 @@ namespace Picmory.Controllers
                 User user = userGet.GetUser(HttpContext);
                 if (profilePicture.Owner == user)
                 {
-                    user.ProfilePicture = profilePicture;
+                    user.ProfilePictureID = profilePicture.Id;
                     userRepository.EditUserData(user);
                     return Ok();
                 }
