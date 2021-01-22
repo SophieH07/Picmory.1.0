@@ -15,18 +15,16 @@ namespace Picmory.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly IFolderRepository folderRepository;
-        private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IPictureRepository pictureRepository;
         private readonly IFollowerRepository followerRepository;
         private readonly UserGet userGet;
 
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository, IFollowerRepository followerRepository)
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IPictureRepository pictureRepository, IFollowerRepository followerRepository)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
             this.pictureRepository = pictureRepository;
             this.followerRepository = followerRepository;
-            _hostEnvironment = hostEnvironment;
             userGet = new UserGet(userRepository);
         }
 
@@ -37,66 +35,43 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                UserPageUser resultUser = new UserPageUser(user.UserName, user.Email, user.ColorOne, user.ColorTwo, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), user.ProfilePictureID, folderRepository.GetAllFolders(user));
+                UserPageUser resultUser = new UserPageUser(user, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), folderRepository.GetAllFolders(user));
                 return Ok(resultUser);
             }
             return Unauthorized();
         }
        
-        [HttpPost("changepassword")]
-        public IActionResult SetNewPassword([FromBody] string newPassword)
-        {
-            if (userGet.HaveUser(HttpContext))
-            {
-                if (newPassword != null) { 
-                User user = userGet.GetUser(HttpContext);
-                user.Password = Hashing.HashPassword(newPassword);
-                userRepository.EditUserData(user);
-                return Ok(); }
-            }
-            return Unauthorized();
-        }
 
-        [HttpPost("changethemeandusername")]
+        [HttpPost("changeuserdata")]
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
 
-                if (userRepository.UserNameAlreadyUsed(changeData.UserName) && changeData.UserName != user.UserName)
+                if (!userRepository.UserNameAlreadyUsed(changeData.UserName) && changeData.UserName != user.UserName && changeData.UserName != null)
+                    {  user.UserName = changeData.UserName; }
+                else if (userRepository.UserNameAlreadyUsed(changeData.UserName) || changeData.UserName == user.UserName)
                     { return BadRequest("Used Username!"); }
-                else if (changeData.UserName != null)
-                    { user.UserName = changeData.UserName; }
-                else if (changeData.ColorOne != null)
-                    { user.ColorOne = (ThemeColor)changeData.ColorOne; } 
-                else if (changeData.ColorTwo != null)
+                if (changeData.ColorOne != null)
+                    { user.ColorOne = (ThemeColor)changeData.ColorOne; }
+                if (changeData.ColorTwo != null)
                     { user.ColorTwo = (ThemeColor)changeData.ColorTwo; }
+                if (changeData.Password != null)
+                    { user.Password = Hashing.HashPassword(changeData.Password); } 
+                if (changeData.ProfilePictureId != 0)
+                    {
+                        Picture profilePicture = pictureRepository.GetPicture(changeData.ProfilePictureId);
+                        if (profilePicture == null) { return BadRequest("Not your picture!"); }
+                        if (profilePicture.Owner == user)
+                        {
+                            user.ProfilePictureID = profilePicture.Id;
+                        }
+                        return BadRequest("Not your picture!");
+                }
                 userRepository.EditUserData(user);
 
                 return Ok();                
-            }
-            return Unauthorized();
-        }
-
-        [HttpPost("setprofilepicture")]
-        public IActionResult SetProfilePicture([FromBody] string profilePictureId)
-        {
-            
-            int.TryParse(profilePictureId, out int pictureId);
-            if (pictureId ==0) { return BadRequest("Wrong data!"); } 
-            Picture profilePicture = pictureRepository.GetPicture(pictureId);
-            if (profilePicture == null) { return BadRequest("Not your picture!"); }
-            if (userGet.HaveUser(HttpContext))
-            {
-                User user = userGet.GetUser(HttpContext);
-                if (profilePicture.Owner == user)
-                {
-                    user.ProfilePictureID = profilePicture.Id;
-                    userRepository.EditUserData(user);
-                    return Ok();
-                }
-                return BadRequest("Not your picture!");
             }
             return Unauthorized();
         }
