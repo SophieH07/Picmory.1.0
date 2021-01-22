@@ -7,15 +7,16 @@ namespace Picmory.Models.RequestModels
     {
         public NavBarUser()
         {}
-        public NavBarUser(string userName, int  profilePictureId, ThemeColor colorOne, ThemeColor colorTwo)
+        public NavBarUser(User user)
         {
-            this.UserName = userName;
-            this.PictureId = profilePictureId;
-            this.ColorOne = colorOne;
-            this.ColorTwo = colorTwo;
+            this.UserName = user.UserName;
+            this.PictureId = user.ProfilePictureID;
+            this.ColorOne = user.ColorOne;
+            this.ColorTwo = user.ColorTwo;
         }
        
-        public String UserName { get; set; }
+
+        public string UserName { get; set; }
         public int? PictureId { get; set; }
         public ThemeColor ColorOne { get; set; }
         public ThemeColor ColorTwo { get; set; }

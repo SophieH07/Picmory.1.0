@@ -46,13 +46,13 @@ namespace Picmory.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginUser user)
         {
-            string loginPassword = user.Password;
-            User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) ? userRepository.GetUserData(user.UserName) : userRepository.GetUserDataFromEmail(user.UserName);
+            User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) 
+                ? userRepository.GetUserData(user.UserName) 
+                : userRepository.GetUserDataFromEmail(user.UserName);
             if (databaseUser != null) {
-                string originalPassword = databaseUser.Password;
-                if (Hashing.ValidatePassword(loginPassword, originalPassword))
+                if (Hashing.ValidatePassword(user.Password, databaseUser.Password))
                 {
-                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePictureID, databaseUser.ColorOne, databaseUser.ColorTwo);
+                    NavBarUser userData = new NavBarUser(databaseUser);
                     Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                     return Ok(userData);
                 }

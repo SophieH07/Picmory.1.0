@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Picmory.Models.RequestModels
 {
     public class LoginUser
     {
         public LoginUser() { }
-        public LoginUser(string name, string password)
+        public LoginUser(string userName, string password)
         {
-            this.UserName = name;
-            this.Password = password;
-        }
-        public LoginUser(string name, string email, string password)
-        {
-            this.Email = email;
-            this.Password = password;
+            UserName = userName;
+            Password = password;
         }
 
-
+        [Required]
         public string UserName { get; set; }
-        public string Email { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 }

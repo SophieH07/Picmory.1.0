@@ -6,10 +6,6 @@ namespace Picmory.Models.RequestResultModels
     public class UserPageUser
     {
         public UserPageUser() { }
-        public UserPageUser(string name)
-        {
-            this.UserName = name;
-        }
         public UserPageUser(string userName, string email, ThemeColor coloreOne, ThemeColor coloreTwo, int followers, int followed, int profilePictureId, List<FolderForShow> folders)
         {
             UserName = userName;
@@ -21,6 +17,7 @@ namespace Picmory.Models.RequestResultModels
             ProfilePictureId = profilePictureId;
             Folders = folders;
         }
+
 
         public string UserName { get; set; }
         public string Email { get; set; }
