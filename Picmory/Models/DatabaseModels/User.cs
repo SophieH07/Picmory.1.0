@@ -12,17 +12,6 @@ namespace Picmory.Models
     public class User : IDateCreatedAndUpdated
     {
         public User() { }
-       
-        public User(ThemeColor colorOne, ThemeColor coloreTwo) 
-        {
-            ColorOne = colorOne;
-            ColorTwo = coloreTwo;
-        }
-        public User(string name,  string password)
-        {
-            this.UserName = name;
-            this.Password = password;
-        }
         public User(string name, string email, string password)
         {
             this.UserName = name;

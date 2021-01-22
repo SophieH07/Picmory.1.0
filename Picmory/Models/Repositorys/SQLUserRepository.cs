@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Picmory.Models.RequestModels;
+﻿using Picmory.Models.RequestModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,9 +60,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.Email == email).Single();
                 return true;
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return false;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return false;
+                }
+                throw;
             }
         }
 
@@ -73,8 +76,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.UserName == name).Single();
                 return true;
             }
-            catch (Exception e) {
-                return false;
+            catch (InvalidOperationException exc)
+            {
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return false;
+                }
+                throw;
             }
         }
 
@@ -95,7 +103,7 @@ namespace Picmory.Models.Repositorys
                     .Contains(term))
                     .Select(a => new SearchUser { UserName = a.UserName, PictureId = a.ProfilePictureID }).Take(5).ToList();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

@@ -32,8 +32,7 @@ namespace Picmory.Controllers
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            if (user.Email != null && user.UserName != null && user.Password != null && 
-                !userRepository.UserNameAlreadyUsed(user.UserName) &&
+            if (!userRepository.UserNameAlreadyUsed(user.UserName) &&
                 !userRepository.EmailAlreadyUsed(user.Email))
             {
                 User databaseUser = SaveUser(user);
