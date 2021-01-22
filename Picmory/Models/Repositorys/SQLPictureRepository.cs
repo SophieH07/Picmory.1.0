@@ -41,6 +41,23 @@ namespace Picmory.Models.Repositorys
             return Success.Successfull;
         }
 
+        public List<string> GetAllPictures(User user)
+        {
+            List<string> pictureIds = new List<string>();
+            try
+            {
+                return pictureIds = context.Pictures
+                    .Where(a => a.Owner == user)
+                    .OrderBy(a => a.DateCreated).Select(a => String.Format("{0}.{1}",a.Id, a.Type.Substring(6)))
+                    .ToList();
+                
+            }
+            catch (Exception)
+            {
+                return pictureIds;
+            }
+        }
+
         public Picture GetPicture(int id)
         {
             return context.Pictures.Include(a => a.Folder).Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();
@@ -56,7 +73,7 @@ namespace Picmory.Models.Repositorys
                     return pictures = context.Pictures
                         .Where(a => a.Owner == user)
                         .Include(a => a.Folder)
-                        .OrderBy(a => a.UploadDate)
+                        .OrderBy(a => a.DateCreated)
                         .Take(offset + 10)
                         .Skip(offset)
                         .ToList();
@@ -66,7 +83,7 @@ namespace Picmory.Models.Repositorys
                     return pictures = context.Pictures
                        .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
                        .Include(a => a.Folder)
-                       .OrderBy(a => a.UploadDate)
+                       .OrderBy(a => a.DateCreated)
                        .Take(offset + 10)
                        .Skip(offset)
                        .ToList();
@@ -97,7 +114,7 @@ namespace Picmory.Models.Repositorys
                                   (a.Access == AccessType.PublicForEveryone ||
                                    a.Access == AccessType.PublicForFollowers))
                             .Include(a => a.Folder)
-                            .OrderBy(a => a.UploadDate)
+                            .OrderBy(a => a.DateCreated)
                             .Take(offset + 10)
                             .Skip(offset)
                             .ToList();
@@ -112,7 +129,7 @@ namespace Picmory.Models.Repositorys
                                  (a.Access == AccessType.PublicForEveryone ||
                                   a.Access == AccessType.PublicForFollowers))
                            .Include(a => a.Folder)
-                           .OrderBy(a => a.UploadDate)
+                           .OrderBy(a => a.DateCreated)
                            .Take(offset + 10)
                            .Skip(offset)
                            .ToList();
@@ -134,7 +151,7 @@ namespace Picmory.Models.Repositorys
                             .Where(a => a.Owner == otherUser &&
                                   (a.Access == AccessType.PublicForEveryone))
                             .Include(a => a.Folder)
-                            .OrderBy(a => a.UploadDate)
+                            .OrderBy(a => a.DateCreated)
                             .Take(offset + 10)
                             .Skip(offset)
                             .ToList();
@@ -147,7 +164,7 @@ namespace Picmory.Models.Repositorys
                                   a.Folder.Access == AccessType.PublicForEveryone &&
                                   a.Access == AccessType.PublicForEveryone )
                            .Include(a => a.Folder)
-                           .OrderBy(a => a.UploadDate)
+                           .OrderBy(a => a.DateCreated)
                            .Take(offset + 10)
                            .Skip(offset)
                            .ToList();

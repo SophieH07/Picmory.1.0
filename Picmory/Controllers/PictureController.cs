@@ -138,7 +138,7 @@ namespace Picmory.Controllers
                 List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
                 foreach (Picture picture in pictures)
                 {
-                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.DateCreated));
                 }
                 return JsonConvert.SerializeObject(responsePictures);
             }
@@ -156,7 +156,7 @@ namespace Picmory.Controllers
                 List<Picture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
                 foreach (Picture picture in pictures)
                 {
-                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.UploadDate));
+                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.DateCreated));
                 }
                 return Ok(JsonConvert.SerializeObject(responsePictures));
             }

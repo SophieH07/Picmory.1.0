@@ -15,5 +15,6 @@ namespace Picmory.Models.Repositorys
         bool ChangePictureData(PictureChange changeData);
         Success DeletePicture(int pictureId);
         public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName);
+        List<string> GetAllPictures(User user);
     }
 }

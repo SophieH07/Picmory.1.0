@@ -46,18 +46,6 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
-        [Produces("application/json")]
-        [HttpGet("getrequestedfollow")]
-        public IActionResult GetFollowingRequest()
-        {
-            if (userGet.HaveUser(HttpContext))
-            {
-                User user = userGet.GetUser(HttpContext);
-                return Ok(followerRepository.GetAllFollowRequest(user));
-            }
-            return Unauthorized();
-        }
-
         [HttpPost("answerfollower")]
         public IActionResult AnswerFollower([FromBody] FollowerAccept followeraccept)
         {
@@ -101,5 +89,19 @@ namespace Picmory.Controllers
             }
             return Unauthorized();
         }
+
+
+        [Produces("application/json")]
+        [HttpGet("getrequestedfollow")]
+        public IActionResult GetFollowingRequest()
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                return Ok(followerRepository.GetAllFollowRequest(user));
+            }
+            return Unauthorized();
+        }
+
     }
 }

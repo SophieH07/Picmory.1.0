@@ -5,7 +5,6 @@ using Picmory.Models.Repositorys;
 using Picmory.Models.RequestModels;
 using Picmory.Models.RequestResultModels;
 using Picmory.Util;
-using System.Collections.Generic;
 
 namespace Picmory.Controllers
 {
@@ -18,14 +17,16 @@ namespace Picmory.Controllers
         private readonly IPictureRepository pictureRepository;
         private readonly IFollowerRepository followerRepository;
         private readonly UserGet userGet;
-
-        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IPictureRepository pictureRepository, IFollowerRepository followerRepository)
+        private readonly PictureRemover pictureRemover;
+       
+        public UserController(IUserRepository userRepository, IFolderRepository folderRepository, IPictureRepository pictureRepository, IFollowerRepository followerRepository, IWebHostEnvironment hostEnvironment)
         {
             this.userRepository = userRepository;
             this.folderRepository = folderRepository;
             this.pictureRepository = pictureRepository;
             this.followerRepository = followerRepository;
             userGet = new UserGet(userRepository);
+            pictureRemover = new PictureRemover(hostEnvironment, pictureRepository);
         }
 
         [Produces("application/json")]
@@ -82,6 +83,7 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 User userToDelete = userGet.GetUser(HttpContext);
+                pictureRemover.DeletePictures(userToDelete);
                 userRepository.DeleteUser(userToDelete);
                 return Ok();
             }

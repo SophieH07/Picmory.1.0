@@ -35,8 +35,15 @@ namespace Picmory.Models
                     created.DateCreated = DateTime.Now;
                 }
             }
+            foreach (var entity in ChangeTracker.Entries().Where(p => p.State == EntityState.Modified))
+            {
+                var updated = entity.Entity as IDateUpdated;
+                if (updated != null)
+                {
+                    updated.DateUpdated = DateTime.Now;
+                }
+            }
 
-            
         }
     }
 }

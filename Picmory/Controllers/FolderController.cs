@@ -24,19 +24,23 @@ namespace Picmory.Controllers
 
 
         [HttpPost("createnewfolder")]
-        public IActionResult CreateNewFolder([FromBody] Folder folder)
+        public IActionResult CreateNewFolder([FromBody] ChangeFolderData folder)
         {
-            if (userGet.HaveUser(HttpContext))
+            if (userGet.HaveUser(HttpContext) )
             {
-                Folder newFolder = new Folder(folder.FolderName, folder.Access, userGet.GetUser(HttpContext));
-                Success success = folderRepository.SaveNewFolder(newFolder);
-                switch (success)
-                {
-                    case Success.Successfull:
-                        return Ok();
-                    case Success.FailedByUsedName:
-                        return BadRequest("Foldername already used!");
+                if (folder.Access != null && folder.Name != null) 
+                { 
+                    Folder newFolder = new Folder(folder.Name, (AccessType)folder.Access, userGet.GetUser(HttpContext));
+                    Success success = folderRepository.SaveNewFolder(newFolder);
+                    switch (success)
+                    {
+                        case Success.Successfull:
+                            return Ok();
+                        case Success.FailedByUsedName:
+                            return BadRequest("Foldername already used!");
+                    }
                 }
+                return BadRequest("Not valid AccessType, or FolderName!");
             }
             return Unauthorized();
         }
@@ -49,8 +53,8 @@ namespace Picmory.Controllers
                 Success success = folderRepository.ChangeFolderData(
                                                 userGet.GetUser(HttpContext),
                                                 changeFolderData.originalFolder,
-                                                changeFolderData.newName,
-                                                changeFolderData.newAccessType);
+                                                changeFolderData.Name,
+                                                changeFolderData.Access);
                 switch (success) {
                     case Success.Successfull:
                         return Ok();
