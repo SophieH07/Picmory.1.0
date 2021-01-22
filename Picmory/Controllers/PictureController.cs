@@ -118,7 +118,7 @@ namespace Picmory.Controllers
                     Success success = pictureRepository.DeletePicture(pictureId);
                     if (success == Success.Successfull) 
                     {
-                        System.IO.File.Delete(_hostEnv.WebRootPath + "/" + pictureId.ToString());
+                        System.IO.File.Delete(_hostEnv.WebRootPath + "/" + pictureId.ToString() + "." + picture.Type.Substring(6));
                         return Ok();
                     }
                 }

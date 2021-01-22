@@ -21,7 +21,22 @@ namespace Picmory.Util
             this.pictureRepository = pictureRepository;
             _hostEnv = hostEnvironment;
         }
-        
+
+        public bool DeletePicturesForFolder(User user, string folderName)
+        {
+            try
+            {
+                List<string> IdList = pictureRepository.GetAllPicturesInFolder(user, folderName);
+                foreach (string Id in IdList)
+                {
+                    int.TryParse(Id.Split(".")[0], out int id);
+                    pictureRepository.DeletePicture(id);
+                    System.IO.File.Delete(_hostEnv.WebRootPath + "/" + Id.ToString());
+                }
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
 
         public bool DeletePictures (User user)
         {

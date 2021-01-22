@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
@@ -14,11 +15,13 @@ namespace Picmory.Controllers
     {
         private readonly IFolderRepository folderRepository;
         public UserGet userGet { get; }
+        private readonly PictureRemover pictureRemover;
 
-        public FolderController(IUserRepository userRepository, IFolderRepository folderRepository)
+        public FolderController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository)
         {
             this.folderRepository = folderRepository;
             userGet = new UserGet(userRepository);
+            pictureRemover = new PictureRemover(hostEnvironment, pictureRepository);
         }
 
 
@@ -72,6 +75,8 @@ namespace Picmory.Controllers
         {
             if (userGet.HaveUser(HttpContext))
             {
+
+                pictureRemover.DeletePicturesForFolder(userGet.GetUser(HttpContext), folderName);
                 Success success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
                 switch (success)
                 {

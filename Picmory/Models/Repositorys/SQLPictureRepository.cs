@@ -58,6 +58,24 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public List<string> GetAllPicturesInFolder(User user, string folderName)
+        {
+            List<string> pictureIds = new List<string>();
+            try
+            {
+                return pictureIds = context.Pictures
+                    .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
+                    .Include(a => a.Folder)
+                    .OrderBy(a => a.DateCreated).Select(a => String.Format("{0}.{1}", a.Id, a.Type.Substring(6)))
+                    .ToList();
+
+            }
+            catch (Exception)
+            {
+                return pictureIds;
+            }
+        }
+
         public Picture GetPicture(int id)
         {
             return context.Pictures.Include(a => a.Folder).Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();

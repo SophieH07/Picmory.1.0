@@ -32,5 +32,6 @@ namespace Picmory.Models
         public string FolderName { get; set; }
         [Required]
         public AccessType Access { get; set; }
+        public List<Picture> Pictures { get; set; }
     }
 }
