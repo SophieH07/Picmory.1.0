@@ -142,6 +142,7 @@ namespace Picmory.Controllers
         }
 
         [HttpGet("getotherimages")]
+        [Produces("application/json")]
         public IActionResult GetImageForUser(PictureRequest data)
         {
             if (userGet.HaveUser(HttpContext))

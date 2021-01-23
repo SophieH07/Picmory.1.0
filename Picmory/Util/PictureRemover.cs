@@ -26,7 +26,7 @@ namespace Picmory.Util
         {
             try
             {
-                List<string> IdList = pictureRepository.GetAllPicturesInFolder(user, folderName);
+                List<string> IdList = pictureRepository.GetAllPictureIdsInFolder(user, folderName);
                 foreach (string Id in IdList)
                 {
                     int.TryParse(Id.Split(".")[0], out int id);
@@ -42,7 +42,7 @@ namespace Picmory.Util
         {
             try
             {
-                List<string> IdList = pictureRepository.GetAllPictures(user);
+                List<string> IdList = pictureRepository.GetAllPictureIds(user);
             foreach (string Id in IdList)
             {
                 System.IO.File.Delete(_hostEnv.WebRootPath + "/" + Id.ToString());
