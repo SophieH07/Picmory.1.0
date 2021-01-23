@@ -58,6 +58,7 @@ namespace Picmory.Controllers
         }
 
 
+
         [HttpPost("changeuserdata")]
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
         {

@@ -11,11 +11,11 @@ namespace Picmory.Models.Repositorys
         public bool SavePicturePath(int Id, string path);
         public string GetPictureType(int Id);
         public Picture GetPicture(int id);
-        public List<Picture> GetPicturesForMe(User user, int offset, string folderName);
+        public List<ResponsePicture> GetPicturesForMe(User user, int offset, string folderName);
         bool ChangePictureData(PictureChange changeData);
         Success DeletePicture(int pictureId);
-        public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName);
-        List<string> GetAllPictures(User user);
-        List<string> GetAllPicturesInFolder(User user, string folderName);
+        public List<ResponsePicture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName);
+        List<string> GetAllPictureIds(User user);
+        List<string> GetAllPictureIdsInFolder(User user, string folderName);
     }
 }

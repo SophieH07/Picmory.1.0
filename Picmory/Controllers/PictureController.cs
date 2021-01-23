@@ -130,19 +130,15 @@ namespace Picmory.Controllers
 
 
         [HttpGet("getmyimages")]
-        public string GetImageForMe(PictureRequest data)
+        [Produces("application/json")]
+        public IActionResult GetImageForMe(PictureRequest data)
         {
             if (userGet.HaveUser(HttpContext))
             {
-                List<ResponsePicture> responsePictures= new List<ResponsePicture>();
-                List<Picture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
-                foreach (Picture picture in pictures)
-                {
-                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.DateCreated));
-                }
-                return JsonConvert.SerializeObject(responsePictures);
+                List<ResponsePicture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
+                return Ok(JsonConvert.SerializeObject(pictures));
             }
-            return null;
+            return Unauthorized();
         }
 
         [HttpGet("getotherimages")]
@@ -152,13 +148,8 @@ namespace Picmory.Controllers
             {
                 User otherUser = userRepository.GetUserData(data.UserId);
                 if (otherUser == null) { return BadRequest("Not existing user!"); }
-                List<ResponsePicture> responsePictures = new List<ResponsePicture>();
-                List<Picture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
-                foreach (Picture picture in pictures)
-                {
-                    responsePictures.Add(new ResponsePicture(picture.Id, picture.Description, picture.Folder.FolderName, picture.Access, picture.DateCreated));
-                }
-                return Ok(JsonConvert.SerializeObject(responsePictures));
+                List<ResponsePicture> pictures = pictureRepository.GetPicturesFromOther(userGet.GetUser(HttpContext), otherUser, data.Offset, data.FolderName);
+                return Ok(JsonConvert.SerializeObject(pictures));
             }
             return Unauthorized();
         }

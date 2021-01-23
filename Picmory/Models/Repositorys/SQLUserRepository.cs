@@ -14,14 +14,6 @@ namespace Picmory.Models.Repositorys
         }
         
         
-        public User EditUserData(User userChanges)
-        {
-            var user = context.Users.Attach(userChanges);
-            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            context.SaveChanges();
-            return userChanges;
-        }
-
         public User GetUserData(int id)
         {
             try
@@ -42,8 +34,7 @@ namespace Picmory.Models.Repositorys
         {
             try
             {
-                var user = context.Users.Where(a => a.UserName == name).Single();
-                return user;
+                return context.Users.Where(a => a.UserName == name).Single();
             }
             catch (InvalidOperationException exc)
             {
@@ -104,6 +95,7 @@ namespace Picmory.Models.Repositorys
                 throw;
             }
         }
+        
 
         public User RegisterNewUser(User user)
         {
@@ -112,6 +104,14 @@ namespace Picmory.Models.Repositorys
             return user;
         }
        
+        public User EditUserData(User userChanges)
+        {
+            var user = context.Users.Attach(userChanges);
+            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            context.SaveChanges();
+            return userChanges;
+        }
+
         public void DeleteUser(User userToDelete)
         {
             context.Users.Remove(userToDelete);
