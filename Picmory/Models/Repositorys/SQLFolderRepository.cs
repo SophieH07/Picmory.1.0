@@ -67,6 +67,41 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public List<FolderForShow> GetAllFoldersForOther(User user, User otherUser)
+        {
+            bool followed = null != context.Followers
+                     .Where(a => a.FollowerUser == user &&
+                            a.Followed == otherUser &&
+                            a.Accepted == true)
+                     .FirstOrDefault();
+            try
+            {
+                List<FolderForShow> folders = new List<FolderForShow>();
+                if (followed)
+                {
+                    folders = context.Folders
+                        .Where(a => a.Owner == otherUser 
+                            && a.Access == AccessType.PublicForEveryone 
+                            || a.Access == AccessType.PublicForFollowers)
+                        .Select(a => new FolderForShow { FolderName = a.FolderName, Access = a.Access })
+                        .ToList();
+                }
+                else
+                {
+                    folders = context.Folders
+                        .Where(a => a.Owner == otherUser 
+                            && a.Access == AccessType.PublicForEveryone)
+                        .Select(a => new FolderForShow { FolderName = a.FolderName, Access = a.Access })
+                        .ToList();
+                }
+                return folders;              
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public Folder GetFolder(User user, string folderName)
         {
             try

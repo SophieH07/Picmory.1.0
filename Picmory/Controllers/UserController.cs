@@ -41,7 +41,22 @@ namespace Picmory.Controllers
             }
             return Unauthorized();
         }
-       
+
+        [Produces("application/json")]
+        [HttpGet("otheruserinfo")]
+        public IActionResult OtherUserInfo([FromBody] string userId)
+        {
+            int.TryParse(userId, out int otheruserId);
+            if (userGet.HaveUser(HttpContext))
+            {
+                User otheruser = userRepository.GetUserData(otheruserId);
+                User user = userGet.GetUser(HttpContext);
+                UserPageUser resultUser = new UserPageUser(otheruser, followerRepository.GetAllFollowersNumber(otheruser), followerRepository.GetAllFollowingNumber(otheruser), folderRepository.GetAllFoldersForOther(user, otheruser));
+                return Ok(resultUser);
+            }
+            return Unauthorized();
+        }
+
 
         [HttpPost("changeuserdata")]
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)

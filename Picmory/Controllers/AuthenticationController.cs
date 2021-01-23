@@ -42,8 +42,8 @@ namespace Picmory.Controllers
             return BadRequest("Wrong Data!");
         }
 
-        [Produces("application/json")]
         [HttpPost("login")]
+        [Produces("application/json")]
         public IActionResult Login([FromBody] LoginUser user)
         {
             User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) 
