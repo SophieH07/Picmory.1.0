@@ -29,35 +29,23 @@ namespace Picmory.Controllers
             pictureRemover = new PictureRemover(hostEnvironment, pictureRepository);
         }
 
+
         [Produces("application/json")]
-        [HttpGet("myinfo")]
-        public IActionResult Info()
+        [HttpGet("userinfo")]
+        public IActionResult OtherUserInfo([FromBody] int userId)
         {
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                UserPageUser resultUser = new UserPageUser(user, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), folderRepository.GetAllFolders(user));
-                return Ok(resultUser);
+                if (userId == 0)
+                {
+                    return Ok(new UserPageUser(user, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), folderRepository.GetAllFolders(user)));
+                }
+                User otheruser = userRepository.GetUserData(userId);
+                return Ok(new UserPageUser(otheruser, followerRepository.GetAllFollowersNumber(otheruser), followerRepository.GetAllFollowingNumber(otheruser), folderRepository.GetAllFoldersForOther(user, otheruser)));
             }
             return Unauthorized();
         }
-
-        [Produces("application/json")]
-        [HttpGet("otheruserinfo")]
-        public IActionResult OtherUserInfo([FromBody] string userId)
-        {
-            int.TryParse(userId, out int otheruserId);
-            if (userGet.HaveUser(HttpContext))
-            {
-                User otheruser = userRepository.GetUserData(otheruserId);
-                User user = userGet.GetUser(HttpContext);
-                UserPageUser resultUser = new UserPageUser(otheruser, followerRepository.GetAllFollowersNumber(otheruser), followerRepository.GetAllFollowingNumber(otheruser), folderRepository.GetAllFoldersForOther(user, otheruser));
-                return Ok(resultUser);
-            }
-            return Unauthorized();
-        }
-
-
 
         [HttpPost("changeuserdata")]
         public IActionResult SetNewData([FromBody] ChangeUserData changeData)
