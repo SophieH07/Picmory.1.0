@@ -68,12 +68,12 @@ namespace Picmory.Controllers
                     {
                         Picture profilePicture = pictureRepository.GetPicture(changeData.ProfilePictureId);
                         if (profilePicture == null) { return BadRequest("Not your picture!"); }
-                        if (profilePicture.Owner == user)
-                        {
-                            user.ProfilePictureID = profilePicture.Id;
-                        }
-                        return BadRequest("Not your picture!");
-                }
+                        if (profilePicture.Owner != user) { return BadRequest("Not your picture!"); }
+                        else 
+                            {
+                                user.ProfilePictureID = profilePicture.Id;
+                            }
+                    }
                 userRepository.EditUserData(user);
 
                 return Ok();                
