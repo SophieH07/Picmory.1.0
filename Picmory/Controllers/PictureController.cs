@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using Picmory.Models.Repositorys.Interfaces;
 
 namespace Picmory.Controllers
 {
@@ -23,14 +24,16 @@ namespace Picmory.Controllers
         private readonly IPictureRepository pictureRepository;
         private readonly IFolderRepository folderRepository;
         private readonly IUserRepository userRepository;
+        private readonly ILikeRepository likeRepository;
         private readonly UserGet userGet;
         private readonly IWebHostEnvironment _hostEnv;
 
 
-        public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository)
+        public PictureController(IUserRepository userRepository, IPictureRepository pictureRepository, IWebHostEnvironment hostEnvironment, IFolderRepository folderRepository, ILikeRepository likeRepository)
         {
             this.userRepository = userRepository;
             this.pictureRepository = pictureRepository;
+            this.likeRepository = likeRepository;
             _hostEnv = hostEnvironment;
             this.folderRepository = folderRepository;
             userGet = new UserGet(userRepository);
@@ -136,7 +139,11 @@ namespace Picmory.Controllers
             if (userGet.HaveUser(HttpContext))
             {
                 List<ResponsePicture> pictures =  pictureRepository.GetPicturesForMe(userGet.GetUser(HttpContext), data.Offset, data.FolderName);
-                return Ok(JsonConvert.SerializeObject(pictures));
+                foreach (ResponsePicture p in pictures)
+                {
+                    p.Likes = likeRepository.ListOfLikers(p.Id);
+                }
+                return Ok(pictures);
             }
             return Unauthorized();
         }

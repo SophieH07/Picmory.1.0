@@ -120,7 +120,7 @@ namespace Picmory.Models.Repositorys
                     return pictures = context.Pictures
                         .Where(a => a.Owner == user)
                         .Include(a => a.Folder)
-                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated})
                         .OrderBy(a => a.UploadTime)
                         .Take(offset + 10)
                         .Skip(offset)

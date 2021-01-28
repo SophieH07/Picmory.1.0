@@ -15,9 +15,9 @@ namespace Picmory.Models.Repositorys
         }
 
 
-        public List<User> ListOfLikers(int pictureId)
+        public List<string> ListOfLikers(int pictureId)
         {
-            throw new NotImplementedException();
+            return context.Likes.Where(a => a.Picture.Id == pictureId).Select(a => a.Owner.UserName).ToList();
         }
 
         public bool SaveDislike(int pictureId, User likerUser)
