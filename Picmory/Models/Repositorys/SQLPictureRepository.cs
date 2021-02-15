@@ -17,6 +17,31 @@ namespace Picmory.Models.Repositorys
         }
 
 
+        public bool SavePicturePath(int Id, string path)
+        {
+            Picture picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
+            if (picture != null)
+            {
+                picture.Path = path;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+       
+        public Picture SavePicture(Picture picture)
+        {
+            context.Pictures.Add(picture);
+            context.SaveChanges();
+            return picture;
+        }
+       
+        public string GetPictureType(int Id)
+        {
+            var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
+            return picture?.Type;
+        }
+
         public bool ChangePictureData(PictureChange changeData)
         {
             Picture picture = context.Pictures.Find(changeData.Id);
@@ -41,14 +66,53 @@ namespace Picmory.Models.Repositorys
             return Success.Successfull;
         }
 
+
+
         public Picture GetPicture(int id)
         {
             return context.Pictures.Include(a => a.Folder).Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();
         }
 
-        public List<Picture> GetPicturesForMe(User user, int offset, string folderName)
+        public List<string> GetAllPictureIds(User user)
         {
-            List<Picture> pictures = new List<Picture>();
+            List<string> pictureIds = new List<string>();
+            try
+            {
+                return pictureIds = context.Pictures
+                    .Where(a => a.Owner == user)
+                    .OrderBy(a => a.DateCreated).Select(a => String.Format("{0}.{1}",a.Id, a.Type.Substring(6)))
+                    .ToList();
+                
+            }
+            catch (Exception)
+            {
+                return pictureIds;
+            }
+        }
+
+        public List<string> GetAllPictureIdsInFolder(User user, string folderName)
+        {
+            List<string> pictureIds = new List<string>();
+            try
+            {
+                return pictureIds = context.Pictures
+                    .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
+                    .Include(a => a.Folder)
+                    .OrderBy(a => a.DateCreated).Select(a => String.Format("{0}.{1}", a.Id, a.Type.Substring(6)))
+                    .ToList();
+
+            }
+            catch (Exception)
+            {
+                return pictureIds;
+            }
+        }
+
+
+
+        public List<ResponsePicture> GetPicturesForMe(User user, int offset, string folderName)
+        {
+            List<ResponsePicture> pictures = new List<ResponsePicture>();
             try
             {
                 if (folderName == null)
@@ -56,7 +120,8 @@ namespace Picmory.Models.Repositorys
                     return pictures = context.Pictures
                         .Where(a => a.Owner == user)
                         .Include(a => a.Folder)
-                        .OrderBy(a => a.UploadDate)
+                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated})
+                        .OrderBy(a => a.UploadTime)
                         .Take(offset + 10)
                         .Skip(offset)
                         .ToList();
@@ -66,26 +131,27 @@ namespace Picmory.Models.Repositorys
                     return pictures = context.Pictures
                        .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
                        .Include(a => a.Folder)
-                       .OrderBy(a => a.UploadDate)
+                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                       .OrderBy(a => a.UploadTime)
                        .Take(offset + 10)
                        .Skip(offset)
                        .ToList();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return pictures;
             }
         }
 
-        public List<Picture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName)
+        public List<ResponsePicture> GetPicturesFromOther(User user, User otherUser, int offset, string folderName)
         {
             bool followed = null != context.Followers
-                .Where(a => a.Follower == user &&
+                .Where(a => a.FollowerUser == user &&
                             a.Followed == otherUser &&
                             a.Accepted == true)
                 .FirstOrDefault();
-            List<Picture> pictures = new List<Picture>();
+            List<ResponsePicture> pictures = new List<ResponsePicture>();
             if (followed)
             {
                 try
@@ -97,7 +163,8 @@ namespace Picmory.Models.Repositorys
                                   (a.Access == AccessType.PublicForEveryone ||
                                    a.Access == AccessType.PublicForFollowers))
                             .Include(a => a.Folder)
-                            .OrderBy(a => a.UploadDate)
+                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                            .OrderBy(a => a.UploadTime)
                             .Take(offset + 10)
                             .Skip(offset)
                             .ToList();
@@ -112,14 +179,15 @@ namespace Picmory.Models.Repositorys
                                  (a.Access == AccessType.PublicForEveryone ||
                                   a.Access == AccessType.PublicForFollowers))
                            .Include(a => a.Folder)
-                           .OrderBy(a => a.UploadDate)
+                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                           .OrderBy(a => a.UploadTime)
                            .Take(offset + 10)
                            .Skip(offset)
                            .ToList();
                     }
                 }
 
-                catch (Exception e)
+                catch (Exception)
                 {
                     return pictures;
                 }
@@ -134,7 +202,8 @@ namespace Picmory.Models.Repositorys
                             .Where(a => a.Owner == otherUser &&
                                   (a.Access == AccessType.PublicForEveryone))
                             .Include(a => a.Folder)
-                            .OrderBy(a => a.UploadDate)
+                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                            .OrderBy(a => a.UploadTime)
                             .Take(offset + 10)
                             .Skip(offset)
                             .ToList();
@@ -147,44 +216,19 @@ namespace Picmory.Models.Repositorys
                                   a.Folder.Access == AccessType.PublicForEveryone &&
                                   a.Access == AccessType.PublicForEveryone )
                            .Include(a => a.Folder)
-                           .OrderBy(a => a.UploadDate)
+                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                           .OrderBy(a => a.UploadTime)
                            .Take(offset + 10)
                            .Skip(offset)
                            .ToList();
                     }
                 }
 
-                catch (Exception e)
+                catch (Exception)
                 {
                     return pictures;
                 }
             }
-        }
-
-        public string GetPictureType(int Id)
-        {
-            var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
-            if (picture == null) { return null; }
-            return picture.Type;
-        }
-
-        public Picture SavePicture(Picture picture)
-        {
-            context.Pictures.Add(picture);
-            context.SaveChanges();
-            return picture;
-        }
-
-        public bool SavePicturePath(int Id, string path)
-        {
-            var picture = context.Pictures.FirstOrDefault(item => item.Id == Id);
-            if (picture != null)
-            {
-                picture.Path = path;
-                context.SaveChanges();
-                return true;
-            }
-            return false;
         }
     }
 }

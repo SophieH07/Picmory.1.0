@@ -32,8 +32,7 @@ namespace Picmory.Controllers
         [HttpPost("register")]
         public IActionResult Create([FromBody]User user)
         {
-            if (user.Email != null && user.UserName != null && user.Password != null && 
-                !userRepository.UserNameAlreadyUsed(user.UserName) &&
+            if (!userRepository.UserNameAlreadyUsed(user.UserName) &&
                 !userRepository.EmailAlreadyUsed(user.Email))
             {
                 User databaseUser = SaveUser(user);
@@ -43,17 +42,17 @@ namespace Picmory.Controllers
             return BadRequest("Wrong Data!");
         }
 
-        [Produces("application/json")]
         [HttpPost("login")]
+        [Produces("application/json")]
         public IActionResult Login([FromBody] LoginUser user)
         {
-            string loginPassword = user.Password;
-            User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) ? userRepository.GetUserData(user.UserName) : userRepository.GetUserDataFromEmail(user.UserName);
+            User databaseUser = userRepository.UserNameAlreadyUsed(user.UserName) 
+                ? userRepository.GetUserData(user.UserName) 
+                : userRepository.GetUserDataFromEmail(user.UserName);
             if (databaseUser != null) {
-                string originalPassword = databaseUser.Password;
-                if (Hashing.ValidatePassword(loginPassword, originalPassword))
+                if (Hashing.ValidatePassword(user.Password, databaseUser.Password))
                 {
-                    NavBarUser userData = new NavBarUser(databaseUser.UserName, databaseUser.ProfilePicture, databaseUser.ColorOne, databaseUser.ColorTwo);
+                    NavBarUser userData = new NavBarUser(databaseUser);
                     Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                     return Ok(userData);
                 }

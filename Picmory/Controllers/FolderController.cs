@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
@@ -14,29 +15,35 @@ namespace Picmory.Controllers
     {
         private readonly IFolderRepository folderRepository;
         public UserGet userGet { get; }
+        private readonly PictureRemover pictureRemover;
 
-        public FolderController(IUserRepository userRepository, IFolderRepository folderRepository)
+        public FolderController(IUserRepository userRepository, IFolderRepository folderRepository, IWebHostEnvironment hostEnvironment, IPictureRepository pictureRepository)
         {
             this.folderRepository = folderRepository;
             userGet = new UserGet(userRepository);
+            pictureRemover = new PictureRemover(hostEnvironment, pictureRepository);
         }
 
 
 
         [HttpPost("createnewfolder")]
-        public IActionResult CreateNewFolder([FromBody] Folder folder)
+        public IActionResult CreateNewFolder([FromBody] ChangeFolderData folder)
         {
-            if (userGet.HaveUser(HttpContext))
+            if (userGet.HaveUser(HttpContext) )
             {
-                Folder newFolder = new Folder(folder.FolderName, folder.Access, userGet.GetUser(HttpContext));
-                Success success = folderRepository.SaveNewFolder(newFolder);
-                switch (success)
-                {
-                    case Success.Successfull:
-                        return Ok();
-                    case Success.FailedByUsedName:
-                        return BadRequest("Foldername already used!");
+                if (folder.Access != null && folder.Name != null) 
+                { 
+                    Folder newFolder = new Folder(folder.Name, (AccessType)folder.Access, userGet.GetUser(HttpContext));
+                    Success success = folderRepository.SaveNewFolder(newFolder);
+                    switch (success)
+                    {
+                        case Success.Successfull:
+                            return Ok();
+                        case Success.FailedByUsedName:
+                            return BadRequest("Foldername already used!");
+                    }
                 }
+                return BadRequest("Not valid AccessType, or FolderName!");
             }
             return Unauthorized();
         }
@@ -49,8 +56,8 @@ namespace Picmory.Controllers
                 Success success = folderRepository.ChangeFolderData(
                                                 userGet.GetUser(HttpContext),
                                                 changeFolderData.originalFolder,
-                                                changeFolderData.newName,
-                                                changeFolderData.newAccessType);
+                                                changeFolderData.Name,
+                                                changeFolderData.Access);
                 switch (success) {
                     case Success.Successfull:
                         return Ok();
@@ -68,6 +75,8 @@ namespace Picmory.Controllers
         {
             if (userGet.HaveUser(HttpContext))
             {
+
+                pictureRemover.DeletePicturesForFolder(userGet.GetUser(HttpContext), folderName);
                 Success success = folderRepository.DeleteFolder(userGet.GetUser(HttpContext), folderName);
                 switch (success)
                 {
