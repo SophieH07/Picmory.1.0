@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 
-const Profile = props => {
+const Profile = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [profilePic, setProfilePic] = useState(0);
@@ -13,16 +13,20 @@ const Profile = props => {
     const [colorOne, setColorOne] = useState(0);
     const [colorTwo, setColorTwo] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [folders, setFolders] = useState();
+    const [pictures, setPictures] = useState();
 
     useEffect(() => {
         try {
             const result = async () => {
                 const response = await axios.get('/user/myuserinfo');
+                console.log(response.data);
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
                 setProfilePic(response.data.profilePictureId);
                 setFollowers(response.data.followers);
-                setFollowed(response.data.followers);
+                setFollowed(response.data.followed);
+                setFolders(response.data.folders);
                 setIsLoading(false);
             }
             result();
@@ -36,13 +40,21 @@ const Profile = props => {
         return (<div><p>Loading...</p></div>)
     }
 
+    const folderList = folders.map((folder) =>
+        <Link to="/">{folder}<img className="pencil" src={pencil} alt="edit" /></Link>
+    );
+
+    //const pictureList = pictures.map((picture) =>
+    //    <Link to="/">{picture}<img className="pencil" src={pencil} alt="edit" /></Link>
+    //);
+
     return (
         <div className="profile" >
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
                 <p className="username">{email}</p>
-                <p>{followers} followers 0 following</p>
+                <p>{followers} followers {followed} following</p>
                 <div>
                     <div className="upload-pic">
                         <Link to="/">upload picture +</Link>
@@ -50,7 +62,7 @@ const Profile = props => {
                 </div>
                 <div className="folders">
                     <div className="folder">
-                        <Link to="/">folder<img className="pencil" src={pencil} alt="edit" /></Link>
+                        {folderList}
                     </div>
                     <div className="folder new"><Link to="/">new folder +</Link></div>
                 </div>
