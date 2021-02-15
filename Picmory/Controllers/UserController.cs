@@ -31,18 +31,15 @@ namespace Picmory.Controllers
 
 
         [Produces("application/json")]
-        [HttpGet("userinfo")]
-        public IActionResult OtherUserInfo([FromBody] int userId)
+        [HttpGet("myuserinfo")]
+        public IActionResult OtherUserInfo()
         {
             if (userGet.HaveUser(HttpContext))
             {
                 User user = userGet.GetUser(HttpContext);
-                if (userId == 0)
-                {
-                    return Ok(new UserPageUser(user, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), folderRepository.GetAllFolders(user)));
-                }
-                User otheruser = userRepository.GetUserData(userId);
-                return Ok(new UserPageUser(otheruser, followerRepository.GetAllFollowersNumber(otheruser), followerRepository.GetAllFollowingNumber(otheruser), folderRepository.GetAllFoldersForOther(user, otheruser)));
+                return Ok(new UserPageUser(user, followerRepository.GetAllFollowersNumber(user), followerRepository.GetAllFollowingNumber(user), folderRepository.GetAllFolders(user)));
+                //User otheruser = userRepository.GetUserData(userId);
+                //return Ok(new UserPageUser(otheruser, followerRepository.GetAllFollowersNumber(otheruser), followerRepository.GetAllFollowingNumber(otheruser), folderRepository.GetAllFoldersForOther(user, otheruser)));
             }
             return Unauthorized();
         }
