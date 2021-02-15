@@ -57,14 +57,14 @@ const Profile = () => {
                 <p>{followers} followers {followed} following</p>
                 <div>
                     <div className="upload-pic">
-                        <Link to="/">upload picture +</Link>
+                        <button>upload picture +</button>
                     </div>
                 </div>
                 <div className="folders">
                     <div className="folder">
                         {folderList}
                     </div>
-                    <div className="folder new"><Link to="/">new folder +</Link></div>
+                    <div className="folder new"><button>new folder +</button></div>
                 </div>
             </div>
             <div className="right-side">

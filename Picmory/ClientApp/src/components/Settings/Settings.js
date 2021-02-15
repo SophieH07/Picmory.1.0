@@ -16,7 +16,6 @@ const Settings = props => {
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState(false);
     const [loadingUsername, setLoadingUsername] = useState(false);
-    const [loadingEmail, setLoadingEmail] = useState(false);
     const [loadingSendingForm, setLoadingSendingForm] = useState(false);
     const [changeError, setChangeError] = useState('');
     const history = useHistory();
@@ -66,35 +65,21 @@ const Settings = props => {
         const data = {
             UserName: username,
             ColorOne: colorOne,
-            ColorTwo: colorTwo
+            ColorTwo: colorTwo,
+            Password: password
         }
-        if (username !== '' && !usernameAlreadyExists) {
-            axios.post("/user/changethemeandusername", data).then(result => {
+        if (username !== '' && !usernameAlreadyExists && password !== '' && !passwordError) {
+            axios.post("/user/changeuserdata", data).then(result => {
                 console.log(result);
+                setChangeError('');
                 setLoadingSendingForm(false);
-                //const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
-                //history.push(referrer);
-
+                const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+                history.push(referrer);
             })
 
         } else {
             setLoadingSendingForm(false);
-            setChangeError("something is wrong with the username or the colors");
-        }
-    }
-
-    const setNewPasswordInDatabase = e => {
-        e.preventDefault();
-        setLoadingSendingForm(true);
-
-        if (password !== '' && !passwordError) {
-            axios.post("/user/changepassword", JSON.stringify(password)).then(result => {
-                console.log(result);
-                setLoadingSendingForm(false);
-            })
-        } else {
-            setLoadingSendingForm(false);
-            setChangeError("something wrong with the new password");
+            setChangeError("something is wrong with the data you gave");
         }
     }
 
@@ -116,6 +101,12 @@ const Settings = props => {
         }
     }
 
+    const deleteUser = () => {
+        axios.post('/user/deleteuser').then((res) => {
+            console.log(res);
+        })
+    }
+
     return (
         <div className="settings">
             <div className="input-fields">
@@ -124,8 +115,13 @@ const Settings = props => {
                     <img alt="profile" />
                     <button>Pick picture</button>
                 </div>
-                <div>
-                    <input name="username" placeholder="Change username" type="text" onChange={(e) => handleChange(e)} />
+                <div className="input-fields">
+                    {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
+                    {loadingUsername ? <p className="warning">Loading...</p> : ''}
+                    {usernameAlreadyExists ? <p className="warning">Sorry, but this username is already taken.</p> : ''}
+                    <div>
+                        <input name="username" placeholder="Change username" type="text" onChange={(e) => handleChange(e)} />
+                    </div>
                 </div>
                 <div className="themes">
                     <h4>Change themes</h4>
@@ -133,20 +129,22 @@ const Settings = props => {
                     <p>~colors~</p>
                     <p>Theme Two</p>
                     <p>~colors~</p>
-                    <button onClick={(e) => setNewDataInDatabase(e)}>SAVE USERNAME AND COLORS</button>
                 </div>
                 <div>
+                    {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
                     <div className="password-container">
                         <input name="password" type={hidden ? "password" : "text"} placeholder="Change password" onChange={(e) => { handleChange(e) }} />
                         <img name="password" src={eye} className="eye" onClick={() => setHidden(!hidden)} alt="toggleShowHide" />
                     </div>
                 </div>
                 <div>
+                    {loadingSendingForm ? <p>Loading...</p> : ''}
+                    {changeError !== '' ? <p className="warning">{changeError}</p> : ''}
                     <div>
-                        <button onClick={(e) => setNewPasswordInDatabase(e)}>SAVE PASSWORD</button>
+                        <button onClick={(e) => setNewDataInDatabase(e)}>SAVE</button>
                     </div>
-                    <button className="delete">DELETE ACCOUNT</button>
-                    <button className="cancel"><Link to='/user'>CANCEL</Link></button>
+                    <button className="delete" onClick={deleteUser}>DELETE ACCOUNT</button>
+                    <button className="cancel"><Link to={`/user/${localStorage.getItem('username')}`}>CANCEL</Link></button>
                 </div>
             </div>
         </div>
