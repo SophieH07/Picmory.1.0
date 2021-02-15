@@ -15,10 +15,8 @@ const Profile = props => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-       // const data = {'userid': '0'} ;
         try {
             const result = async () => {
-                //const response = await axios.get('/user/myinfo');
                 const response = await axios.get('/user/myuserinfo');
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
