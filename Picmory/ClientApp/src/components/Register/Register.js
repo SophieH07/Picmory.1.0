@@ -3,7 +3,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import UserContext from "../../contexts/UserContext";
 import axios from 'axios';
 import "./Register.css";
-import "../Common.css";
+import "../Util/Common.css";
 import eye from '../../img/eye.png';
 
 const Register = props => {

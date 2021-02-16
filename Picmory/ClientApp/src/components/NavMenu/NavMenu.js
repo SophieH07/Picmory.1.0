@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import logo from "../../img/PicmoryLogoTransparent.png";
 import name from "../../img/transparentNameOnly.png";
+import UserContext from "../../contexts/UserContext";
 
 export function NavMenu(props) {
+    const [isAuthenticated] = useContext(UserContext);
     const [collapsed, setCollapsed] = useState(true);
     const [username, setUsername] = useState('');
 
     useEffect(() => {
-        if (props.isAuthenticated) {
+        if (isAuthenticated) {
             setUsername(localStorage.getItem("username"))
         }
-    }, [props.isAuthenticated])
+    }, [isAuthenticated])
 
     const contentUser = (
         <ul className="navbar-nav flex-grow">

@@ -7,7 +7,7 @@ import Login from './components/Login/Login';
 import Profile from './components/Profile/Profile';
 import Settings from './components/Settings/Settings';
 import { UserContext } from "./contexts/UserContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/Navigation/ProtectedRoute";
 import './custom.css'
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
         <div className="main" >
             <Router>
                 <UserContext.Provider value={[isAuthenticated, setIsAuthenticated]}>
-                    <NavMenu isAuthenticated={isAuthenticated} handleLogOut={handleLogOut} />
+                    <NavMenu handleLogOut={handleLogOut} />
                     <Route exact path='/' component={props => (<Home  {...props} />)} />
                     <Route path='/login' component={props => (<Login  {...props} />)} />
                     <Route path='/register' component={Register} />

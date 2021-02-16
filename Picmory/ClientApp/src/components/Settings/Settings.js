@@ -1,7 +1,7 @@
 ﻿import React, { useState } from "react";
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import '../Common.css';
+import '../Util/Common.css';
 import './Settings.css';
 import eye from '../../img/eye.png';
 
