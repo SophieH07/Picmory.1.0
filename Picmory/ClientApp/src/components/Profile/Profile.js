@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
+import FolderModal from '../Util/Modals/FolderModal.js';
 
 const Profile = () => {
     const [username, setUsername] = useState('');
@@ -15,6 +16,16 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [pictures, setPictures] = useState();
     const [folders, setFolders] = useState();
+
+    const [showFolderModal, setShowFolderModal] = useState(false);
+    const [showPictureModal, setShowPictureModal] = useState(false);
+
+    const hideModal = () => {
+        if (showFolderModal || showPictureModal) {
+            setShowFolderModal(false);
+            setShowPictureModal(false);
+        }
+    }
 
     useEffect(() => {
         try {
@@ -30,11 +41,7 @@ const Profile = () => {
                 setIsLoading(false);
             }
             result();
-        } catch (e) {
-            console.log(e);
-        }
 
-        try {
             const data = {
                 Offset: 0
             }
@@ -45,11 +52,10 @@ const Profile = () => {
                 setPictures(resp.data);
             }
             res();
+
         } catch (e) {
             console.log(e);
         }
-
-
     }, [])
 
     if (isLoading) {
@@ -68,10 +74,9 @@ const Profile = () => {
         </div>
     );
 
-
-
     return (
-        <div className="profile" >
+        <div className="profile" onClick={hideModal}>
+            <FolderModal show={showFolderModal} />
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
@@ -79,13 +84,14 @@ const Profile = () => {
                 <p>{followers} followers {followed} following</p>
                 <div>
                     <div className="upload-pic">
-                        <button>upload picture +</button>
+                        <button onClick={() => setShowPictureModal(!showPictureModal)}>upload picture +</button>
                     </div>
                 </div>
                 <div className="folders">
                     {folderList}
-
-                    <div className="folder new"><button>new folder +</button></div>
+                    <div className="folder new">
+                        <button onClick={() => setShowFolderModal(!showFolderModal)}>new folder +</button>
+                    </div>
                 </div>
             </div>
             <div className="right-side">
