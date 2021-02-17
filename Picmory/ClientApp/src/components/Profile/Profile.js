@@ -27,6 +27,7 @@ const Profile = () => {
 
     const [showEditFolderModal, setShowEditFolderModal] = useState(false);
     const [showEditPictureModal, setShowEditPictureModal] = useState(false);
+
     const ref = useRef();
 
     useOutsideClick(ref, () => {
@@ -40,7 +41,6 @@ const Profile = () => {
 
     useEffect(() => {
         try {
-
             const data = {
                 Offset: 0
             }
@@ -65,6 +65,24 @@ const Profile = () => {
         }
     }, [])
 
+    const showPictureFromFolder = e => {
+        try {
+            const data = {
+                Offset: 0,
+                FolderName: e.target.name
+            }
+
+            const result = async (e) => {
+                const resp = await axios.post('/picture/getmyimages', data);
+                console.log(resp.data);
+                setPictures(resp.data);
+            }
+            result();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     if (isLoading) {
         return (<div><p>Loading...</p></div>)
     }
@@ -72,7 +90,7 @@ const Profile = () => {
     const folderList = Object.entries(folders).map(([key, value]) =>
         <div className="folder" key={key}>
             <p>
-                <Link to="/">{value.folderName}</Link>
+                <p name={value.folderName} onClick={(e) => showPictureFromFolder(e) }>{value.folderName}</p>
                 <img className="pencil" src={pencil} alt="edit" onClick={() => setShowEditFolderModal(!showEditFolderModal)} />
             </p>
         </div>
