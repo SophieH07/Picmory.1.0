@@ -1,15 +1,20 @@
 ﻿import React, { useState } from "react";
 import axios from 'axios';
-import './Modal.css';
+import '../Modal.css';
 import '../Common.css';
+import { useHistory, useLocation } from 'react-router-dom';
 
-const FolderModal = props => {
+const EditPictureModal = props => {
 
+    const [description, setDescription] = useState('');
+    const [access, setAccess] = useState(0);
     const [folderName, setFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
-    const [access, setAccess] = useState(0);
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
+
+    const history = useHistory();
+    const location = useLocation();
 
     const checkFolderNameNotEmpty = e => {
         if (folderName !== '') {
@@ -23,13 +28,28 @@ const FolderModal = props => {
     const handleSubmit = async (e) => {
         try {
             const data = {
-                Name: folderName,
-                Access: access
+                Description: description,
+                Access: access,
+                FolderName: folderName
             }
 
-            const result = await axios.post('/folder/createnewfolder', data)
+            const result = await axios.post('/picture/editpicture', data)
             console.log(result.data);
+            const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+            history.push(referrer);
 
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const deletePicture = async (e) => {
+        try {
+            const id = "picture id"
+            const result = await axios.post('picture/deletepicture', id)
+            console.log(result);
+            const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+            history.push(referrer);
         } catch (e) {
             console.log(e);
         }
@@ -38,8 +58,10 @@ const FolderModal = props => {
     return (
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
-                <h2>Create new folder</h2>
+                <h2>Edit picture</h2>
                 <form>
+                    <img alt="chosen picture" />
+                    <input name='description' placeholder="Description" onChange={(e) => { setDescription(e.target.value) }} />
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
                     <select onChange={(e) => { setAccess(e.target.value) }}>
@@ -48,11 +70,12 @@ const FolderModal = props => {
                         <option value='2'>Private</option>
                     </select>
                 </form>
-                <button type="submit" onClick={(e) => handleSubmit(e)}>Create</button>
+                <button type="submit" onClick={(e) => handleSubmit(e)}>Save</button>
+                <button onClick={(e) => deletePicture(e)}>Delete</button>
             </div>
         </div>
     );
 
 }
 
-export default FolderModal;
+export default EditPictureModal;

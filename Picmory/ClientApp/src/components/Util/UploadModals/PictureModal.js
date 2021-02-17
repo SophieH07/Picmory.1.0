@@ -1,7 +1,8 @@
 ﻿import React, { useState } from "react";
 import axios from 'axios';
-import './Modal.css';
+import '../Modal.css';
 import '../Common.css';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const PictureModal = props => {
 
@@ -12,6 +13,9 @@ const PictureModal = props => {
     const [folderNameError, setFolderNameError] = useState(false);
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
+
+    const history = useHistory();
+    const location = useLocation();
 
     const checkFolderNameNotEmpty = e => {
         if (folderName !== '') {
@@ -33,6 +37,8 @@ const PictureModal = props => {
 
             const result = await axios.post('/picture/uploadpicture', data)
             console.log(result.data);
+            const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+            history.push(referrer);
 
         } catch (e) {
             console.log(e);
