@@ -26,6 +26,7 @@
     width: 100%;
     height: auto;
     float: right;
+    cursor: pointer;
 }
 
 .folders {

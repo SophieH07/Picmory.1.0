@@ -40,8 +40,14 @@ const Profile = () => {
 
     useEffect(() => {
         try {
+
+            const data = {
+                Offset: 0
+            }
+
             const result = async () => {
                 const response = await axios.get('/user/myuserinfo');
+                const resp = await axios.post('/picture/getmyimages', data);
                 console.log(response.data);
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
@@ -49,20 +55,10 @@ const Profile = () => {
                 setFollowers(response.data.followers);
                 setFollowed(response.data.followed);
                 setFolders(response.data.folders);
+                setPictures(resp.data);
                 setIsLoading(false);
             }
             result();
-
-            const data = {
-                Offset: 0
-            }
-
-            const res = async () => {
-                const resp = await axios.post('/picture/getmyimages', data)
-                console.log(resp.data);
-                setPictures(resp.data);
-            }
-            res();
 
         } catch (e) {
             console.log(e);
