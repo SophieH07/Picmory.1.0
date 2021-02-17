@@ -10,7 +10,7 @@ const FolderModal = props => {
     const handleSubmit = async (e) => {
         try {
             const data = {
-                FolderName: folderName,
+                Name: folderName,
                 Access: access
             }
 
