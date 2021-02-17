@@ -1,9 +1,10 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 import FolderModal from '../Util/Modals/FolderModal.js';
+import useOutsideClick from "./useOutsideClick";
 
 const Profile = () => {
     const [username, setUsername] = useState('');
@@ -17,15 +18,17 @@ const Profile = () => {
     const [pictures, setPictures] = useState();
     const [folders, setFolders] = useState();
 
+
     const [showFolderModal, setShowFolderModal] = useState(false);
     const [showPictureModal, setShowPictureModal] = useState(false);
+    const ref = useRef();
 
-    const hideModal = () => {
+    useOutsideClick(ref, () => {
         if (showFolderModal || showPictureModal) {
             setShowFolderModal(false);
             setShowPictureModal(false);
         }
-    }
+    });
 
     useEffect(() => {
         try {
@@ -75,8 +78,8 @@ const Profile = () => {
     );
 
     return (
-        <div className="profile" onClick={hideModal}>
-            <FolderModal show={showFolderModal} />
+        <div className="profile">
+            {showFolderModal && (<FolderModal show={showFolderModal} reference={ref} />)}
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
