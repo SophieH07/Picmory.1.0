@@ -44,6 +44,12 @@ const Login = props => {
         }
     }
 
+    const handleKeyPress = e => {
+        if (e.keyCode === 13) {
+            handleSubmit();
+        }
+    }
+
     return (
         <div className="login-main">
             {loading ? <p>Loading...</p> : ''}
@@ -52,7 +58,7 @@ const Login = props => {
             <form>
                 <div className="input-fields">
                     <div>
-                        <input name="usernameOrEmail" value={usernameOrEmail} placeholder="Username or Email" onChange={(e) => { setUsernameOrEmail(e.target.value) }}></input>
+                        <input name="usernameOrEmail" value={usernameOrEmail} placeholder="Username or Email" onChange={(e) => { setUsernameOrEmail(e.target.value) }} />
                     </div>
                     <div className="password-container">
                         <input name="password" value={password} type={hidden ? "password" : "text"} placeholder="Password" onChange={(e) => { setPassword(e.target.value) }} />

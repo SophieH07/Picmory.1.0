@@ -30,7 +30,20 @@ const Profile = () => {
                 setIsLoading(false);
             }
             result();
+        } catch (e) {
+            console.log(e);
+        }
 
+        try {
+            const data = {
+                Offset: 10,
+                FolderName: ''
+            };
+            const res = async () => {
+                const resp = await axios.get('/picture/getmyimages', data);
+                console.log(resp.data);
+            }
+            res();
         } catch (e) {
             console.log(e);
         }
