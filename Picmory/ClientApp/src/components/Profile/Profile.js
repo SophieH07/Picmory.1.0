@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 import FolderModal from '../Util/Modals/FolderModal.js';
-import useOutsideClick from "./useOutsideClick";
+import PictureModal from '../Util/Modals/PictureModal.js';
+import useOutsideClick from "../Util/useOutsideClick";
 
 const Profile = () => {
     const [username, setUsername] = useState('');
@@ -80,6 +81,7 @@ const Profile = () => {
     return (
         <div className="profile">
             {showFolderModal && (<FolderModal show={showFolderModal} reference={ref} />)}
+            {showPictureModal && (<PictureModal show={showPictureModal} reference={ref} />)}
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
