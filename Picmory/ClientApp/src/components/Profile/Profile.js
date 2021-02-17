@@ -40,7 +40,9 @@ const Profile = () => {
     }
 
     const folderList = Object.entries(folders).map(([key, value]) =>
-        <Link key={key} to="/">{value.folderName}<img className="pencil" src={pencil} alt="edit" /></Link>
+        <div className="folder" key={key}>
+            <p><Link to="/">{value.folderName}<img className="pencil" src={pencil} alt="edit" /></Link></p>
+        </div>
     );
 
     //const pictureList = pictures.map((picture) =>
@@ -60,9 +62,8 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className="folders">
-                    <div className="folder">
-                        <p>{folderList}</p>
-                    </div>
+                    {folderList}
+
                     <div className="folder new"><button>new folder +</button></div>
                 </div>
             </div>
