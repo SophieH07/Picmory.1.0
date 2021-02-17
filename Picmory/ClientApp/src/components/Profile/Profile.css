@@ -75,3 +75,7 @@ a {
     a:hover {
         text-decoration: none;
     }
+
+.picture {
+    width: 300px;
+}

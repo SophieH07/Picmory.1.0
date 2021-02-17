@@ -42,6 +42,7 @@ const Profile = () => {
             const res = async () => {
                 const resp = await axios.post('/picture/getmyimages', data)
                 console.log(resp.data);
+                setPictures(resp.data);
             }
             res();
         } catch (e) {
@@ -61,9 +62,13 @@ const Profile = () => {
         </div>
     );
 
-    //const pictureList = pictures.map((picture) =>
-    //    <Link to="/">{picture}<img className="pencil" src={pencil} alt="edit" /></Link>
-    //);
+    const pictureList = Object.entries(pictures).map(([key, value]) =>
+        <div key={key}>
+            <img className="picture" src={`https://localhost:44386/picture/picture/${value.id}`} alt="picture" />
+        </div>
+    );
+
+
 
     return (
         <div className="profile" >
@@ -84,7 +89,7 @@ const Profile = () => {
                 </div>
             </div>
             <div className="right-side">
-                <p>basically all the pictures here</p>
+                <div>{pictureList}</div>
             </div>
         </div>
     );
