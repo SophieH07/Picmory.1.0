@@ -40,7 +40,7 @@ namespace Picmory.Controllers
         }
 
 
-        [HttpGet("{pictureid}")]
+        [HttpGet("picture/{pictureid}")]
         public IActionResult GetImageById(string pictureId)
         {
             if (pictureId == "0") { 
@@ -135,7 +135,7 @@ namespace Picmory.Controllers
 
 
 
-        [HttpGet("getmyimages")]
+        [HttpPost("getmyimages")]
         [Produces("application/json")]
         public IActionResult GetImageForMe(PictureRequest data)
         {
