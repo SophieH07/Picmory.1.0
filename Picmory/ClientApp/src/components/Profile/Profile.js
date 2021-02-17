@@ -13,8 +13,8 @@ const Profile = () => {
     const [colorOne, setColorOne] = useState(0);
     const [colorTwo, setColorTwo] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [folders, setFolders] = useState();
     const [pictures, setPictures] = useState();
+    const [folders, setFolders] = useState();
 
     useEffect(() => {
         try {
@@ -33,28 +33,16 @@ const Profile = () => {
         } catch (e) {
             console.log(e);
         }
-
-        try {
-            const data = {
-                Offset: 10,
-                FolderName: ''
-            };
-            const res = async () => {
-                const resp = await axios.get('/picture/getmyimages', data);
-                console.log(resp.data);
-            }
-            res();
-        } catch (e) {
-            console.log(e);
-        }
     }, [])
 
     if (isLoading) {
         return (<div><p>Loading...</p></div>)
     }
 
-    const folderList = folders.map((folder) =>
-        <Link to="/">{folder}<img className="pencil" src={pencil} alt="edit" /></Link>
+    const folderList = Object.entries(folders).map(([key, value]) =>
+        <div className="folder" key={key}>
+            <p><Link to="/">{value.folderName}<img className="pencil" src={pencil} alt="edit" /></Link></p>
+        </div>
     );
 
     //const pictureList = pictures.map((picture) =>
@@ -74,9 +62,8 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className="folders">
-                    <div className="folder">
-                        {folderList}
-                    </div>
+                    {folderList}
+
                     <div className="folder new"><button>new folder +</button></div>
                 </div>
             </div>
