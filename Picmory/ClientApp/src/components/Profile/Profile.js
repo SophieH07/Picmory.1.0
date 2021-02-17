@@ -33,6 +33,22 @@ const Profile = () => {
         } catch (e) {
             console.log(e);
         }
+
+        try {
+            const data = {
+                Offset: 0
+            }
+
+            const res = async () => {
+                const resp = await axios.post('/picture/getmyimages', data)
+                console.log(resp.data);
+            }
+            res();
+        } catch (e) {
+            console.log(e);
+        }
+
+
     }, [])
 
     if (isLoading) {
@@ -52,7 +68,7 @@ const Profile = () => {
     return (
         <div className="profile" >
             <div className="left-side">
-                <img src={`https://localhost:44386/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
+                <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
                 <p className="username">{email}</p>
                 <p>{followers} followers {followed} following</p>
