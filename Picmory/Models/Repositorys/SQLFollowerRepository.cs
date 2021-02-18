@@ -18,7 +18,7 @@ namespace Picmory.Models.Repositorys
 
         public Success AnswerNewFollower(bool accept, User follower, User followed)
         {
-            var follow = context.Followers.FirstOrDefault(item => item.Follower == follower && item.Followed == followed);
+            var follow = context.Followers.FirstOrDefault(item => item.FollowerUser == follower && item.Followed == followed);
             if (follow != null)
             {
                 if (follow.Accepted != null) { return Success.FailedByAlreadyAnswered; }
@@ -31,13 +31,13 @@ namespace Picmory.Models.Repositorys
 
         public Success AskNewFollower(User follower, User followed)
         {
-            Followers requested = context.Followers
-                    .Include(a => a.Follower)
-                    .Where(a => a.Follower == follower && a.Followed == followed)
+            Follower requested = context.Followers
+                    .Include(a => a.FollowerUser)
+                    .Where(a => a.FollowerUser == follower && a.Followed == followed)
                     .FirstOrDefault();
             if (requested == null)
             {
-                Followers follow = new Followers(followed, follower, null);
+                Follower follow = new Follower(followed, follower, null);
                 context.Followers.Add(follow);
                 context.SaveChanges();
                 return Success.Successfull;
@@ -50,7 +50,7 @@ namespace Picmory.Models.Repositorys
 
         public Success DeleteFollower(User follower, User followed)
         {
-            var follow = context.Followers.FirstOrDefault(item => item.Follower == follower && item.Followed == followed);
+            var follow = context.Followers.FirstOrDefault(item => item.FollowerUser == follower && item.Followed == followed);
             if (follow != null)
             {
                 if (follow.Accepted == null) { return Success.FailedByNotAccepted; }
@@ -66,13 +66,13 @@ namespace Picmory.Models.Repositorys
             try
             {
                 List <string> followerUsers = new List<string>();
-                List<Followers> followers = context.Followers
-                    .Include(a => a.Follower)
+                List<Follower> followers = context.Followers
+                    .Include(a => a.FollowerUser)
                     .Where(a => a.Followed == user && a.Accepted == true)
                     .ToList();
-                foreach (Followers follower in followers)
+                foreach (Follower follower in followers)
                 {
-                    followerUsers.Add(follower.Follower.UserName);
+                    followerUsers.Add(follower.FollowerUser.UserName);
                 }
                 return followerUsers;
             }
@@ -82,16 +82,31 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public int GetAllFollowersNumber(User user)
+        {
+            try
+            {
+                return context.Followers
+                    .Include(a => a.FollowerUser)
+                    .Where(a => a.Followed == user && a.Accepted == true)
+                    .Count();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
         public List<string> GetAllFollowing(User user)
         {
             List<string> followedUsers = new List<string>();
             try
             {   
-                List<Followers> followers = context.Followers
-                    .Include(a => a.Follower)
-                    .Where(a => a.Follower == user && a.Accepted == true)
+                List<Follower> followers = context.Followers
+                    .Include(a => a.FollowerUser)
+                    .Where(a => a.FollowerUser == user && a.Accepted == true)
                     .ToList();
-                foreach (Followers follower in followers)
+                foreach (Follower follower in followers)
                 {
                     followedUsers.Add(follower.Followed.UserName);
                 }
@@ -103,18 +118,33 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public int GetAllFollowingNumber(User user)
+        {
+            try
+            {
+                return context.Followers
+                    .Include(a => a.FollowerUser)
+                    .Where(a => a.FollowerUser == user && a.Accepted == true)
+                    .Count();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
         public List<string> GetAllFollowRequest(User user)
         {
             List<string> followRequestUsers = new List<string>();
             try
             {
-                List<Followers> followers = context.Followers
-                    .Include(a => a.Follower)
+                List<Follower> followers = context.Followers
+                    .Include(a => a.FollowerUser)
                     .Where(a => a.Followed == user && a.Accepted == null)
                     .ToList();
-                foreach (Followers follower in followers)
+                foreach (Follower follower in followers)
                 {
-                    followRequestUsers.Add(follower.Follower.UserName);
+                    followRequestUsers.Add(follower.FollowerUser.UserName);
                 }
                 return followRequestUsers;
             }

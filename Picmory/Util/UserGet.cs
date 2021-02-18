@@ -1,26 +1,46 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Picmory.Models;
 using Picmory.Models.Repositorys;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 
 namespace Picmory.Util
 {
     public class UserGet
     {
-        private IUserRepository userRepository;
+        private readonly IUserRepository userRepository;
 
         public UserGet(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
         }
+
+
         public User GetUser(HttpContext context)
         {
-            return userRepository.GetUserData(int.Parse(context.User.Claims.FirstOrDefault(c => c.Type == "Id").Value));
+            SecurityToken jsonToken;
+            var handler = new JwtSecurityTokenHandler();
+            string cookie = context.Request.Cookies["Bearer"];
+            jsonToken = handler.ReadToken(cookie);
+            JwtSecurityToken tokenS = handler.ReadToken(cookie) as JwtSecurityToken;
+            string id = tokenS.Claims.First(claim => claim.Type == "Id").Value;
+            return userRepository.GetUserData(int.Parse(id));
         }
 
         public bool HaveUser(HttpContext context)
         {
-            return context.User.HasClaim(c => c.Type == "Id");
+            SecurityToken jsonToken;
+            var handler = new JwtSecurityTokenHandler();
+            string cookie = context.Request.Cookies["Bearer"];
+            if (cookie == null) { return false; }
+            if (cookie.Length < 235) { return false; }
+            try { jsonToken = handler.ReadToken(cookie); }
+            catch { return false; }
+            JwtSecurityToken tokenS = handler.ReadToken(cookie) as JwtSecurityToken;
+            string id = tokenS.Claims.First(claim => claim.Type == "Id").Value;
+            if (id == null) { return false; }
+            return true;
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace Picmory.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FollowerController : ControllerBase
@@ -45,17 +44,6 @@ namespace Picmory.Controllers
                 }
             }
             return Unauthorized();
-        }
-
-        [HttpGet("getrequestedfollow")]
-        public List<string> GetFollowingRequest()
-        {
-            if (userGet.HaveUser(HttpContext))
-            {
-                User user = userGet.GetUser(HttpContext);
-                return followerRepository.GetAllFollowRequest(user);
-            }
-            return null;
         }
 
         [HttpPost("answerfollower")]
@@ -101,5 +89,19 @@ namespace Picmory.Controllers
             }
             return Unauthorized();
         }
+
+
+        [Produces("application/json")]
+        [HttpGet("getrequestedfollow")]
+        public IActionResult GetFollowingRequest()
+        {
+            if (userGet.HaveUser(HttpContext))
+            {
+                User user = userGet.GetUser(HttpContext);
+                return Ok(followerRepository.GetAllFollowRequest(user));
+            }
+            return Unauthorized();
+        }
+
     }
 }

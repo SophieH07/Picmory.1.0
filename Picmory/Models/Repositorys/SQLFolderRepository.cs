@@ -1,4 +1,5 @@
-﻿using Picmory.Models.RequestResultModels;
+﻿using Picmory.Models.RequestModels;
+using Picmory.Models.RequestResultModels;
 using Picmory.Util;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace Picmory.Models.Repositorys
         
        
 
-        public Success ChangeFolderData(User user, Folder originalFolder, string newName, AccessType? newAccess)
+        public Success ChangeFolderData(User user, ChangeFolderData originalFolder, string newName, AccessType? newAccess)
         {
             Folder folder = context.Folders
                 .FirstOrDefault(item => item.Owner == user &&
-                                        item.FolderName == originalFolder.FolderName &&
+                                        item.FolderName == originalFolder.Name &&
                                         item.Access == originalFolder.Access);
             if (folder != null)
             {
@@ -61,6 +62,41 @@ namespace Picmory.Models.Repositorys
                 return foldersForShow;
             }
             catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public List<FolderForShow> GetAllFoldersForOther(User user, User otherUser)
+        {
+            bool followed = null != context.Followers
+                     .Where(a => a.FollowerUser == user &&
+                            a.Followed == otherUser &&
+                            a.Accepted == true)
+                     .FirstOrDefault();
+            try
+            {
+                List<FolderForShow> folders = new List<FolderForShow>();
+                if (followed)
+                {
+                    folders = context.Folders
+                        .Where(a => a.Owner == otherUser 
+                            && a.Access == AccessType.PublicForEveryone 
+                            || a.Access == AccessType.PublicForFollowers)
+                        .Select(a => new FolderForShow { FolderName = a.FolderName, Access = a.Access })
+                        .ToList();
+                }
+                else
+                {
+                    folders = context.Folders
+                        .Where(a => a.Owner == otherUser 
+                            && a.Access == AccessType.PublicForEveryone)
+                        .Select(a => new FolderForShow { FolderName = a.FolderName, Access = a.Access })
+                        .ToList();
+                }
+                return folders;              
+            }
+            catch (Exception)
             {
                 return null;
             }

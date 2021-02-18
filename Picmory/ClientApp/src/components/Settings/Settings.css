@@ -1,0 +1,38 @@
+﻿.settings {
+    align-content: center;
+    margin-top: 40px;
+    text-align: center;
+    background-color: #9CE2CB;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    max-height: 1000px;
+    height: 100%;
+    max-width: 800px;
+    width: 100%;
+}
+
+.profile-picture {
+    margin-bottom: 10px;
+}
+
+.themes {
+    margin-bottom: 10px;
+}
+
+.settings button
+.input-fields div {
+    margin-bottom: 10px;
+}
+
+.save-password {
+    margin-bottom: 10px;
+}
+
+.delete {
+    float: left;
+    background-color: red;
+}
+
+.cancel {
+    float: right;
+    background-color: yellow;
+}

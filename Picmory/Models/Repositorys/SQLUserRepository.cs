@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Picmory.Models.RequestModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Picmory.Models.Repositorys
@@ -13,29 +14,35 @@ namespace Picmory.Models.Repositorys
         }
         
         
-        public User EditUserData(User userChanges)
-        {
-            var user = context.Users.Attach(userChanges);
-            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            context.SaveChanges();
-            return userChanges;
-        }
-
         public User GetUserData(int id)
         {
-            return context.Users.Include(a => a.ProfilePicture).Where(a => a.Id == id).Single();
+            try
+            { 
+                return context.Users.Where(a => a.Id == id).Single();
+            }
+            catch (InvalidOperationException exc)
+            {
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
+            }
         }
 
         public User GetUserData(string name)
         {
             try
             {
-                var user = context.Users.Where(a => a.UserName == name).Single();
-                return user;
+                return context.Users.Where(a => a.UserName == name).Single();
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return null;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
             }
         }
 
@@ -46,9 +53,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.Email == email).Single();
                 return user;
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return null;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return null;
+                }
+                throw;
             }
         }
 
@@ -59,9 +70,13 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.Email == email).Single();
                 return true;
             }
-            catch (Exception e)
+            catch (InvalidOperationException exc)
             {
-                return false;
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return false;
+                }
+                throw;
             }
         }
 
@@ -71,10 +86,16 @@ namespace Picmory.Models.Repositorys
                 var user = context.Users.Where(a => a.UserName == name).Single();
                 return true;
             }
-            catch (Exception e) {
-                return false;
+            catch (InvalidOperationException exc)
+            {
+                if (exc.Message == "Sequence contains no elements")
+                {
+                    return false;
+                }
+                throw;
             }
         }
+        
 
         public User RegisterNewUser(User user)
         {
@@ -82,5 +103,37 @@ namespace Picmory.Models.Repositorys
             context.SaveChanges();
             return user;
         }
+       
+        public User EditUserData(User userChanges)
+        {
+            var user = context.Users.Attach(userChanges);
+            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            context.SaveChanges();
+            return userChanges;
+        }
+
+        public void DeleteUser(User userToDelete)
+        {
+            context.Users.Remove(userToDelete);
+            context.SaveChanges(); 
+        }
+
+
+        public List<SearchUser> GetUsersForTerm(string term)
+        {
+            List<SearchUser> resultUsers = new List<SearchUser>();
+            try
+            {
+                return resultUsers = context.Users
+                    .Where(a => a.UserName
+                    .Contains(term))
+                    .Select(a => new SearchUser { UserName = a.UserName, PictureId = a.ProfilePictureID }).Take(5).ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
     }
 }

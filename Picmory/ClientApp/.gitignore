@@ -19,3 +19,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+*.iml
+.idea
+.tscache
+.DS_Store
+node_modules/
+typings/
+coverage/
+test/typescript/axios.js*
+sauce_connect.log
+package-lock.json
