@@ -44,7 +44,6 @@ namespace Picmory.Controllers
         public IActionResult GetImageById(string pictureId)
         {
             if (pictureId == "0") { 
-                
                 return File(System.IO.File.ReadAllBytes(_hostEnv.WebRootPath + "/0.jpg"), "image/jpg"); }
             Picture pictureInDB = pictureRepository.GetPicture(int.Parse(pictureId));
             if (userGet.HaveUser(HttpContext) && pictureInDB.Type != null)
@@ -151,7 +150,7 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
-        [HttpGet("getotherimages")]
+        [HttpPost("getotherimages")]
         [Produces("application/json")]
         public IActionResult GetImageForUser(PictureRequest data)
         {

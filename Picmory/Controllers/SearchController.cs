@@ -30,7 +30,7 @@ namespace Picmory.Controllers
         }
 
         [Produces("application/json")]
-        [HttpGet("suggestions")]
+        [HttpPost("suggestions")]
         public IActionResult Suggestions([FromBody] string term)
         {
             if (userGet.HaveUser(HttpContext))
