@@ -55,7 +55,7 @@ const Login = props => {
             {loading ? <p>Loading...</p> : ''}
             {loginError === '' ? '' : <p className="warning">{loginError}</p>}
             <h2>Login</h2>
-            <form>
+            <form onKeyPress={(e) => handleKeyPress(e) }>
                 <div className="input-fields">
                     <div>
                         <input name="usernameOrEmail" value={usernameOrEmail} placeholder="Username or Email" onChange={(e) => { setUsernameOrEmail(e.target.value) }} />
@@ -65,9 +65,9 @@ const Login = props => {
                         <img name="password" src={eye} className="eye" onClick={() => setHidden(!hidden)} alt="toggleShowHide" />
                     </div>
                 </div>
+                <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
+                <button type="submit" onClick={(e) => handleSubmit(e)}>Login</button>
             </form>
-            <p className="forgot-password underline"><Link tag={Link} to="/register">Forgot password?</Link></p>
-            <button type="submit" onClick={(e) => handleSubmit(e)}>Login</button>
             <p className="back-to-register underline">Don't have an account yet? Join us! <Link tag={Link} to="/register">Sign up here</Link></p>
         </div >
     );

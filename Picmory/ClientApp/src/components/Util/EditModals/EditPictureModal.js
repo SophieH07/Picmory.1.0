@@ -59,7 +59,7 @@ const EditPictureModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit picture</h2>
-                <form>
+                <form className="input-fields">
                     <img alt="chosen picture" />
                     <input name='description' placeholder="Description" onChange={(e) => { setDescription(e.target.value) }} />
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}

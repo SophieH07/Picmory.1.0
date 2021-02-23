@@ -1,6 +1,5 @@
 ﻿import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
-import { Link } from "react-router-dom";
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
 import FolderModal from '../Util/UploadModals/FolderModal.js';
@@ -89,10 +88,8 @@ const Profile = () => {
 
     const folderList = Object.entries(folders).map(([key, value]) =>
         <div className="folder" key={key}>
-            <p>
-                <p name={value.folderName} onClick={(e) => showPictureFromFolder(e) }>{value.folderName}</p>
-                <img className="pencil" src={pencil} alt="edit" onClick={() => setShowEditFolderModal(!showEditFolderModal)} />
-            </p>
+            <p name={value.folderName} onClick={(e) => showPictureFromFolder(e)}>{value.folderName}</p>
+            <img className="pencil" src={pencil} alt="edit" onClick={() => setShowEditFolderModal(!showEditFolderModal)} />
         </div>
     );
 

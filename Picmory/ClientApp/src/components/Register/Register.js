@@ -156,8 +156,14 @@ const Register = props => {
         }
     }
 
+    const handleKeyPress = e => {
+        if (e.keyCode === 13) {
+            handleSubmit();
+        }
+    }
+
     return (
-        <div className="register">
+        <div className="register" onKeyPress={(e) => handleKeyPress(e)}>
             <h2>Create Account</h2>
             <div className="input-fields">
                 {usernameError ? <p className="warning">The username cannot be null.</p> : ''}

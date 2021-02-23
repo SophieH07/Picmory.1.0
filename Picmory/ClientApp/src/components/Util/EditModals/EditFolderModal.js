@@ -60,7 +60,7 @@ const FolderModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit folder</h2>
-                <form>
+                <form className="input-fields">
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
                     <select onChange={(e) => { setAccess(e.target.value) }}>
