@@ -150,11 +150,11 @@ const Settings = props => {
                 <div className="themes">
                     <div>
                         <h5>Theme One</h5>
-                        <GithubPicker />
+                        <GithubPicker onChange={(e) => { setColorOne(e.hex) }} />
                     </div>
                     <div>
                         <h5>Theme Two</h5>
-                        <GithubPicker />
+                        <GithubPicker onChange={(e) => { setColorTwo(e.hex) }}/>
                     </div>
                 </div>
                 <div>
