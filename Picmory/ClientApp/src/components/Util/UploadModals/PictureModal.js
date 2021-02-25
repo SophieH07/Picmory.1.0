@@ -14,7 +14,6 @@ const PictureModal = props => {
     const [folderNameError, setFolderNameError] = useState(false);
     const [uploadError, setUploadError] = useState('');
 
-
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
 
     const history = useHistory();

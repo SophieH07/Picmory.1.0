@@ -17,7 +17,7 @@ const FolderModal = props => {
 
 
     const checkFolderNameNotEmpty = e => {
-        if (newFolderName !== '') {
+        if (e.target.value !== '') {
             setNewFolderName(e.target.value);
             setFolderNameError(false);
         } else {

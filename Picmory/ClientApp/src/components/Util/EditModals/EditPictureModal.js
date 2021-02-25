@@ -45,7 +45,7 @@ const EditPictureModal = props => {
 
     const deletePicture = async (e) => {
         try {
-            const id = "picture id"
+            const id = props.picture.id;
             const result = await axios.post('picture/deletepicture', id)
             console.log(result);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
