@@ -1,6 +1,6 @@
 ﻿import React, { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import { GithubPicker } from 'react-color';
+import { CompactPicker } from 'react-color';
 import axios from 'axios';
 import '../Util/Common.css';
 import './Settings.css';
@@ -147,11 +147,11 @@ const Settings = props => {
                 <div className="themes">
                     <div>
                         <h5>Theme One</h5>
-                        <GithubPicker onChange={(e) => { setColorOne(e.hex) }} />
+                        <CompactPicker onChange={(e) => { setColorOne(e.hex) }} />
                     </div>
                     <div>
                         <h5>Theme Two</h5>
-                        <GithubPicker onChange={(e) => { setColorTwo(e.hex) }}/>
+                        <CompactPicker onChange={(e) => { setColorTwo(e.hex) }}/>
                     </div>
                 </div>
                 <div>
