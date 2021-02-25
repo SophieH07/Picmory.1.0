@@ -32,7 +32,7 @@ const FolderModal = props => {
                 Access: access
             }
 
-            const result = await axios.post('/folder/createnewfolder', data)
+            const result = await axios.post('/folder/changefolderdata', data)
             console.log(result.data);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
@@ -61,8 +61,8 @@ const FolderModal = props => {
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit folder</h2>
                 <form className="input-fields">
+                    {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <div>
-                        {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                         <input name='foldername' placeholder={props.folder.folderName} onChange={(e) => { checkFolderNameNotEmpty(e) }} />
                     </div>
                     <div>

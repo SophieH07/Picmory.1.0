@@ -37,7 +37,7 @@ const Settings = props => {
             result();
 
         } catch (e) {
-
+            console.log(e);
         }
     })
 

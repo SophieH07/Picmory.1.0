@@ -16,7 +16,7 @@ const FolderModal = props => {
     const location = useLocation();
 
     const checkFolderNameNotEmpty = e => {
-        if (folderName !== '') {
+        if (e.target.value !== '') {
             setFolderName(e.target.value);
             setFolderNameError(false);
         } else {
@@ -46,9 +46,8 @@ const FolderModal = props => {
             <div className="modal-main" ref={props.reference}>
                 <h2>Create new folder</h2>
                 <form className="input-fields">
+                    {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <div>
-                        {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
-
                         <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
                     </div>
                     <div>

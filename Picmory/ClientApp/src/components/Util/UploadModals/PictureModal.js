@@ -20,32 +20,18 @@ const PictureModal = props => {
     const history = useHistory();
     const location = useLocation();
 
-    //useEffect(() => {
-    //    if (!selectedFile) {
-    //        setPreview(undefined)
-    //        return
-    //    }
-
-    //    const objectUrl = URL.createObjectURL(selectedFile)
-    //    setPreview(objectUrl)
-
-    //    return () => URL.revokeObjectURL(objectUrl)
-    //}, [selectedFile])
-
-
-
-    //const uploadPicture = e => {
-    //    if (!e.target.files || e.target.files.length === 0) {
-    //        setSelectedFile(undefined)
-    //        return
-    //    }
-
-    //    setSelectedFile(e.target.files[0])
-    //}
+    const uploadPicture = e => {
+        if (e.target.files || e.target.files.length !== 0) {
+            setSelectedFile(e.target.files[0])
+            setPreview(URL.createObjectURL(e.target.files[0]));
+        }
+        console.log(selectedFile);
+        console.log(preview);
+    }
 
 
     const checkFolderNameNotEmpty = e => {
-        if (folderName !== '') {
+        if (e.target.value !== '') {
             setFolderName(e.target.value);
             setFolderNameError(false);
         } else {
@@ -58,14 +44,14 @@ const PictureModal = props => {
             const data = {
                 Photo: selectedFile.name,
                 Description: description,
-                Access: access,
-                FolderName: folderName
+                FolderName: folderName,
+                Access: access
             }
             console.log(data);
             const result = await axios.post('/picture/uploadpicture', data)
             console.log(result.data);
-            //const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
-            //history.push(referrer);
+            const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
+            history.push(referrer);
 
         } catch (error) {
             console.log(error);
@@ -79,13 +65,15 @@ const PictureModal = props => {
                 <h2>Upload picture</h2>
                 <form className="input-fields">
                     <div>
-                        //{selectedFile && <img className="up-picture" src={preview} />}
-                        <input type='file' onChange={(e) => { setSelectedFile(e.target.value) }} />
+                        {selectedFile && <img className="up-picture" src={preview} />}
+                        <input type='file' onChange={(e) => { uploadPicture(e) }} />
                     </div>
                     <div>
                         <input name='description' placeholder="Description" onChange={(e) => { setDescription(e.target.value) }} />
+                    </div>
+                    <div>
                         {folderNameError ? '' : <p className="warning">Folder name cannot be empty</p>}
-                        <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
+                        <input name='foldername' type="text" placeholder='Folder name' onChange={(e) => checkFolderNameNotEmpty(e)} />
                     </div>
                     <div>
                         <select onChange={(e) => { setAccess(e.target.value) }}>

@@ -17,7 +17,7 @@ const EditPictureModal = props => {
     const location = useLocation();
 
     const checkFolderNameNotEmpty = e => {
-        if (folderName !== '') {
+        if (e.target.value !== '') {
             setFolderName(e.target.value);
             setFolderNameError(false);
         } else {
@@ -66,7 +66,7 @@ const EditPictureModal = props => {
                     <div>
                         <input name='description' placeholder={props.picture.description} onChange={(e) => { setDescription(e.target.value) }} />
                     </div>
-                    {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
+                    {folderNameError ? '' : <p className="warning">Folder name cannot be empty</p>}
                     <div>
                         <input name='foldername' placeholder={props.picture.folderName} onChange={(e) => { checkFolderNameNotEmpty(e) }} />
                     </div>

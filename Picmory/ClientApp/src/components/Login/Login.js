@@ -13,7 +13,7 @@ const Login = props => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [loginError, setLoginError] = useState('');
-    const [isAuthenticated, setIsAuthenticated] = useContext(UserContext);
+    const [, setIsAuthenticated] = useContext(UserContext);
     const history = useHistory();
     const location = useLocation();
 
