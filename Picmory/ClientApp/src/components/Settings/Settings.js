@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import { GithubPicker } from 'react-color';
 import axios from 'axios';
 import '../Util/Common.css';
 import './Settings.css';
@@ -11,6 +12,7 @@ const Settings = props => {
     const [username, setUsername] = useState('');
     const [profilePic, setProfilePic] = useState(0);
     const [newProfilePic, setNewProfilePic] = useState();
+    const [newSrc, setNewSrc] = useState('');
     const [colorOne, setColorOne] = useState('');
     const [colorTwo, setColorTwo] = useState('');
     const [usernameError, setUsernameError] = useState(false);
@@ -20,7 +22,6 @@ const Settings = props => {
     const [loadingUsername, setLoadingUsername] = useState(false);
     const [loadingSendingForm, setLoadingSendingForm] = useState(false);
     const [changeError, setChangeError] = useState('');
-    const [newSrc, setNewSrc] = useState('');
     const history = useHistory();
     const location = useLocation();
 
@@ -32,7 +33,6 @@ const Settings = props => {
                 setProfilePic(response.data.profilePictureId);
                 setColorOne(response.data.coloreOne);
                 setColorTwo(response.data.coloreTwo);
-                console.log(response.data);
             }
             result();
 
@@ -146,11 +146,16 @@ const Settings = props => {
                         <input name="username" placeholder="Change username" type="text" onChange={(e) => handleChange(e)} />
                     </div>
                 </div>
+                <h4>Change themes</h4>
                 <div className="themes">
-                    <p>Original colors</p>
-                    <p>{colorOne} {colorTwo}</p>
-                    <h4>Change themes</h4>
-                    <p>Theme Two</p>
+                    <div>
+                        <h5>Theme One</h5>
+                        <GithubPicker />
+                    </div>
+                    <div>
+                        <h5>Theme Two</h5>
+                        <GithubPicker />
+                    </div>
                 </div>
                 <div>
                     {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}

@@ -20,6 +20,7 @@
 
 .themes {
     margin-bottom: 10px;
+    display: inline-flex;
 }
 
 .settings button

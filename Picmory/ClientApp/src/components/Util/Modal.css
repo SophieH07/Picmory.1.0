@@ -5,6 +5,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
+    overflow-y: auto !important;
 }
 
 .modal-main {
@@ -27,4 +28,10 @@
 
 .picture {
     max-width: 300px;
+}
+
+.up-picture {
+    max-height: 200px;
+    height: 100%;
+    width: auto;
 }
