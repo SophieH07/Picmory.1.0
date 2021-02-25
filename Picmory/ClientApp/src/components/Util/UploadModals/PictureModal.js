@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useState } from "react";
 import axios from 'axios';
 import '../Modal.css';
 import '../Common.css';
@@ -13,6 +13,7 @@ const PictureModal = props => {
     const [folderName, setFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
     const [uploadError, setUploadError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
 
@@ -24,8 +25,6 @@ const PictureModal = props => {
             setSelectedFile(e.target.files[0])
             setPreview(URL.createObjectURL(e.target.files[0]));
         }
-        console.log(selectedFile);
-        console.log(preview);
     }
 
 
@@ -39,6 +38,7 @@ const PictureModal = props => {
     }
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         try {
             const data = {
                 Photo: selectedFile.name,
@@ -49,12 +49,15 @@ const PictureModal = props => {
             console.log(data);
             const result = await axios.post('/picture/uploadpicture', data)
             console.log(result.data);
+            setUploadError('');
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (error) {
-            console.log(error);
             setUploadError(error.response.data);
+            setLoading(false);
+            console.log(error);
         }
     }
 
@@ -62,6 +65,8 @@ const PictureModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Upload picture</h2>
+                {loading ? <p>Loading...</p> : ''}
+                {uploadError !== '' ? <p>{uploadError}</p> : ''}
                 <form className="input-fields">
                     <div>
                         {selectedFile && <img className="up-picture" src={preview} />}

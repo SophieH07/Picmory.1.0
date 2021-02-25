@@ -9,6 +9,8 @@ const FolderModal = props => {
     const [newFolderName, setNewFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
     const [access, setAccess] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [editError, setEditError] = useState('');
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
 
@@ -26,6 +28,7 @@ const FolderModal = props => {
     }
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         try {
             const data = {
                 Name: newFolderName,
@@ -34,24 +37,31 @@ const FolderModal = props => {
 
             const result = await axios.post('/folder/changefolderdata', data)
             console.log(result.data);
+            setEditError('');
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (e) {
+            setEditError(e.response.data);
+            setLoading(false);
             console.log(e);
         }
     }
 
     const deleteFolder = async (e) => {
+        setLoading(true);
         try {
             const folderName = props.folder.folderName
 
             const result = await axios.post('/folder/deletefolder', folderName)
             console.log(result);
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (e) {
+            setLoading(false);
             console.log(e);
         }
     }
@@ -60,6 +70,8 @@ const FolderModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit folder</h2>
+                {loading ? <p>Loading...</p> : ''}
+                {editError !== '' ? <p>{editError}</p> : ''}
                 <form className="input-fields">
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <div>

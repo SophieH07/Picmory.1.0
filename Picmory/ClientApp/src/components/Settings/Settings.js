@@ -111,12 +111,7 @@ const Settings = props => {
                 checkIfUsernameAlreadyExists(e.target.value);
             }
         }
-        if (e.target.name === "colorOne") {
-            setColorOne(e.target.value);
-        }
-        if (e.target.name === "colorTwo") {
-            setColorTwo(e.target.value);
-        }
+
         if (e.target.name === "password") {
             validatePassword(e.target.value)
         }
@@ -125,6 +120,8 @@ const Settings = props => {
     const deleteUser = () => {
         axios.post('/user/deleteuser').then((res) => {
             console.log(res);
+            const referrer = location.state ? location.state.from : '/register';
+            history.push(referrer);
         })
     }
 

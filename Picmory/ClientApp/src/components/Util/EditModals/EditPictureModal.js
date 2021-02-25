@@ -10,6 +10,8 @@ const EditPictureModal = props => {
     const [access, setAccess] = useState(0);
     const [folderName, setFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [editError, setEditError] = useState('');
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
 
@@ -26,6 +28,7 @@ const EditPictureModal = props => {
     }
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         try {
             const data = {
                 Description: description,
@@ -35,22 +38,29 @@ const EditPictureModal = props => {
 
             const result = await axios.post('/picture/editpicture', data)
             console.log(result.data);
+            setEditError('');
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (e) {
+            setEditError(e.response.data);
+            setLoading(false);
             console.log(e);
         }
     }
 
     const deletePicture = async (e) => {
+        setLoading(true);
         try {
             const id = props.picture.id;
             const result = await axios.post('picture/deletepicture', id)
             console.log(result);
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
         } catch (e) {
+            setLoading(false);
             console.log(e);
         }
     }
@@ -59,6 +69,8 @@ const EditPictureModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit picture</h2>
+                {loading ? <p>Loading...</p> : ''}
+                {editError !== '' ? <p>{editError}</p> : ''}
                 <form className="input-fields">
                     <div>
                         <img className="picture" src={`https://localhost:44386/picture/picture/${props.picture.id}`} alt="chosenpicture" />

@@ -9,6 +9,8 @@ const FolderModal = props => {
     const [folderName, setFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
     const [access, setAccess] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [uploadError, setUploadError] = useState('');
 
     const showHideClassName = props.show ? "modal display-block" : "modal display-none";
 
@@ -25,6 +27,7 @@ const FolderModal = props => {
     }
 
     const handleSubmit = async (e) => {
+        setLoading(true);
         try {
             const data = {
                 Name: folderName,
@@ -33,10 +36,14 @@ const FolderModal = props => {
 
             const result = await axios.post('/folder/createnewfolder', data)
             console.log(result.data);
+            setUploadError('');
+            setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;
             history.push(referrer);
 
         } catch (e) {
+            setUploadError(e.response.data);
+            setLoading(false);
             console.log(e);
         }
     }
@@ -45,6 +52,8 @@ const FolderModal = props => {
         <div className={showHideClassName}>
             <div className="modal-main" ref={props.reference}>
                 <h2>Create new folder</h2>
+                {loading ? <p>Loading...</p> : ''}
+                {uploadError !== '' ? <p>{uploadError}</p> : ''}
                 <form className="input-fields">
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
                     <div>
