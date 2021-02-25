@@ -10,7 +10,6 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
             {...rest}
             render={(props) => {
                 if (isAuthenticated) {
-                    console.log(isAuthenticated);
                     return <Component {...props} />
                 } else {
                     console.log(isAuthenticated);

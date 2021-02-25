@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '../Util/Common.css';
@@ -9,6 +9,8 @@ const Settings = props => {
 
     const [hidden, setHidden] = useState(true);
     const [username, setUsername] = useState('');
+    const [profilePic, setProfilePic] = useState(0);
+    const [newProfilePic, setNewProfilePic] = useState();
     const [colorOne, setColorOne] = useState('');
     const [colorTwo, setColorTwo] = useState('');
     const [usernameError, setUsernameError] = useState(false);
@@ -18,11 +20,30 @@ const Settings = props => {
     const [loadingUsername, setLoadingUsername] = useState(false);
     const [loadingSendingForm, setLoadingSendingForm] = useState(false);
     const [changeError, setChangeError] = useState('');
+    const [newSrc, setNewSrc] = useState('');
     const history = useHistory();
     const location = useLocation();
 
-    const changeProfilePicture = picture => {
-        //...
+    useEffect(() => {
+        try {
+            const result = async () => {
+                const response = await axios.get('/user/myuserinfo');
+                setUsername(response.data.userName);
+                setProfilePic(response.data.profilePictureId);
+                setColorOne(response.data.coloreOne);
+                setColorTwo(response.data.coloreTwo);
+                console.log(response.data);
+            }
+            result();
+
+        } catch (e) {
+
+        }
+    })
+
+    const changeProfilePicture = event => {
+        setNewProfilePic(event.target.value);
+        setNewSrc(URL.createObjectURL(event.target.files[0]));
     }
 
     const validateUsername = username => {
@@ -112,8 +133,10 @@ const Settings = props => {
             <div className="input-fields">
                 <div className="profile-picture">
                     <h4>Change profile picture</h4>
-                    <img alt="profile" />
-                    <button>Pick picture</button>
+                    {newSrc ? <img className="profile-pic" id="new-pic" src={newSrc} alt="new-profile" /> : <img className="profile-pic" src={`https://localhost:44386/picture/picture/${profilePic}`} alt="profile" />}
+                </div>
+                <div>
+                    <input name='picture' type="file" onChange={(e) => { changeProfilePicture(e) }} />
                 </div>
                 <div className="input-fields">
                     {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
@@ -124,11 +147,10 @@ const Settings = props => {
                     </div>
                 </div>
                 <div className="themes">
+                    <p>Original colors</p>
+                    <p>{colorOne} {colorTwo}</p>
                     <h4>Change themes</h4>
-                    <p>Theme One</p>
-                    <p>~colors~</p>
                     <p>Theme Two</p>
-                    <p>~colors~</p>
                 </div>
                 <div>
                     {passwordError ? <p className="warning">The password must be at least 6 char long, contain a lowercase and uppercase letter and a number.</p> : ''}
@@ -140,11 +162,11 @@ const Settings = props => {
                 <div>
                     {loadingSendingForm ? <p>Loading...</p> : ''}
                     {changeError !== '' ? <p className="warning">{changeError}</p> : ''}
-                    <div>
+                    <div className="buttons">
                         <button onClick={(e) => setNewDataInDatabase(e)}>SAVE</button>
+                        <button className="delete" onClick={deleteUser}>DELETE ACCOUNT</button>
+                        <button className="cancel"><Link to={`/user/${localStorage.getItem('username')}`}>CANCEL</Link></button>
                     </div>
-                    <button className="delete" onClick={deleteUser}>DELETE ACCOUNT</button>
-                    <button className="cancel"><Link to={`/user/${localStorage.getItem('username')}`}>CANCEL</Link></button>
                 </div>
             </div>
         </div>

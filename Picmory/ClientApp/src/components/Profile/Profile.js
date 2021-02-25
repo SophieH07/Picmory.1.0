@@ -50,9 +50,10 @@ const Profile = () => {
             const result = async () => {
                 const response = await axios.get('/user/myuserinfo');
                 const resp = await axios.post('/picture/getmyimages', data);
-                console.log(resp.data);
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
+                setColorOne(response.data.coloreOne);
+                setColorTwo(response.data.coloreTwo);
                 setProfilePic(response.data.profilePictureId);
                 setFollowers(response.data.followers);
                 setFollowed(response.data.followed);
