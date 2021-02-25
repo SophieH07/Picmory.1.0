@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 const FolderModal = props => {
 
-    const [folderName, setFolderName] = useState('');
+    const [newFolderName, setNewFolderName] = useState('');
     const [folderNameError, setFolderNameError] = useState(false);
     const [access, setAccess] = useState(0);
 
@@ -17,8 +17,8 @@ const FolderModal = props => {
 
 
     const checkFolderNameNotEmpty = e => {
-        if (folderName !== '') {
-            setFolderName(e.target.value);
+        if (newFolderName !== '') {
+            setNewFolderName(e.target.value);
             setFolderNameError(false);
         } else {
             setFolderNameError(true);
@@ -28,7 +28,7 @@ const FolderModal = props => {
     const handleSubmit = async (e) => {
         try {
             const data = {
-                Name: folderName,
+                Name: newFolderName,
                 Access: access
             }
 
@@ -44,7 +44,7 @@ const FolderModal = props => {
 
     const deleteFolder = async (e) => {
         try {
-            const folderName = "folder name"
+            const folderName = props.folder.folderName
 
             const result = await axios.post('/folder/deletefolder', folderName)
             console.log(result);
@@ -61,13 +61,17 @@ const FolderModal = props => {
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit folder</h2>
                 <form className="input-fields">
-                    {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
-                    <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
-                    <select onChange={(e) => { setAccess(e.target.value) }}>
-                        <option value='0'>Public</option>
-                        <option value='1'>Public only for followers</option>
-                        <option value='2'>Private</option>
-                    </select>
+                    <div>
+                        {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
+                        <input name='foldername' placeholder={props.folder.folderName} onChange={(e) => { checkFolderNameNotEmpty(e) }} />
+                    </div>
+                    <div>
+                        <select onChange={(e) => { setAccess(e.target.value) }}>
+                            <option value='0'>Public</option>
+                            <option value='1'>Public only for followers</option>
+                            <option value='2'>Private</option>
+                        </select>
+                    </div>
                 </form>
                 <button type="submit" onClick={(e) => handleSubmit(e)}>Create</button>
                 <button onClick={(e) => deleteFolder(e)}>Delete</button>

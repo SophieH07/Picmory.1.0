@@ -27,6 +27,9 @@ const Profile = () => {
     const [showEditFolderModal, setShowEditFolderModal] = useState(false);
     const [showEditPictureModal, setShowEditPictureModal] = useState(false);
 
+    const [selectedPicture, setSelectedPicture] = useState();
+    const [selectedFolder, setSelectedFolder] = useState();
+
     const ref = useRef();
 
     useOutsideClick(ref, () => {
@@ -47,7 +50,7 @@ const Profile = () => {
             const result = async () => {
                 const response = await axios.get('/user/myuserinfo');
                 const resp = await axios.post('/picture/getmyimages', data);
-                console.log(response.data);
+                console.log(resp.data);
                 setUsername(response.data.userName);
                 setEmail(response.data.email);
                 setProfilePic(response.data.profilePictureId);
@@ -64,16 +67,15 @@ const Profile = () => {
         }
     }, [])
 
-    const showPictureFromFolder = e => {
+    const showPictureFromFolder = folder => {
         try {
             const data = {
                 Offset: 0,
-                FolderName: e.target.name
+                FolderName: folder.folderName
             }
 
             const result = async (e) => {
                 const resp = await axios.post('/picture/getmyimages', data);
-                console.log(resp.data);
                 setPictures(resp.data);
             }
             result();
@@ -82,30 +84,41 @@ const Profile = () => {
         }
     }
 
+
+    const editFolder = folder => {
+        setSelectedFolder(folder);
+        setShowEditFolderModal(!showEditFolderModal);
+    }
+
+    const editPicture = picture => {
+        setSelectedPicture(picture);
+        setShowEditPictureModal(!showEditPictureModal);
+    }
+
     if (isLoading) {
         return (<div><p>Loading...</p></div>)
     }
 
     const folderList = Object.entries(folders).map(([key, value]) =>
         <div className="folder" key={key}>
-            <p name={value.folderName} onClick={(e) => showPictureFromFolder(e)}>{value.folderName}</p>
-            <img className="pencil" src={pencil} alt="edit" onClick={() => setShowEditFolderModal(!showEditFolderModal)} />
+            <img className="pencil" src={pencil} alt="edit" onClick={() => editFolder(value)} />
+            <p onClick={() => showPictureFromFolder(value)}>{value.folderName}</p>
         </div>
     );
 
     const pictureList = Object.entries(pictures).map(([key, value]) =>
-        <div key={key}>
-            <img className="pencil" src={pencil} alt="edit" onClick={() => setShowEditPictureModal(!showEditPictureModal)} />
-            <img className="picture" src={`https://localhost:44386/picture/picture/${value.id}`} alt="picture" />
+        <div className="picture-div" key={key}>
+            <img className="picture" src={`https://localhost:44386/picture/picture/${value.id}`} alt="picture" onClick={() => editPicture(value)} />
+            <p>{value.description}</p>
         </div>
     );
 
     return (
         <div className="profile">
             {showFolderModal && (<FolderModal show={showFolderModal} reference={ref} />)}
-            {showEditFolderModal && (<EditFolderModal show={showEditFolderModal} reference={ref} />)}
+            {showEditFolderModal && (<EditFolderModal folder={selectedFolder} show={showEditFolderModal} reference={ref} />)}
             {showPictureModal && (<PictureModal show={showPictureModal} reference={ref} />)}
-            {showEditPictureModal && (<EditPictureModal show={showEditPictureModal} reference={ref} />)}
+            {showEditPictureModal && (<EditPictureModal picture={selectedPicture} show={showEditPictureModal} reference={ref} />)}
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>

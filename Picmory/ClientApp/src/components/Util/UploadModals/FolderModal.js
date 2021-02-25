@@ -46,15 +46,20 @@ const FolderModal = props => {
             <div className="modal-main" ref={props.reference}>
                 <h2>Create new folder</h2>
                 <form className="input-fields">
-                    {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
-                    <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
-                    <select onChange={(e) => { setAccess(e.target.value) }}>
-                        <option value='0'>Public</option>
-                        <option value='1'>Public only for followers</option>
-                        <option value='2'>Private</option>
-                    </select>
+                    <div>
+                        {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
+
+                        <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
+                    </div>
+                    <div>
+                        <select onChange={(e) => { setAccess(e.target.value) }}>
+                            <option value='0'>Public</option>
+                            <option value='1'>Public only for followers</option>
+                            <option value='2'>Private</option>
+                        </select>
+                    </div>
+                    <button type="submit" onClick={(e) => handleSubmit(e)}>Create</button>
                 </form>
-                <button type="submit" onClick={(e) => handleSubmit(e)}>Create</button>
             </div>
         </div>
     );

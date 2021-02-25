@@ -24,3 +24,7 @@
 .display-none {
     display: none;
 }
+
+.picture {
+    max-width: 300px;
+}

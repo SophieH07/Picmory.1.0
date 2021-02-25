@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import '../Modal.css';
 import '../Common.css';
@@ -60,17 +60,25 @@ const EditPictureModal = props => {
             <div className="modal-main" ref={props.reference}>
                 <h2>Edit picture</h2>
                 <form className="input-fields">
-                    <img alt="chosen picture" />
-                    <input name='description' placeholder="Description" onChange={(e) => { setDescription(e.target.value) }} />
+                    <div>
+                        <img className="picture" src={`https://localhost:44386/picture/picture/${props.picture.id}`} alt="chosenpicture" />
+                    </div>
+                    <div>
+                        <input name='description' placeholder={props.picture.description} onChange={(e) => { setDescription(e.target.value) }} />
+                    </div>
                     {folderNameError ? <p className="warning">Folder name cannot be empty</p> : ''}
-                    <input name='foldername' placeholder='Folder name' onChange={(e) => { checkFolderNameNotEmpty(e) }} />
-                    <select onChange={(e) => { setAccess(e.target.value) }}>
-                        <option value='0'>Public</option>
-                        <option value='1'>Public only for followers</option>
-                        <option value='2'>Private</option>
-                    </select>
+                    <div>
+                        <input name='foldername' placeholder={props.picture.folderName} onChange={(e) => { checkFolderNameNotEmpty(e) }} />
+                    </div>
+                    <div>
+                        <select onChange={(e) => { setAccess(e.target.value) }}>
+                            <option value='0'>Public</option>
+                            <option value='1'>Public only for followers</option>
+                            <option value='2'>Private</option>
+                        </select>
+                    </div>
+                    <button type="submit" onClick={(e) => handleSubmit(e)}>Save</button>
                 </form>
-                <button type="submit" onClick={(e) => handleSubmit(e)}>Save</button>
                 <button onClick={(e) => deletePicture(e)}>Delete</button>
             </div>
         </div>
