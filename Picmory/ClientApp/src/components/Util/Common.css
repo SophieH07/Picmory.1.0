@@ -46,3 +46,13 @@
 .underline a:hover {
     text-decoration: underline;
 }
+
+
+.picture {
+    margin: 5px;
+    max-width: 300px;
+}
+
+.picture-div {
+    background-color: white;
+}

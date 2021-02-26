@@ -2,6 +2,7 @@
 import axios from 'axios';
 import pencil from "../../img/pngwing.com.png";
 import "./Profile.css";
+import '../Util/Common.css';
 import FolderModal from '../Util/UploadModals/FolderModal.js';
 import PictureModal from '../Util/UploadModals/PictureModal.js';
 import EditFolderModal from '../Util/EditModals/EditFolderModal.js';
@@ -10,7 +11,6 @@ import useOutsideClick from "../Util/useOutsideClick";
 
 const Profile = () => {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [profilePic, setProfilePic] = useState(0);
     const [followed, setFollowed] = useState(0);
     const [followers, setFollowers] = useState('');
@@ -51,7 +51,6 @@ const Profile = () => {
                 const response = await axios.get('/user/myuserinfo');
                 const resp = await axios.post('/picture/getmyimages', data);
                 setUsername(response.data.userName);
-                setEmail(response.data.email);
                 setColorOne(response.data.coloreOne);
                 setColorTwo(response.data.coloreTwo);
                 setProfilePic(response.data.profilePictureId);
@@ -123,7 +122,6 @@ const Profile = () => {
             <div className="left-side">
                 <img src={`https://localhost:44386/picture/picture/${profilePic}`} className="profile-pic" alt="profile pic" />
                 <p className="username">{username}</p>
-                <p className="username">{email}</p>
                 <p>{followers} followers {followed} following</p>
                 <div>
                     <div className="upload-pic">

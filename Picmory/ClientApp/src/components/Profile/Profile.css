@@ -77,12 +77,3 @@ a {
     a:hover {
         text-decoration: none;
     }
-
-.picture {
-    margin: 5px;
-    max-width: 300px;
-}
-
-.picture-div {
-    background-color: white;
-}

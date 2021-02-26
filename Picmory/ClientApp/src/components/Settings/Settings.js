@@ -10,6 +10,7 @@ const Settings = props => {
 
     const [hidden, setHidden] = useState(true);
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [profilePic, setProfilePic] = useState(0);
     const [newProfilePic, setNewProfilePic] = useState();
     const [newSrc, setNewSrc] = useState('');
@@ -33,6 +34,7 @@ const Settings = props => {
                 setProfilePic(response.data.profilePictureId);
                 setColorOne(response.data.coloreOne);
                 setColorTwo(response.data.coloreTwo);
+                setEmail(response.data.email);
             }
             result();
 
@@ -135,6 +137,9 @@ const Settings = props => {
                 <div>
                     <input name='picture' type="file" onChange={(e) => { changeProfilePicture(e) }} />
                 </div>
+                <div>
+                    <p>{email}</p>
+                </div>
                 <div className="input-fields">
                     {usernameError ? <p className="warning">The username cannot be null.</p> : ''}
                     {loadingUsername ? <p className="warning">Loading...</p> : ''}
@@ -151,7 +156,7 @@ const Settings = props => {
                     </div>
                     <div>
                         <h5>Theme Two</h5>
-                        <CompactPicker onChange={(e) => { setColorTwo(e.hex) }}/>
+                        <CompactPicker onChange={(e) => { setColorTwo(e.hex) }} />
                     </div>
                 </div>
                 <div>
