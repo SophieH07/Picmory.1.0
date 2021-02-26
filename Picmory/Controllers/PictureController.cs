@@ -77,6 +77,19 @@ namespace Picmory.Controllers
             return Unauthorized();
         }
 
+        [HttpPost("uploadprofilepicture")]
+        public IActionResult UploadProfilePicture()
+        {
+            IFormFile uploadedImage = HttpContext.Request.Form.Files[0];
+            UploadPhoto photoData = new UploadPhoto();
+            if (userGet.HaveUser(HttpContext) && ModelState.IsValid && uploadedImage != null && ImageTypeIsValid(uploadedImage))
+            {
+                UploadImage(HttpContext, photoData, uploadedImage);
+                return Ok();
+            }
+            return Unauthorized();
+        }
+
 
         [HttpPost("editpicture")]
         public IActionResult EditPicture([FromBody] PictureChange changeData)
