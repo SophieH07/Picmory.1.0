@@ -35,6 +35,8 @@ namespace Picmory.Controllers
             if (!userRepository.UserNameAlreadyUsed(user.UserName) &&
                 !userRepository.EmailAlreadyUsed(user.Email))
             {
+                user.ColorOne = "";
+                user.ColorTwo = "";
                 User databaseUser = SaveUser(user);
                 Response.Cookies.Append("Bearer", GenerateJSONWebToken(databaseUser), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                 return Ok();

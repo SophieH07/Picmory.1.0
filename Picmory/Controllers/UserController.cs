@@ -56,9 +56,9 @@ namespace Picmory.Controllers
                 else if (userRepository.UserNameAlreadyUsed(changeData.UserName) || changeData.UserName == user.UserName)
                     { return BadRequest("Used Username!"); }
                 if (changeData.ColorOne != null)
-                    { user.ColorOne = (ThemeColor)changeData.ColorOne; }
+                    { user.ColorOne = changeData.ColorOne; }
                 if (changeData.ColorTwo != null)
-                    { user.ColorTwo = (ThemeColor)changeData.ColorTwo; }
+                    { user.ColorTwo = changeData.ColorTwo; }
                 if (changeData.Password != null)
                     { user.Password = Hashing.HashPassword(changeData.Password); } 
                 if (changeData.ProfilePictureId != 0)

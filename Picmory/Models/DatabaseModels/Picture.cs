@@ -12,13 +12,13 @@ namespace Picmory.Models
     public class Picture : IDateCreatedAndUpdated
     {
         public Picture() { }
-        public Picture(string desription, AccessType accesType, string type, User owner, Folder folder) 
+        public Picture(string desription, AccessType accesType, string type, User owner, int folderId) 
         {
             Description = desription;
             Access = accesType;
             Type = type;
             Owner = owner;
-            Folder = folder;
+            FolderId = FolderId;
         }
 
 
@@ -37,8 +37,7 @@ namespace Picmory.Models
         [Required]
         [ForeignKey("PictureOwner")]
         public User Owner { get; set; }
-        [Required]
-        public Folder Folder { get; set; }
+        public int FolderId { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public List <Like> Likes { get; set; }

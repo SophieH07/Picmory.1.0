@@ -96,7 +96,7 @@ namespace Picmory.Controllers
                             pictureRepository.ChangePictureData(changeData);
                             return Ok();
                         case Success.FailedByWrongAccessFolder:
-                            return BadRequest("Wrong access picture for " + picture.Folder.FolderName + " folder!");
+                            return BadRequest("Wrong access picture for " + " folder!");
                         case Success.FailedByWrongAccessNewFolder:
                             return BadRequest("Wrong access picture for " + changeData.FolderName + " folder!");
                         case Success.FailedByNotExistFolderName:
@@ -180,7 +180,7 @@ namespace Picmory.Controllers
                                             photoData.Access,
                                             uploadedImage.ContentType,
                                             userGet.GetUser(context),
-                                            photoData.Folder);
+                                            photoData.Folder.Id);
             Picture savedImageData = pictureRepository.SavePicture(imageDataForDB);
             string filePath = CreateFilePath(savedImageData, uploadedImage);
             FileStream stream = new FileStream(filePath, FileMode.Create);
@@ -221,7 +221,7 @@ namespace Picmory.Controllers
             }
             else if (changeData.FolderName == null && changeData.Access != null) 
             {
-                if (!(changeData.Access <= picture.Folder.Access)) { return Success.FailedByWrongAccessFolder; }
+                if (!(changeData.Access <= folderRepository.GetFolder(picture.FolderId).Access)) { return Success.FailedByWrongAccessFolder; }
                 else { return Success.Successfull;  }
             }
             else

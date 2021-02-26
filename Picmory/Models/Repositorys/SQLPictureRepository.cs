@@ -14,6 +14,7 @@ namespace Picmory.Models.Repositorys
         public SQLPictureRepository(PicmoryDbContext context)
         {
             this.context = context;
+            
         }
 
 
@@ -48,7 +49,7 @@ namespace Picmory.Models.Repositorys
             if (picture == null) { return false; }
             else {
                 if (changeData.FolderName != null)
-                { picture.Folder = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault(); }
+                { picture.Id = context.Folders.Where(a => a.Owner == changeData.Owner && a.FolderName == changeData.FolderName).SingleOrDefault().Id; }
                 if (changeData.Access != null)
                 { picture.Access = (AccessType)changeData.Access; }
                 if (changeData.Description != null)
@@ -70,7 +71,7 @@ namespace Picmory.Models.Repositorys
 
         public Picture GetPicture(int id)
         {
-            return context.Pictures.Include(a => a.Folder).Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();
+            return context.Pictures.Include(a => a.Owner).Where(a => a.Id == id).FirstOrDefault();
         }
 
         public List<string> GetAllPictureIds(User user)
@@ -96,8 +97,7 @@ namespace Picmory.Models.Repositorys
             try
             {
                 return pictureIds = context.Pictures
-                    .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
-                    .Include(a => a.Folder)
+                    .Where(a => a.Owner == user && context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName == folderName)
                     .OrderBy(a => a.DateCreated).Select(a => String.Format("{0}.{1}", a.Id, a.Type.Substring(6)))
                     .ToList();
 
@@ -119,8 +119,7 @@ namespace Picmory.Models.Repositorys
                 {
                     return pictures = context.Pictures
                         .Where(a => a.Owner == user)
-                        .Include(a => a.Folder)
-                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated})
+                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated})
                         .OrderBy(a => a.UploadTime)
                         .Take(offset + 10)
                         .Skip(offset)
@@ -129,9 +128,8 @@ namespace Picmory.Models.Repositorys
                 else
                 {
                     return pictures = context.Pictures
-                       .Where(a => a.Owner == user && a.Folder.FolderName == folderName)
-                       .Include(a => a.Folder)
-                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                       .Where(a => a.Owner == user && a.FolderId == context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().Id)
+                        .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated })
                        .OrderBy(a => a.UploadTime)
                        .Take(offset + 10)
                        .Skip(offset)
@@ -162,8 +160,7 @@ namespace Picmory.Models.Repositorys
                             .Where(a => a.Owner == otherUser &&
                                   (a.Access == AccessType.PublicForEveryone ||
                                    a.Access == AccessType.PublicForFollowers))
-                            .Include(a => a.Folder)
-                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated })
                             .OrderBy(a => a.UploadTime)
                             .Take(offset + 10)
                             .Skip(offset)
@@ -173,13 +170,12 @@ namespace Picmory.Models.Repositorys
                     {
                         return pictures = context.Pictures
                            .Where(a => a.Owner == otherUser &&
-                                  a.Folder.FolderName == folderName &&
-                                 (a.Folder.Access == AccessType.PublicForEveryone ||
-                                  a.Folder.Access == AccessType.PublicForFollowers) &&
+                                  context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName == folderName &&
+                                 (context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().Access == AccessType.PublicForEveryone ||
+                                  context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().Access == AccessType.PublicForFollowers) &&
                                  (a.Access == AccessType.PublicForEveryone ||
                                   a.Access == AccessType.PublicForFollowers))
-                           .Include(a => a.Folder)
-                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated })
                            .OrderBy(a => a.UploadTime)
                            .Take(offset + 10)
                            .Skip(offset)
@@ -201,8 +197,7 @@ namespace Picmory.Models.Repositorys
                         return pictures = context.Pictures
                             .Where(a => a.Owner == otherUser &&
                                   (a.Access == AccessType.PublicForEveryone))
-                            .Include(a => a.Folder)
-                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                            .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated })
                             .OrderBy(a => a.UploadTime)
                             .Take(offset + 10)
                             .Skip(offset)
@@ -212,11 +207,10 @@ namespace Picmory.Models.Repositorys
                     {
                         return pictures = context.Pictures
                            .Where(a => a.Owner == otherUser &&
-                                  a.Folder.FolderName == folderName &&
-                                  a.Folder.Access == AccessType.PublicForEveryone &&
+                                  context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName == folderName &&
+                                  context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().Access == AccessType.PublicForEveryone &&
                                   a.Access == AccessType.PublicForEveryone )
-                           .Include(a => a.Folder)
-                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = a.Folder.FolderName, Access = a.Access, UploadTime = a.DateCreated })
+                           .Select(a => new ResponsePicture { Id = a.Id, Description = a.Description, FolderName = context.Folders.Where(a => a.Owner == user && a.FolderName == folderName).SingleOrDefault().FolderName, Access = a.Access, UploadTime = a.DateCreated })
                            .OrderBy(a => a.UploadTime)
                            .Take(offset + 10)
                            .Skip(offset)

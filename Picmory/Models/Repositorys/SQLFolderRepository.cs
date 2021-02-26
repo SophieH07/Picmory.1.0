@@ -114,6 +114,18 @@ namespace Picmory.Models.Repositorys
             }
         }
 
+        public Folder GetFolder(int id)
+        {
+            try
+            {
+                return context.Folders.Where(a => a.Id == id ).SingleOrDefault();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
         public Success SaveNewFolder(Folder folder)
         {
             if (context.Folders.Where(a => a.Owner == folder.Owner && a.FolderName == folder.FolderName).SingleOrDefault() == null)

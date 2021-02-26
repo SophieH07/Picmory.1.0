@@ -31,8 +31,10 @@ namespace Picmory.Models
         [Required]
         [MaxLength(100)]
         public string Password { get; set; }
-        public ThemeColor ColorOne { get; set; }
-        public ThemeColor ColorTwo { get; set; }
+        [MaxLength(10)]
+        public string ColorOne { get; set; }
+        [MaxLength(10)]
+        public string ColorTwo { get; set; }
         public int ProfilePictureID { get; set; }    
         public List<Folder> Folder { get; set; }
         public DateTime DateCreated { get; set; }

@@ -18,7 +18,7 @@ namespace Picmory.Models.RequestModels
 
         public string UserName { get; set; }
         public int? PictureId { get; set; }
-        public ThemeColor ColorOne { get; set; }
-        public ThemeColor ColorTwo { get; set; }
+        public string ColorOne { get; set; }
+        public string ColorTwo { get; set; }
     }
 }

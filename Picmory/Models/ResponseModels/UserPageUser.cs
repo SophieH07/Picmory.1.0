@@ -21,8 +21,8 @@ namespace Picmory.Models.RequestResultModels
 
         public string UserName { get; set; }
         public string Email { get; set; }
-        public ThemeColor ColoreOne { get; set; }
-        public ThemeColor ColoreTwo { get; set; }
+        public string ColoreOne { get; set; }
+        public string ColoreTwo { get; set; }
         public int Followers { get; set; }
         public int Followed { get; set; }
         public int ProfilePictureId { get; set; }
