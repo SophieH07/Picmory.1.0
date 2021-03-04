@@ -4,17 +4,17 @@ import '../Util/Common.css';
 
 const Main = () => {
 
-    useEffect(() => {
-        try {
-            axios.get('/picture/getotherimages').then((re) => {
-                console.log(re.data);
-            })
+    //useEffect(() => {
+    //    try {
+    //        axios.get('/picture/getotherimages').then((re) => {
+    //            console.log(re.data);
+    //        })
 
-        } catch (e) {
-            console.log(e);
-        }
+    //    } catch (e) {
+    //        console.log(e);
+    //    }
 
-    })
+    //})
 
 
     return (

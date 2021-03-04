@@ -54,7 +54,7 @@ const FolderModal = props => {
         try {
             const folderName = props.folder.folderName
 
-            const result = await axios.post('/folder/deletefolder', folderName)
+            const result = await axios.post('/folder/deletefolder', JSON.stringify(folderName))
             console.log(result);
             setLoading(false);
             const referrer = location.state ? location.state.from : `/user/${localStorage.getItem('username')}`;

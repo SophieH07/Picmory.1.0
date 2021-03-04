@@ -11,12 +11,13 @@ export function NavMenu(props) {
     const [isAuthenticated] = useContext(UserContext);
     const [collapsed, setCollapsed] = useState(true);
     const [username, setUsername] = useState('');
+    //const [url, setUrl] = useState('');
     const history = useHistory();
     const location = useLocation();
 
     useEffect(() => {
         if (isAuthenticated) {
-            setUsername(localStorage.getItem("username"))
+            setUsername(localStorage.getItem("username"));
         }
     }, [isAuthenticated])
 
